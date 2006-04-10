@@ -1,0 +1,36 @@
+# State Table Markup Language
+default namespace = "http://www.ccil.org/~cowan/XML/tagsoup/stml"
+start = statetable
+
+## Root element
+statetable = element statetable {
+	attribute version {"1.0"},
+	attribute id {xsd:ID}?,
+	symbol*,
+	action+,
+	state+
+	}
+
+## A symbol specifies a non-character input to the state machine
+symbol = element symbol {
+	attribute id {xsd:ID}
+	}
+
+## An action is the name for what the state machine does
+action = element action {
+	attribute id {xsd:ID}
+	}
+
+## A state specifies an internal state of the machine
+state = element state {
+	attribute id {xsd:ID},
+	tr*
+	}
+
+## A tr specifies a state transition
+tr = element tr {
+	(attribute symbol {xsd:IDREF} |
+		attribute char {xsd:string {length = "1"}}),
+	attribute action {xsd:IDREF},
+	attribute newstate {xsd:IDREF}
+	}

@@ -48,10 +48,9 @@ public class PYXWriter
 		}
 
 	public void cmnt(char [] buff, int offset, int length) throws SAXException {
-//		System.out.println("%%%% cmnt called");
-		theWriter.print('!');
-		theWriter.write(buff, offset, length);
-		theWriter.println();
+//		theWriter.print('!');
+//		theWriter.write(buff, offset, length);
+//		theWriter.println();
 		}
 
 	public void entity(char[] buff, int offset, int length) throws SAXException { }

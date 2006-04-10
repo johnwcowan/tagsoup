@@ -107,6 +107,11 @@ Integer.toString(theState));
 				h.aname(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
+        		case A_ANAME_ADUP:
+				h.aname(theOutputBuffer, 0, theSize);
+				theSize = 0;
+				h.adup(theOutputBuffer, 0, theSize);
+				break;
         		case A_ANAME_ADUP_STAGC:
 				h.aname(theOutputBuffer, 0, theSize);
 				theSize = 0;
@@ -121,6 +126,12 @@ Integer.toString(theState));
 				h.aval(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				h.stagc(theOutputBuffer, 0, theSize);
+				break;
+			case A_CDATA:
+				// suppress the final "]]" in the buffer
+				if (theSize > 1) theSize -= 2;
+				h.pcdata(theOutputBuffer, 0, theSize);
+				theSize = 0;
 				break;
 			case A_ENTITY:
 				char ch1 = (char)ch;
@@ -216,6 +227,12 @@ Integer.toString(theState));
 				break;
         		case A_STAGC:
 				h.stagc(theOutputBuffer, 0, theSize);
+				theSize = 0;
+				break;
+			case A_EMPTYTAG:
+//				System.err.println("%%% Empty tag seen");
+				h.stagc(theOutputBuffer, 0, theSize);
+				h.etag(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
 			case A_UNGET:

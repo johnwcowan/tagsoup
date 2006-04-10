@@ -22,9 +22,8 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.ext.LexicalHandler;
 
-import com.megginson.sax.XMLWriter;
 
-public class Parser extends DefaultHandler implements ScanHandler, XMLReader, LexicalHandler {
+public class Parser extends DefaultHandler implements ScanHandler, XMLReader, LexicalHandler, HTMLModels {
 
 	// XMLReader implementation
 
@@ -37,21 +36,31 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
 
-	private final static String namespacesFeature =
+	public final static String namespacesFeature =
 		"http://xml.org/sax/features/namespaces";
-	private final static String namespacePrefixesFeature =
+	public final static String namespacePrefixesFeature =
 		"http://xml.org/sax/features/namespace-prefixes";
-	private final static String ignoreBogonsFeature =
+	public final static String externalGeneralEntitiesFeature =
+		"http://xml.org/sax/features/external-general-entities";
+	public final static String externalParameterEntitiesFeature =
+		"http://xml.org/sax/features/external-parameter-entities";
+	public final static String ignoreBogonsFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons";
-	private final static String lexicalHandlerProperty =
+	public final static String bogonsEmptyFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/bogons-empty";
+	public final static String lexicalHandlerProperty =
 		"http://xml.org/sax/properties/lexical-handler";
+	public final static String scannerProperty =
+		"http://www.ccil.org/~cowan/tagsoup/properties/scanner";
+	public final static String schemaProperty =
+		"http://www.ccil.org/~cowan/tagsoup/properties/schema";
+	public final static String autoDetectorProperty =
+		"http://www.ccil.org/~cowan/tagsoup/properties/auto-detector";
 
 	private HashMap theFeatures = new HashMap();
 	{
-		theFeatures.put("http://xml.org/sax/features/external-general-entities",
-			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/external-parameter-entities",
-			Boolean.FALSE);
+		theFeatures.put(externalGeneralEntitiesFeature, Boolean.FALSE);
+		theFeatures.put(externalParameterEntitiesFeature, Boolean.FALSE);
 		theFeatures.put("http://xml.org/sax/features/is-standalone",
 			Boolean.FALSE);
 		theFeatures.put("http://xml.org/sax/features/lexical-handler/parameter-entities",
@@ -73,6 +82,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put("http://xml.org/sax/features/xmlns-uris",
 			Boolean.FALSE);
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
+		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
 		}
 
 
@@ -87,22 +97,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void setFeature (String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		if (name.equals(namespacesFeature) ||
-				name.equals(namespacePrefixesFeature) ||
-				name.equals(ignoreBogonsFeature)) {
-			// These features can be changed with real effect
-			if (value)
-				theFeatures.put(name, Boolean.TRUE);
-			else
-				theFeatures.put(name, Boolean.FALSE);
-			}
-		else {
-			// All other features are immutable
-			boolean v = getFeature(name);
-			if (v != value) {
-				throw new SAXNotSupportedException("Can't change feature" + name);
-				}
-			}
+		if (value)
+			theFeatures.put(name, Boolean.TRUE);
+		else
+			theFeatures.put(name, Boolean.FALSE);
 		}
 
 	public Object getProperty (String name)
@@ -110,13 +108,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (name.equals(lexicalHandlerProperty)) {
 			return theLexicalHandler == this ? null : theLexicalHandler;
 			}
-		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/scanner")) {
+		else if (name.equals(scannerProperty)) {
 			return theScanner;
 			}
-		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/schema")) {
+		else if (name.equals(schemaProperty)) {
 			return theSchema;
 			}
-		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/auto-detector")) {
+		else if (name.equals(autoDetectorProperty)) {
 			return theAutoDetector;
 			}
 		else {
@@ -126,7 +124,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void setProperty (String name, Object value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		if (name.equals("http://xml.org/sax/properties/lexical-handler")) {
+		if (name.equals(lexicalHandlerProperty)) {
 			if (value instanceof LexicalHandler) {
 				theLexicalHandler = (LexicalHandler)value;
 				}
@@ -134,7 +132,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				throw new SAXNotSupportedException("Your lexical handler is not a LexicalHandler");
 				}
 			}
-		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/scanner")) {
+		else if (name.equals(scannerProperty)) {
 			if (value instanceof Scanner) {
 				theScanner = (Scanner)value;
 				}
@@ -142,7 +140,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				throw new SAXNotSupportedException("Your scanner is not a Scanner");
 				}
 			}
-		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/schema")) {
+		else if (name.equals(schemaProperty)) {
 			if (value instanceof Schema) {
 				theSchema = (Schema)value;
 				}
@@ -150,7 +148,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				 throw new SAXNotSupportedException("Your schema is not a Schema");
 				}
 			}
-		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/auto-detector")) {
+		else if (name.equals(autoDetectorProperty)) {
 			if (value instanceof AutoDetector) {
 				theAutoDetector = (AutoDetector)value;
 				}
@@ -233,6 +231,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		thePITarget = null;
 		theSaved = null;
 		theEntity = 0;
+		virginStack = true;
 		}
 
 	// Return a Reader based on the contents of an InputSource
@@ -270,7 +269,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Element theSaved = null;
 	private Element thePCDATA = null;
 	private char theEntity = 0;
-	private boolean emptyDocument = true;
 
 	public void adup(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null || theAttributeName == null) return;
@@ -301,6 +299,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void eof(char[] buff, int offset, int length) throws SAXException {
+		if (virginStack) rectify(thePCDATA);
 		while (theStack.next() != null) {
 			pop();
 			}
@@ -312,7 +311,25 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void etag(char[] buff, int offset, int length) throws SAXException {
 		theNewElement = null;
 		String name = alphatize(new String(buff, offset, length));
+		// Handle empty tags and SGML end-tag minimization
+		if (name == null || name.equals("")) {
+			name = theStack.name();
+			}
 //		System.err.println("%% Got end of " + name);
+
+		// If this is a CDATA element and the tag doesn't match,
+		// restart CDATA mode and process the tag as characters.
+		if ((theStack.flags() & Schema.F_CDATA) != 0 &&
+				!(theStack.name().equalsIgnoreCase(name))) {
+			char[] lostData = new char[2];
+			lostData[0] = '<';
+			lostData[1] = '/';
+			theContentHandler.characters(lostData, 0, 2);
+			lostData[0] = '>';
+			theContentHandler.characters(lostData, 0, 1);
+			theScanner.startCDATA();
+			return;
+			}
 		Element sp;
 		for (sp = theStack; sp != null; sp = sp.next()) {
 			if (sp.name().equals(name)) break;
@@ -341,6 +358,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private void pop() throws SAXException {
 		String name = theStack.name();
 //		System.err.println("%% Popping " + name);
+		if ((theStack.flags() & Schema.F_CDATA) != 0) {
+			theLexicalHandler.endCDATA();
+			}
 		theContentHandler.endElement(getURI(), name, name);
 		theStack = theStack.next();
 		}
@@ -357,13 +377,18 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	// Push element onto stack
+	private boolean virginStack = true;
 	private void push(Element e) throws SAXException {
 //		System.err.println("%% Pushing " + e.name());
 		e.clean();
 		theContentHandler.startElement(getURI(), e.name(), e.name(), e.atts());
 		e.setNext(theStack);
 		theStack = e;
-		if ((theStack.flags() & Schema.F_CDATA) != 0) theScanner.startCDATA();
+		virginStack = false;
+		if ((theStack.flags() & Schema.F_CDATA) != 0) {
+			theScanner.startCDATA();
+			theLexicalHandler.startCDATA();
+			}
 		}
 
 	public void gi(char[] buff, int offset, int length) throws SAXException {
@@ -377,13 +402,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				return;
 				}
 			name = name.intern();
-			theSchema.elementType(name, Schema.M_EMPTY, Schema.M_ANY, 0);
+			boolean empty = theFeatures.get(bogonsEmptyFeature) == Boolean.TRUE;
+			theSchema.elementType(name, empty ? Schema.M_EMPTY : Schema.M_ANY, Schema.M_ANY, 0);
 			type = theSchema.getElementType(name);
 			}
 
 		// The root element mustn't be empty
-		if ((theStack.name()).equals("<root>") &&
-				type.model() == Schema.M_EMPTY) return;
+		if ((theStack.name()).equals("<root>") && type.parent() == null) return;
 
 		theNewElement = new Element(type);
 //		System.err.println("%% Got GI " + theNewElement.name());
@@ -409,6 +434,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void pi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null || thePITarget == null) return;
+		if (thePITarget.toLowerCase().equals("xml")) return;
 		theContentHandler.processingInstruction(thePITarget,
 			new String(buff, offset, length));
 		thePITarget = null;
@@ -417,7 +443,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void stagc(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null) return;
 		rectify(theNewElement);
-		emptyDocument = false;
 		}
 
 	public void cmnt(char[] buff, int offset, int length) throws SAXException {
@@ -464,7 +489,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		int len = src.length();
 		for (int i = 0; i < len; i++) {
 			char ch = Character.toLowerCase(src.charAt(i));
-			if (Character.isLetterOrDigit(ch) || ch == ':') {
+			if (Character.isLetterOrDigit(ch) || ch == ':'
+					|| ch == '-' || ch == '.' || ch == '_') {
 				if (dst == null) dst = new StringBuffer();
 				dst.append(ch);
 				}
@@ -503,9 +529,15 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// Main method: tidies specified files or stdin
 	// -Dfiles=true writes output to separate files with .xhtml extension
 	// -Dnons suppresses namespaces, -Dnobogons suppresses unknown elements
+	// -Dany makes bogons ANY rather than EMPTY,
 	// -Dpyx=true, -Dhtml=true uses Pyx or HTML output
 
 	public static void main(String[] argv) throws IOException, SAXException {
+		if (Boolean.getBoolean("nocdata")) {
+			Schema s = HTMLSchema.sharedSchema();
+			s.elementType("script", M_PCDATA, M_HTML|M_INLINE, 0);
+			s.elementType("style", M_PCDATA, M_HEAD|M_INLINE, 0);
+			}
 		if (argv.length == 0) {
 			tidy("/dev/stdin", System.out);
 			}
@@ -516,6 +548,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				int j = src.lastIndexOf('.');
 				if (j == -1)
 					dst = src + ".xhtml";
+				else if (src.endsWith(".xhtml"))
+					dst = src + "_";
 				else
 					dst = src.substring(0, j) + ".xhtml";
 				System.err.println("src: " + src + " dst: " + dst);
@@ -552,11 +586,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (Boolean.getBoolean("nobogons")) {
 			r.setFeature(ignoreBogonsFeature, true);
 			}
+		if (Boolean.getBoolean("any")) {
+			r.setFeature(bogonsEmptyFeature, false);
+			}
 
 		Writer w = new OutputStreamWriter(os, "UTF-8");
 		ContentHandler h = chooseContentHandler(w);
 		r.setContentHandler(h);
-		if (h instanceof LexicalHandler) {
+		if (Boolean.getBoolean("lexical") && h instanceof LexicalHandler) {
 			r.setProperty(lexicalHandlerProperty, h);
 			}
 		r.parse(src);
@@ -568,7 +605,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			h = new PYXWriter(w);
 			}
 		else if (Boolean.getBoolean("html")) {
-			h = new HTMLWriter(w);
+			XMLWriter x = new XMLWriter(w);
+			x.setHTMLMode(true);
+			h = x;
 			}
 		else {
 			h = new XMLWriter(w);

@@ -1,9 +1,7 @@
-CDATA element termination (look for whole etag?)
-Attributes:
-	Change state table to cope with missing = in tags
-	Figure out a cure for unquoted attribute values without blanks (!)
-	Figure out 'bar baz="zam"' when bar is usually minimized
-	Cope with missing unquote in attribute value
-	Normalize values
-Support HTML comments through LexicalHandler
-Experiment with opening new elements before closing old ones
+Normalize attribute values
+Support namespace declarations
+Support prefixed elements
+Make sure PIs have WF names
+Make feature to suppress attribute defaulting
+Entity references in attribute values don't work except at the beginning
+Configure testing to deal with charsets

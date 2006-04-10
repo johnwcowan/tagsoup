@@ -97,17 +97,17 @@ public class Schema {
 		}
 
 	public char getEntity(String name) {
-//		System.err.println("%% Looking up entity " + name);
-		if (name.length() <= 1) return '&';
-		if (name.charAt(1) == '#') {
-			if (name.charAt(2) == 'x') {
+		System.err.println("%% Looking up entity " + name);
+		if (name.length() == 0) return 0;
+		if (name.charAt(0) == '#') {
+			if (name.charAt(1) == 'x') {
 				try {
-					return (char)Integer.parseInt(name.substring(3), 16);
+					return (char)Integer.parseInt(name.substring(2), 16);
 					}
 				catch (NumberFormatException e) { return 0; }
 				}
 			try {
-				return (char)Integer.parseInt(name.substring(2));
+				return (char)Integer.parseInt(name.substring(1));
 				}
 			catch (NumberFormatException e) { return 0; }
 			}

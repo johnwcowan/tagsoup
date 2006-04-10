@@ -87,26 +87,9 @@
   <!-- prepare generation of the parser classes based on the definition files -->
   <target name="prepare-parser" depends="init,prepare"
 	  description="Prepare generation of parser classes.">
-	<exec executable="perl" dir="." output="${tmp}/HTMLModels.i" append="false">
-      <arg value="${bin}/compile-enums"/>
-      <arg value="${src}/definitions/html/elements"/>
-    </exec>
-	<exec executable="perl" dir="." output="${tmp}/HTMLSchema.i" append="false">
-      <arg value="${bin}/compile-elements"/>
-      <arg value="${src}/definitions/html/elements"/>
-    </exec>
-	<exec executable="perl" dir="." output="${tmp}/HTMLSchema.i" append="true">
-      <arg value="${bin}/compile-attributes"/>
-      <arg value="${src}/definitions/html/attributes"/>
-    </exec>
-	<exec executable="perl" dir="." output="${tmp}/HTMLSchema.i" append="true">
-      <arg value="${bin}/compile-entities"/>
-      <arg value="${src}/definitions/html/entities"/>
-    </exec>
-	<exec executable="perl" dir="." output="${tmp}/HTMLScanner.i" append="false">
-      <arg value="${bin}/compile-statetable"/>
-      <arg value="${src}/definitions/html/statetable"/>
-    </exec>
+	<xslt style="tssl/tssl-models.xslt" in="${src}/definitions/html.tssl" out="${tmp}/HTMLModels.i"/>
+	<xslt style="tssl/tssl.xslt" in="${src}/definitions/html.tssl" out="${tmp}/HTMLSchema.i"/>
+	<xslt style="stml/stml.xslt" in="${src}/definitions/html.stml" out="${tmp}/HTMLScanner.i"/>
   </target>
 
 
@@ -153,7 +136,7 @@
 		use="true"
 		windowtitle="TagSoup ${tagsoup.version} API">
       <doctitle><![CDATA[<h1>TagSoup Package Documentation</h1>]]></doctitle>
-	  <bottom><![CDATA[<em>Licence</em>: <strong>Academic Free License 1.2</strong> and <strong> GPL 2.0</strong>]]></bottom>
+	  <bottom><![CDATA[<em>Licence</em>: <strong>Academic Free License 2.1</strong> and <strong> GPL 2.0</strong>]]></bottom>
     </javadoc>
   </target>
 

@@ -1,45 +1,112 @@
+Changes from 0.9.7 to 0.10.1 (there is no 0.10.0):
+============================
+Convert to XSLT configuration exclusively;
+	Perl code and tab-separated tables are gone
+Remove xmlns:* attributes
+Append "_" to attribute names ending in ":"
+Don't prepend "_" to an attribute name starting in "_"
+Handle namespace prefixes in attributes:
+	"xml" prefix is handled correctly
+	other prefixes are mapped to "urn:x-prefix:foo"
+Ignore XML declarations
+-Dnocdata=true turns off F_CDATA on script and style elements
+Fixed off-by-one errors in character references that made them uninterpreted
+Start-tags ending in a minimized attribute are no longer being dropped
+XML empty tags are now supported (though slashes are still allowed in
+	unquoted attribute values)
+
+Changes from 0.9.6 to 0.9.7:
+============================
+Upgraded AFL to version 2.1
+Passed through newlines in character content (very old bug)
+
+Changes from 0.9.5 to 0.9.6:
+=============================
+Script element can appear directly in body
+">" terminates a start-tag even inside a quoted attribute,
+	to protect against unbalanced quotes
+"_" is prepended to attributes that don't begin with a letter
+Remove "xmlns" attributes from the input
+All standard features can now be set
+	(although there is no effect from doing so)
+New "bogons-empty" feature can be set to false to give bogons
+	 content model of ANY rather than EMPTY;
+	-Dany switch sets this feature to false
+TSSL now has an explicit group element to declare an element group
+STML is a new XML format for modeling state-table changes
+License updated to AFL 2.1
+
+Changes from 0.9.4 to 0.9.5:
+=============================
+S in the statetable now means \r and \n and \t as well as space
+	(as was always intended; brain fart!)
+Ins and del elements are now allowed everywhere
+TSSL now correctly supports attributes that are legal on all elements
+
+Changes from 0.9.3 to 0.9.4:
+=============================
+Fixed paper-bag bug that revealed attribute type BOOLEAN to applications.
+Obsolete ABSTRACT removed in favor of README.
+Improved implementation of CDATA restart after bogus end-tag.
+Allowed hyphen, underscore, and period in names as well as colon.
+First cut at TagSoup Schema Language -- doesn't do anything yet.
+Support CDATA sections on input.
+Don't generate built-in entities within CDATA elements.
+
 Changes from 0.9.2 to 0.9.3:
 =============================
-Begin to integrate tests
-Introduced BOOLEAN type
-Features that actually work are now named constants in Parser
-Double root elements are really gone now
-Fixed a bug that made unknown elements disappear in some cases
-Parser is now safely reusable
+Convenience main program "tagsoup" in bin directory.
+Begin to integrate tests.
+Introduced BOOLEAN type (currently just converted to NMTOKEN).
+Features that actually work are now named constants in Parser.
+Double root elements are really gone now.
+ID attributes weren't being removed from restarted elements.
+Fixed a bug that made unknown elements disappear in some cases.
+Parser is now safely reusable.
+PYXWriter and XMLWriter now implement LexicalHandler.
+Parser reports comments, startCDATA, and endCDATA events to a LexicalHandler.
+ScanHandler methods now throw only SAXException, not also IOException.
+-Dlexical=true switch sets the ContentHandler as a LexicalHandler as well
+	(XMLWriter prints comments, ignores CDATA sections; PYXWriter ignores all).
+-Dreuse=true switch reuses a single Parser object (no great speed gain).
+We now disallow an a element as the child of another a element.
+An empty input is now treated as zero-length character content.
+HTMLWriter is gone in favor of an extended XMLWriter with get/setHTMLMode methods.
+CDATA elements only terminaate with matching end-tags (thanks to Sebastien Bardoux).
 
 Changes from 0.9.1 to 0.9.2:
 ============================
-No longer inserts bogus ; after unknown entity reference without ;
-Consecutive entity references now work correctly
-Setting namespaces and namespace-prefixes methods now works
--Dnons=true option turns off namespace and prefix
+No longer inserts bogus ; after unknown entity reference without ;.
+Consecutive entity references now work correctly.
+Setting namespaces and namespace-prefixes methods now works.
+-Dnons=true option turns off namespace and prefix.
 New feature http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons"
-	suppresses unknown start-tags (any end-tag will be automatically ignored)
--Dnobogons=true option turns ignore-bogons on
+	suppresses unknown start-tags (any end-tag will be automatically ignored).
+-Dnobogons=true option turns ignore-bogons on.
 Suppress unknown and/or empty initial start-tag always
-	(prevents double root element)
-Schema now allows style as an inline element, like script
-Schema now allows tr as a child of table to avoid problems with embedded tables
-Clear Parser instance variables to make Parsers properly reusable
+	(prevents double root element).
+Schema now allows style as an inline element, like script.
+Schema now allows tr as a child of table to avoid problems with embedded tables.
+Clear Parser instance variables to make Parsers properly reusable.
 
 Changes from 0.9 to 0.9.1:
 ==========================
-Incorporated patch for -jar support by Joseph Walton
-Incorporated patch for Megginson XMLWriter support by Joseph Walton
-Changed existing XMLWriter to HTMLWriter
-Rewrote Parser.main for better features, removed Tester class
--Dnewline=true removed, now implied by -DHTML=true
+Incorporated patch for -jar support by Joseph Walton.
+Incorporated patch for Megginson XMLWriter support by Joseph Walton.
+Changed existing XMLWriter to HTMLWriter.
+Rewrote Parsermain for better features, removed Tester class.
+-Dnewline=true removed, now implied by -DHTML=true.
 -Dfiles=true now used to generate separate outputs (old Tester behavior)
-	with extension .xhtml (removing any old extension)
-Fixed nasty bug in HTMLScanner that was failing to fix unusual entities
-Don't attempt to smash whitespace to spaces any more
+	with extension xhtml (removing any old extension).
+Fixed nasty bug in HTMLScanner that was failing to fix unusual entities.
+Don't attempt to smash whitespace to spaces any more.
 
 Changes from 0.8 to 0.9:
 ========================
-Ant-ified by Martin Rademacher
-Don't suppress colons in element names
-Entity problems fixed (I hope)
-Can now set namespace and namespace-prefixes features (without effect)
-Properly templatize HTMLModels.java
-Attributes are no longer in the HTML namespace
-Updated license to Academic Free License 2.0 + GPL 2.0
+Ant-ified by Martin Rademacher.
+Don't suppress colons in element names.
+Entity problems fixed (I hope).
+Can now set namespace and namespace-prefixes features (without effect).
+Properly templatize HTMLModels.java.
+Attributes are no longer in the HTML namespace.
+Updated license to Academic Free License 2.0 + GPL 2.0.

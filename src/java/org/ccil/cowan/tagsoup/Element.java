@@ -26,6 +26,7 @@ public class Element {
 	private ElementType theType;		// type of element
 	private AttributesImpl theAtts;		// attributes of element
 	private Element theNext;		// successor of element
+	private String xmlURI = "http://www.w3.org/XML/1998/namespace";
 
 	/**
 	Return an Element from a specified ElementType.
@@ -150,17 +151,43 @@ public class Element {
 	Attributes with null name (the name was ill-formed)
 	or null value (the attribute was present in the element type but
 	not in this actual element) are removed.  Type BOOLEAN is
-	changed to type NMTOKEN at this time.
+	changed to type NMTOKEN at this time.  We also prepend '_'
+	to numeric attribute names.  Namespaced names are fixed up
+	as best we can.
 	*/
 
 	public void clean() {
 		for (int i = theAtts.getLength() - 1; i >= 0; i--) {
-			if (theAtts.getValue(i) == null ||
-			    theAtts.getLocalName(i) == null) {
+			String name = theAtts.getLocalName(i);
+			if (theAtts.getValue(i) == null || name == null ||
+					name.length() == 0) {
 				theAtts.removeAttribute(i);
+				continue;
 				}
-			else if (theAtts.getType(i).equals("BOOLEAN")) {
+			if (name.equals("xmlns") ||
+				 name.startsWith("xmlns:")) {
+				theAtts.removeAttribute(i);
+				continue;
+				}
+			if (theAtts.getType(i).equals("BOOLEAN")) {
 				theAtts.setType(i, "NMTOKEN");
+				}
+			char start = name.charAt(0);
+			if (!(Character.isLetter(start) || start == '_')) {
+				theAtts.setLocalName(i, "_" + name);
+				}
+			if (name.charAt(name.length() - 1) == ':') {
+				theAtts.setLocalName(i, name + "_");
+				}
+			int c = name.indexOf(':');
+			if (c != -1) {
+				theAtts.setLocalName(i, name.substring(c+1));
+				theAtts.setQName(i, name);
+				String p = name.substring(0, c);
+				if (p.equals("xml"))
+					theAtts.setURI(i, xmlURI);
+				else
+					theAtts.setURI(i, "urn:x-prefix:" + p);
 				}
 			}
 		}
