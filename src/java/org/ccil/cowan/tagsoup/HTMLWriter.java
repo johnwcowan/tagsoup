@@ -17,9 +17,10 @@ package org.ccil.cowan.tagsoup;
 import java.io.*;
 import java.util.Stack;
 import org.xml.sax.*;
+import org.xml.sax.ext.LexicalHandler;
 
 public class HTMLWriter
-	implements ContentHandler {
+	implements ContentHandler, LexicalHandler {
 
 	private PrintWriter theWriter;		// where we write to
 	private boolean cdataMode = false;
@@ -146,6 +147,21 @@ public class HTMLWriter
 		}
 
 	public void startPrefixMapping(String prefix, String uri) { }
+
+
+        // Default LexicalHandler implementation
+
+        public void comment(char[] ch, int start, int length) throws SAXException {
+		theWriter.print("<!--");
+		theWriter.write(ch, start, length);
+		theWriter.print("-->");
+		}
+        public void endCDATA() throws SAXException { }
+        public void endDTD() throws SAXException { }
+        public void endEntity(String name) throws SAXException { }
+        public void startCDATA() throws SAXException { }
+        public void startDTD(String name, String publicId, String systemId) throws SAXException { }
+        public void startEntity(String name) throws SAXException { }
 
 	// Constructor
 

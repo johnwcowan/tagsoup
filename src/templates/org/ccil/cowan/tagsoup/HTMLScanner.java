@@ -181,6 +181,10 @@ Integer.toString(theState));
 				h.pcdata(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
+			case A_CMNT:
+				h.cmnt(theOutputBuffer, 1, theSize - 3);
+				theSize = 0;
+				break;
         		case A_PI:
 				h.pi(theOutputBuffer, 0, theSize);
 				theSize = 0;

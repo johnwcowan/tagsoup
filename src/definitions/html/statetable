@@ -21,13 +21,13 @@ CDATA	EOF	pcdata	DONE
 CDATA2		save	CDATA
 CDATA2	/	unsave;pcdata	ETAG
 CDATA2	EOF	unsave;pcdata	DONE
-COM		skip	COM
-COM	-	skip	COMD
-COM	EOF	skip	DONE
-COMD		skip	COM
-COMD	-	skip	COMD
-COMD	>	skip	PCDATA
-COMD	EOF	skip	DONE
+COM		save	COM
+COM	-	save	COMD
+COM	EOF	cmnt	DONE
+COMD		save	COM
+COMD	-	save	COMD
+COMD	>	cmnt	PCDATA
+COMD	EOF	cmnt	DONE
 CRLF		unget	PCDATA
 CRLF	LF	skip	PCDATA
 CRLF	EOF	skip	DONE

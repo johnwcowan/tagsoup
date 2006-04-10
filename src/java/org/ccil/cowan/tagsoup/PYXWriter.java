@@ -18,9 +18,10 @@
 package org.ccil.cowan.tagsoup;
 import java.io.*;
 import org.xml.sax.*;
+import org.xml.sax.ext.LexicalHandler;
 
 public class PYXWriter
-	implements ScanHandler, ContentHandler {
+	implements ScanHandler, ContentHandler, LexicalHandler {
 
 	private PrintWriter theWriter;		// where we write to
 	private static char[] dummy = new char[1];
@@ -28,45 +29,52 @@ public class PYXWriter
 
 	// ScanHandler implementation
 
-	public void adup(char[] buff, int offset, int length) throws IOException {
+	public void adup(char[] buff, int offset, int length) throws SAXException {
 		theWriter.println(attrName);
 		attrName = null;
 		}
 
-	public void aname(char[] buff, int offset, int length) throws IOException {
+	public void aname(char[] buff, int offset, int length) throws SAXException {
 		theWriter.print('A');
 		theWriter.write(buff, offset, length);
 		theWriter.print(' ');
 		attrName = new String(buff, offset, length);
 		}
 
-	public void aval(char[] buff, int offset, int length) throws IOException {
+	public void aval(char[] buff, int offset, int length) throws SAXException {
 		theWriter.write(buff, offset, length);
 		theWriter.println();
 		attrName = null;
 		}
 
-	public void entity(char[] buff, int offset, int length) throws IOException { }
+	public void cmnt(char [] buff, int offset, int length) throws SAXException {
+//		System.out.println("%%%% cmnt called");
+		theWriter.print('!');
+		theWriter.write(buff, offset, length);
+		theWriter.println();
+		}
+
+	public void entity(char[] buff, int offset, int length) throws SAXException { }
 
 	public char getEntity() { return 0; }
 
-	public void eof(char[] buff, int offset, int length) throws IOException {
+	public void eof(char[] buff, int offset, int length) throws SAXException {
 		theWriter.close();
 		}
 
-	public void etag(char[] buff, int offset, int length) throws IOException {
+	public void etag(char[] buff, int offset, int length) throws SAXException {
 		theWriter.print(')');
 		theWriter.write(buff, offset, length);
 		theWriter.println();
 		}
 
-	public void gi(char[] buff, int offset, int length) throws IOException {
+	public void gi(char[] buff, int offset, int length) throws SAXException {
 		theWriter.print('(');
 		theWriter.write(buff, offset, length);
 		theWriter.println();
 		}
 
-	public void pcdata(char[] buff, int offset, int length) throws IOException {
+	public void pcdata(char[] buff, int offset, int length) throws SAXException {
 		if (length == 0) return;	// nothing to do
 		boolean inProgress = false;
 		length += offset;
@@ -100,47 +108,44 @@ public class PYXWriter
 			}
 		}
 
-	public void pitarget(char[] buff, int offset, int length) throws IOException {
+	public void pitarget(char[] buff, int offset, int length) throws SAXException {
 		theWriter.print('?');
 		theWriter.write(buff, offset, length);
 		theWriter.write(' ');
 		}
 
-	public void pi(char[] buff, int offset, int length) throws IOException {
+	public void pi(char[] buff, int offset, int length) throws SAXException {
 		theWriter.write(buff, offset, length);
 		theWriter.println();
 		}
 
-	public void stagc(char[] buff, int offset, int length) throws IOException {
+	public void stagc(char[] buff, int offset, int length) throws SAXException {
 		theWriter.println("!");			// FIXME
 		}
 
 	// SAX ContentHandler implementation
 
-	public void characters(char[] buff, int offset, int length) {
-		try {
-			pcdata(buff, offset, length);
-			}
-		catch (IOException e) { }	// can't actually throw this
+	public void characters(char[] buff, int offset, int length) throws SAXException {
+		pcdata(buff, offset, length);
 		}
 
-	public void endDocument() {
+	public void endDocument() throws SAXException {
 		theWriter.close();
 		}
 
-	public void endElement(String uri, String localname, String qname) {
+	public void endElement(String uri, String localname, String qname) throws SAXException {
 		if (qname.length() == 0) qname = localname;
 		theWriter.print(')');
 		theWriter.println(qname);
 		}
 
-	public void endPrefixMapping(String prefix) { }
+	public void endPrefixMapping(String prefix) throws SAXException { }
 
-	public void ignorableWhitespace(char[] buff, int offset, int length) {
+	public void ignorableWhitespace(char[] buff, int offset, int length) throws SAXException {
 		characters(buff, offset, length);
 		}
 
-	public void processingInstruction(String target, String data) {
+	public void processingInstruction(String target, String data) throws SAXException {
 		theWriter.print('?');
 		theWriter.print(target);
 		theWriter.print(' ');
@@ -149,12 +154,12 @@ public class PYXWriter
 
 	public void setDocumentLocator(Locator locator) { }
 
-	public void skippedEntity(String name) { }
+	public void skippedEntity(String name) throws SAXException { }
 
-	public void startDocument() { }
+	public void startDocument() throws SAXException { }
 
 	public void startElement(String uri, String localname, String qname,
-			Attributes atts) {
+			Attributes atts) throws SAXException {
 		if (qname.length() == 0) qname=localname;
 		theWriter.print('(');
 		theWriter.println(qname);
@@ -169,7 +174,19 @@ public class PYXWriter
 			}
 		}
 
-	public void startPrefixMapping(String prefix, String uri) { }
+	public void startPrefixMapping(String prefix, String uri) throws SAXException { }
+
+	// Default LexicalHandler implementation
+
+	public void comment(char[] ch, int start, int length) throws SAXException {
+		cmnt(ch, start, length);
+		}
+	public void endCDATA() throws SAXException { }
+	public void endDTD() throws SAXException { }
+	public void endEntity(String name) throws SAXException { }
+	public void startCDATA() throws SAXException { }
+	public void startDTD(String name, String publicId, String systemId) throws SAXException { }
+	public void startEntity(String name) throws SAXException { }
 
 	// Constructor
 

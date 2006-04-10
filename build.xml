@@ -11,6 +11,7 @@
   <property name="bin" value="bin"/>
   <property name="src" value="src"/>
   <property name="build" value="build"/>
+  <property name="buildtests" value="build-tests"/>
   <property name="dist"  value="dist"/>
   <property name="docs" value="docs"/>
   <property name="tmp" value="tmp"/>
@@ -28,7 +29,7 @@
     <mkdir dir="${tmp}"/>
   </target>
 
-  <!-- Builld a distribution jar file -->
+  <!-- Build a distribution jar file -->
   <target name="dist" depends="init,compile"
 	  description="Build a binary distribution file.">
     <antcall target="jar-release">
@@ -59,6 +60,29 @@
 	</javac>
   </target>
 
+
+  <target name="buildtests" depends="dist"
+  	description="Build the test classes against a release JAR">
+    <mkdir dir="${buildtests}"/>
+	<javac srcdir="${src}/java" destdir="${buildtests}" classpath="${dist}/lib/tagsoup-${tagsoup.version}.jar">
+	 <include name="org/ccil/cowan/tagsoup/test/*" />
+	</javac>
+  </target>
+
+  <target name="test" depends="buildtests" description="Run the unit tests">
+    <junit>
+      <classpath>
+       <pathelement path="${dist}/lib/tagsoup-${tagsoup.version}.jar"/>
+      </classpath>
+      <batchtest >
+        <formatter type="plain" usefile="false" />
+        <fileset dir="${buildtests}">
+          <include name="**/Test*.class" />
+          <exclude name="**/*$$*" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
 
   <!-- prepare generation of the parser classes based on the definition files -->
   <target name="prepare-parser" depends="init,prepare"
@@ -112,6 +136,7 @@
 
   <!-- clean up the mess -->
   <target name="clean" description="Clean up folders.">
+    <delete dir="${buildtests}"/>
     <delete dir="${build}"/>
     <delete dir="${tmp}"/>
     <delete dir="${docs}"/>

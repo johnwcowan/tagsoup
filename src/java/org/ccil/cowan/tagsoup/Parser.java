@@ -20,26 +20,32 @@ import java.net.URL;
 import java.net.URLConnection;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.ext.LexicalHandler;
 
 import com.megginson.sax.XMLWriter;
 
-public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
+public class Parser extends DefaultHandler implements ScanHandler, XMLReader, LexicalHandler {
 
 	// XMLReader implementation
 
 	private ContentHandler theContentHandler = this;
+	private LexicalHandler theLexicalHandler = this;
 	private DTDHandler theDTDHandler = this;
 	private ErrorHandler theErrorHandler = this;
 	private EntityResolver theEntityResolver = this;
 	private Schema theSchema;
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
-	private final String namespacesFeature =
+
+	private final static String namespacesFeature =
 		"http://xml.org/sax/features/namespaces";
-	private final String namespacePrefixesFeature =
+	private final static String namespacePrefixesFeature =
 		"http://xml.org/sax/features/namespace-prefixes";
-	private final String ignoreBogonsFeature =
+	private final static String ignoreBogonsFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons";
+	private final static String lexicalHandlerProperty =
+		"http://xml.org/sax/properties/lexical-handler";
+
 	private HashMap theFeatures = new HashMap();
 	{
 		theFeatures.put("http://xml.org/sax/features/external-general-entities",
@@ -84,7 +90,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		if (name.equals(namespacesFeature) ||
 				name.equals(namespacePrefixesFeature) ||
 				name.equals(ignoreBogonsFeature)) {
-			// These features can be changed but have no effect
+			// These features can be changed with real effect
 			if (value)
 				theFeatures.put(name, Boolean.TRUE);
 			else
@@ -101,7 +107,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
 	public Object getProperty (String name)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/scanner")) {
+		if (name.equals(lexicalHandlerProperty)) {
+			return theLexicalHandler == this ? null : theLexicalHandler;
+			}
+		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/scanner")) {
 			return theScanner;
 			}
 		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/schema")) {
@@ -117,7 +126,15 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
 	public void setProperty (String name, Object value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/scanner")) {
+		if (name.equals("http://xml.org/sax/properties/lexical-handler")) {
+			if (value instanceof LexicalHandler) {
+				theLexicalHandler = (LexicalHandler)value;
+				}
+			else {
+				throw new SAXNotSupportedException("Your lexical handler is not a LexicalHandler");
+				}
+			}
+		else if (name.equals("http://www.ccil.org/~cowan/tagsoup/properties/scanner")) {
 			if (value instanceof Scanner) {
 				theScanner = (Scanner)value;
 				}
@@ -253,20 +270,21 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 	private Element theSaved = null;
 	private Element thePCDATA = null;
 	private char theEntity = 0;
+	private boolean emptyDocument = true;
 
-	public void adup(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void adup(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null || theAttributeName == null) return;
 		theNewElement.setAttribute(theAttributeName, null, theAttributeName);
 		theAttributeName = null;
 		}
 
-	public void aname(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void aname(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null) return;
 		theAttributeName = alphatize(new String(buff, offset, length));
 //		System.err.println("%% Attribute name " + theAttributeName);
 		}
 
-	public void aval(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void aval(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null || theAttributeName == null) return;
 		String value = new String(buff, offset, length);
 //		System.err.println("%% Attribute value [" + value + "]");
@@ -275,14 +293,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 //		System.err.println("%% Aval done");
 		}
 
-	public void entity(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void entity(char[] buff, int offset, int length) throws SAXException {
 //		System.err.println("%% Entity at " + offset + " " + length);
 		String name = new String(buff, offset, length);
 //		System.err.println("%% Got entity [" + name + "]");
 		theEntity = theSchema.getEntity(name);
 		}
 
-	public void eof(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void eof(char[] buff, int offset, int length) throws SAXException {
 		while (theStack.next() != null) {
 			pop();
 			}
@@ -291,7 +309,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		theContentHandler.endDocument();
 		}
 
-	public void etag(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void etag(char[] buff, int offset, int length) throws SAXException {
 		theNewElement = null;
 		String name = alphatize(new String(buff, offset, length));
 //		System.err.println("%% Got end of " + name);
@@ -348,7 +366,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		if ((theStack.flags() & Schema.F_CDATA) != 0) theScanner.startCDATA();
 		}
 
-	public void gi(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void gi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
 		String name = alphatize(new String(buff, offset, length));
 		if (name == null) return;
@@ -358,18 +376,20 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			if (theFeatures.get(ignoreBogonsFeature) == Boolean.TRUE)  {
 				return;
 				}
-			// Suppress unknown and empty root elements in any case
-			if (theStack.parent() == null) return;
-			if (theStack.model() == Schema.M_EMPTY) return;
 			name = name.intern();
 			theSchema.elementType(name, Schema.M_EMPTY, Schema.M_ANY, 0);
 			type = theSchema.getElementType(name);
 			}
+
+		// The root element mustn't be empty
+		if ((theStack.name()).equals("<root>") &&
+				type.model() == Schema.M_EMPTY) return;
+
 		theNewElement = new Element(type);
 //		System.err.println("%% Got GI " + theNewElement.name());
 		}
 
-	public void pcdata(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void pcdata(char[] buff, int offset, int length) throws SAXException {
 		if (length == 0) return;
 		boolean allWhite = true;
 		for (int i = 0; i < length; i++) {
@@ -382,21 +402,26 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		theContentHandler.characters(buff, offset, length);
 		}
 
-	public void pitarget(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void pitarget(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
 		thePITarget = new String(buff, offset, length).intern();
 		}
 
-	public void pi(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void pi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null || thePITarget == null) return;
 		theContentHandler.processingInstruction(thePITarget,
 			new String(buff, offset, length));
 		thePITarget = null;
 		}
 
-	public void stagc(char[] buff, int offset, int length) throws IOException, SAXException {
+	public void stagc(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null) return;
 		rectify(theNewElement);
+		emptyDocument = false;
+		}
+
+	public void cmnt(char[] buff, int offset, int length) throws SAXException {
+		theLexicalHandler.comment(buff, offset, length);
 		}
 
 	// Rectify the stack, pushing and popping as needed
@@ -449,8 +474,18 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		return dst.toString();
 		}
 
+	// Default LexicalHandler implementation
+
+	public void comment(char[] ch, int start, int length) throws SAXException { }
+	public void endCDATA() throws SAXException { }
+	public void endDTD() throws SAXException { }
+	public void endEntity(String name) throws SAXException { }
+	public void startCDATA() throws SAXException { }
+	public void startDTD(String name, String publicId, String systemId) throws SAXException { }
+	public void startEntity(String name) throws SAXException { }
+
 	private String getURI() {
-		if (theFeatures.get("http://xml.org/sax/features/namespaces")
+		if (theFeatures.get(namespacesFeature)
 					== Boolean.TRUE)
 			return theSchema.getURI();
 		else
@@ -458,7 +493,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		}
 
 	private String getPrefix() {
-		if (theFeatures.get("http://xml.org/sax/features/namespace-prefixes")
+		if (theFeatures.get(namespacePrefixesFeature)
 					== Boolean.TRUE)
 			return theSchema.getPrefix();
 		else
@@ -467,6 +502,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
 	// Main method: tidies specified files or stdin
 	// -Dfiles=true writes output to separate files with .xhtml extension
+	// -Dnons suppresses namespaces, -Dnobogons suppresses unknown elements
 	// -Dpyx=true, -Dhtml=true uses Pyx or HTML output
 
 	public static void main(String[] argv) throws IOException, SAXException {
@@ -495,29 +531,48 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			}
 		}
 
+	private static Parser myParser = null;
+
 	private static void tidy(String src, OutputStream os)
 			throws IOException, SAXException {
-		XMLReader r = new Parser();
+		XMLReader r;
+		if (Boolean.getBoolean("reuse")) {
+			if (myParser == null) myParser = new Parser();
+			r = myParser;
+			}
+		else {
+			r = new Parser();
+			}
+
 		if (Boolean.getBoolean("nons")) {
-			r.setFeature("http://xml.org/sax/features/namespaces", false);
-			r.setFeature("http://xml.org/sax/features/namespace-prefixes", false);
+			r.setFeature(namespacesFeature, false);
+			r.setFeature(namespacePrefixesFeature, false);
 			}
+
 		if (Boolean.getBoolean("nobogons")) {
-			r.setFeature("http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons", true);
+			r.setFeature(ignoreBogonsFeature, true);
 			}
+
 		Writer w = new OutputStreamWriter(os, "UTF-8");
-		r.setContentHandler(chooseContentHandler(w));
+		ContentHandler h = chooseContentHandler(w);
+		r.setContentHandler(h);
+		if (h instanceof LexicalHandler) {
+			r.setProperty(lexicalHandlerProperty, h);
+			}
 		r.parse(src);
 		}
 
 	private static ContentHandler chooseContentHandler(Writer w) {
 		ContentHandler h;
-		if (Boolean.getBoolean("pyx"))
+		if (Boolean.getBoolean("pyx")) {
 			h = new PYXWriter(w);
-		else if (Boolean.getBoolean("html"))
+			}
+		else if (Boolean.getBoolean("html")) {
 			h = new HTMLWriter(w);
-		else
+			}
+		else {
 			h = new XMLWriter(w);
+			}
 		return h;
 		}
 

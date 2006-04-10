@@ -1,5 +1,14 @@
+Changes from 0.9.2 to 0.9.3:
+=============================
+Begin to integrate tests
+Introduced BOOLEAN type
+Features that actually work are now named constants in Parser
+Double root elements are really gone now
+Fixed a bug that made unknown elements disappear in some cases
+Parser is now safely reusable
+
 Changes from 0.9.1 to 0.9.2:
-==========================
+============================
 No longer inserts bogus ; after unknown entity reference without ;
 Consecutive entity references now work correctly
 Setting namespaces and namespace-prefixes methods now works

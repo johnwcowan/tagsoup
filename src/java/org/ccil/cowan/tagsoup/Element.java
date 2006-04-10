@@ -138,7 +138,7 @@ public class Element {
 
 	public void anonymize() {
 		for (int i = theAtts.getLength() - 1; i >= 0; i--) {
-			if (theAtts.getType(i).equals("id") ||
+			if (theAtts.getType(i).equals("ID") ||
 			    theAtts.getQName(i).equals("name")) {
 				theAtts.removeAttribute(i);
 				}
@@ -149,8 +149,8 @@ public class Element {
 	Clean the attributes of this element.
 	Attributes with null name (the name was ill-formed)
 	or null value (the attribute was present in the element type but
-	not in this actual element)
-	are removed.
+	not in this actual element) are removed.  Type BOOLEAN is
+	changed to type NMTOKEN at this time.
 	*/
 
 	public void clean() {
@@ -158,6 +158,9 @@ public class Element {
 			if (theAtts.getValue(i) == null ||
 			    theAtts.getLocalName(i) == null) {
 				theAtts.removeAttribute(i);
+				}
+			else if (theAtts.getType(i).equals("BOOLEAN")) {
+				theAtts.setType(i, "NMTOKEN");
 				}
 			}
 		}
