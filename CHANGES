@@ -1,3 +1,11 @@
+Changes from 1.0rc2 to 1.0rc3
+=============================
+Convert CR and CRLF to LF in comments and PIs
+Force empty elements to close immediately
+Match close tags of CDATA elements more precisely (but case-blind)
+Process switches on the command line
+Man page available
+
 Changes from 1.0rc1 to 1.0rc2
 =============================
 Isolated & and &# now don't crash parser

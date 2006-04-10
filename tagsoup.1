@@ -1,0 +1,109 @@
+.TH TAGSOUP "1" "May 2005" "TagSoup 1.0rc3" "User Commands"
+.SH NAME
+TagSoup \- convert nasty, ugly HTML to clean XHTML
+.SH SYNOPSIS
+.B java -jar tagsoup-1.0rc3
+[
+.I options
+] [
+.I files
+]
+.SH DESCRIPTION
+.\" Add any additional description here
+.PP
+Rectify arbitrary HTML into clean XHTML,
+using a tailored description of HTML.
+The output will be well-formed XML, but not necessarily
+.I valid
+XHTML.
+.PP
+.TP
+.B --files
+multiple input
+.I files
+should be processed into corresponding output files
+.TP
+.BI --encoding= encoding
+specifies the encoding of input files
+.TP
+.B --html
+output rectified HTML rather than XML
+.TP
+.B --lexical
+output lexical features (specifically comments)
+.TP
+.B --nons
+suppress namespaces in output
+.TP
+.B --nobogons
+suppress unknown non-HTML elements in output
+.TP
+.B --any
+treat unknown non-HTML elements as allowing any content
+.TP
+.B --nocdata
+Treat the CDATA-content elements
+.I script
+and
+.I style
+as ordinary elements
+(mostly for testing)
+.TP
+.B --pyx
+output PYX format rather than XML
+(mostly for testing)
+.TP
+.B --pyxin
+input is PYX-format HTML
+(mostly for testing)
+.TP
+.B --reuse
+reuse the same Parser object internally
+(for testing only)
+.PP
+.B TagSoup
+is a parser and reformatter for nasty, ugly HTML.
+Its normal processing mode is to accept HTML files on the command line,
+or from the standard input if none are given, and output them
+as clean XML
+to the standard output.  The encoding is assumed to be the platform-local
+encoding on input, and is always UTF-8 on output.
+.PP
+When the
+.B --files
+option is given, each input file is processed into an output file of the
+corresponding name, with the extension changed to
+.IR xhtml .
+If the extension is already
+.IR xhtml ,
+it is changed to
+.IR xhtml_ .
+.PP
+TagSoup will repair, by whatever means necessary,
+violations of XML well-formedness.  In particular, it will fix up
+malformed attribute names and supply missing attribute-value quotation marks.
+More significantly, it supplies end-tags where HTML allows them
+to be omitted, and sometimes where it doesn't.  It will even supply
+start-tags where necessary; for example, if a document begins with a
+<li> tag, TagSoup will automatically prefix it with <html><body><ul>.
+.PP
+.SH BUGS
+TagSoup can be fooled by missing close quotes after attribute values, and by
+incorrect character encodings (it does not contain an encoding guesser).
+.PP
+Processing TagSoup output through TagSoup a second time should in principle
+produce identical results, but sometimes does not.  That's why this release
+is not 1.0.
+.PP
+TagSoup doesn't understand namespace declarations, which are not properly
+part of HTML.  Instead, any element or attribute name beginning
+.IR foo :
+will be put into the artificial namespace
+.RI urn:x-prefix: foo .
+.SH AUTHOR
+John Cowan <cowan@ccil.org>
+.SH COPYRIGHT
+Copyright \(co 2005 John Cowan
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

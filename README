@@ -16,27 +16,38 @@
    license which allows proprietary re-use. It's also licensed under the
    [3]GNU GPL, since unfortunately the GPL and the AFL are incompatible.
 
-  TagSoup 1.0 Release Candidate 2 released!
+  TagSoup 1.0 Release Candidate 3 released!
 
-   Tagsoup 1.0rc2 is the second release candidate for TagSoup 1.0. This
-   is something of a misnomer, since I know there are still problems -- I
+   Tagsoup 1.0rc3 is the third release candidate for TagSoup 1.0. This is
+   something of a misnomer, since I know there are still problems -- I
    have a new test suite with about 1000 randomly generated HTML
    documents, and about 8% of those show signs of trouble. However, in no
    case is the TagSoup output not well-formed XML. I'll continue to work
-   on this problem, but I'm releasing 1.0rc2 now so that I can get
+   on this problem, but I'm releasing 1.0rc3 now so that I can get
    various bug fixes out to users who need them.
 
-   The major improvement for this release is based on a submitted patch
-   that I have revised and generalized. It is now possible to mark
-   certain elements, currently form and table, as "uncloseable", meaning
-   that a close-tag for a parent element will not force them shut. You
-   can now write things like "</scr" + "ipt>" inside a script element
-   without a problem, whereas before that would terminate the element.
-   And the "nons" property finally works correctly again, suppressing the
-   HTML namespace declaration in the output.
+   This release cleans up long-standing problems with detecting the
+   end-tag for style and script elements. It should now require that the
+   end-tag be exactly </style> or </script> as the case may be, but
+   allows case-blind matching. Any other similar-looking string should
+   not prematurely terminate the element.
 
-   [4]Download the TagSoup 1.0rc2 jar file here. It's about 40K long.
-   [5]Download the full TagSoup 1.0rc2 source here. If you don't have
+   TagSoup now allows switches on the command line, though the Java
+   properties are retained for backward compatibility. I may remove them
+   later. I have modified this page to show switches only, and I have
+   written a proper Unix man page, with a textual version for non-Unix
+   users.
+
+   The encoding=encoding switch is new and specifies the character
+   encoding of the input files. The default is whatever is the Java
+   default encoding on your platform.
+
+   In addition, an element known to be empty will be closed immediately.
+   Formerly, an empty element followed by a comment would, in --lexical
+   mode, show up with the comment inside the element.
+
+   [4]Download the TagSoup 1.0rc3 jar file here. It's about 41K long.
+   [5]Download the full TagSoup 1.0rc3 source here. If you don't have
    zip, you can use jar to unpack it.
 
   What TagSoup does
@@ -83,50 +94,54 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
 
   TagSoup as a stand-alone program
 
-   It is possible to run TagSoup as a program by saying java
-   -Dswitch=true ... -jar tagsoup-1.0rc2 file .... Files mentioned on the
-   command line will be parsed individually. If no files are specified,
-   the standard input is read.
+   It is possible to run TagSoup as a program by saying java -jar
+   tagsoup-1.0rc3 [option ...] [file ...]. Files mentioned on the command
+   line will be parsed individually. If no files are specified, the
+   standard input is read.
 
-   The following switches are understood:
+   The following optiones are understood:
 
-   files
+   --files
           Output into individual files, with html extensions changed to
           xhtml. Otherwise, all output is sent to the standard output.
 
-   html
+   --html
           Output is in clean HTML: the XML declaration is suppressed, as
           are end-tags for the known empty elements.
 
-   pyx
+   --pyx
           Output is in PYX format.
 
-   pyxin
+   --pyxin
           Input is in PYXoid format (need not be well-formed).
 
-   nons
+   --nons
           Namespaces are suppressed. Normally, all elements are in the
           XHTML 1.x namespace, and all attributes are in no namespace.
 
-   nobogons
+   --nobogons
           Bogons (unknown elements) are suppressed. Normally, they are
           treated as empty.
 
-   any
+   --any
           Bogons are given a content model of ANY rather than EMPTY.
 
-   lexical
+   --lexical
           Pass through HTML comments. Has no effect when output is in PYX
           format.
 
-   reuse
+   --reuse
           Reuse a single instance of TagSoup parser throughout. Normally,
           a new one is instantiated for each input file.
 
-   nocdata
+   --nocdata
           Change the content models of the script and style elements to
           treat them as ordinary #PCDATA (text-only) elements, as in
           XHTML, rather than with the special CDATA content model.
+
+   --encoding=encoding
+          Specify the input encoding. The default is the Java platform
+          default.
 
   More information
 
@@ -157,8 +172,8 @@ References
    1. http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html
    2. http://www.opensource.org/licenses/afl-2.1.php
    3. http://www.opensource.org/licenses/gpl-license.php
-   4. file://localhost/var.old/home/c/cowan/public_html/XML/tagsoup/tagsoup-1.0rc2.jar
-   5. file://localhost/var.old/home/c/cowan/public_html/XML/tagsoup/tagsoup-1.0rc2-src.zip
+   4. file://localhost/var.old/home/c/cowan/public_html/XML/tagsoup/tagsoup-1.0rc3.jar
+   5. file://localhost/var.old/home/c/cowan/public_html/XML/tagsoup/tagsoup-1.0rc3-src.zip
    6. http://tidy.sf.net/
    7. http://www.crumbmuseum.com/truckin.html
    8. http://www.cafeconleche.org/XOM
