@@ -14,7 +14,8 @@
 // The TagSoup command line UI
 
 package org.ccil.cowan.tagsoup;
-import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Enumeration;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -28,25 +29,32 @@ The stand-alone TagSoup program.
 **/
 public class CommandLine {
 
-	static HashMap options = new HashMap(); static {
-		options.put("--nocdata", null);	// CDATA elements are normal
-		options.put("--files", null);	// process arguments as separate files
-		options.put("--reuse", null);	// reuse a single Parser
-		options.put("--nons", null);	// no namespaces
-		options.put("--nobogons", null);  // suppress unknown elements
-		options.put("--any", null);	// unknowns have ANY content model
-		options.put("--pyxin", null);	// input is PYX
-		options.put("--lexical", null);	// output comments
-		options.put("--pyx", null);	// output is PYX
-		options.put("--html", null);	// output is HTML
-		options.put("--encoding=", null);	// specify encoding
+	static Hashtable options = new Hashtable(); static {
+		options.put("--nocdata", Boolean.FALSE); // CDATA elements are normal
+		options.put("--files", Boolean.FALSE);	// process arguments as separate files
+		options.put("--reuse", Boolean.FALSE);	// reuse a single Parser
+		options.put("--nons", Boolean.FALSE);	// no namespaces
+		options.put("--nobogons", Boolean.FALSE);  // suppress unknown elements
+		options.put("--any", Boolean.FALSE);	// unknowns have ANY content model
+		options.put("--pyxin", Boolean.FALSE);	// input is PYX
+		options.put("--lexical", Boolean.FALSE); // output comments
+		options.put("--pyx", Boolean.FALSE);	// output is PYX
+		options.put("--html", Boolean.FALSE);	// output is HTML
+		options.put("--encoding=", Boolean.FALSE); // specify encoding
+		options.put("--help", Boolean.FALSE); 	// specify encoding
 		}
 
-	// Main method: processes specified files or stdin
+	/**
+	Main method.  Processes specified files or standard input.
+	**/
 
 	public static void main(String[] argv) throws IOException, SAXException {
 		HTMLSchema s = HTMLSchema.sharedSchema();
 		int optind = getopts(options, argv);
+		if (hasOption(options, "--help")) {
+			doHelp();
+			return;
+			}
 		if (hasOption(options, "--nocdata")) {
 			ElementType script = s.getElementType("script");
 			script.setFlags(0);
@@ -80,7 +88,29 @@ public class CommandLine {
 			}
 		}
 
+	// Print the help message
+
+	private static void doHelp() {
+		System.err.print("usage: java -jar tagsoup-*.jar ");
+		System.err.print(" [ ");
+		boolean first = true;
+		for (Enumeration e = options.keys(); e.hasMoreElements(); ) {
+			if (!first) {
+				System.err.print("| ");
+				}
+			first = false;
+			String key = (String)(e.nextElement());
+			System.err.print(key);
+			if (key.endsWith("="))
+				System.err.print("?");
+				System.err.print(" ");
+			}
+		System.err.println("]*");
+	}
+
 	private static Parser myParser = null;
+
+	// Process one source onto an output stream.
 
 	private static void process(String src, OutputStream os)
 			throws IOException, SAXException {
@@ -122,10 +152,14 @@ public class CommandLine {
 		else {
 			s.setByteStream(System.in);
 			}
-		String encoding = (String)options.get("--encoding=");
-		if (encoding != null) s.setEncoding(encoding);
+		if (hasOption(options, "--encoding=")) {
+			String encoding = (String)options.get("--encoding=");
+			if (encoding != null) s.setEncoding(encoding);
+			}
 		r.parse(s);
 		}
+
+	// Pick a content handler to generate the desired format.
 
 	private static ContentHandler chooseContentHandler(Writer w) {
 		ContentHandler h;
@@ -134,7 +168,8 @@ public class CommandLine {
 			}
 		else if (hasOption(options, "--html")) {
 			XMLWriter x = new XMLWriter(w);
-			x.setHTMLMode(true);
+			x.setOutputProperty(XMLWriter.METHOD, "html");
+			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
 			h = x;
 			}
 		else {
@@ -143,7 +178,9 @@ public class CommandLine {
 		return h;
 		}
 
-	private static int getopts(HashMap options, String[] argv) {
+	// Options processing
+
+	private static int getopts(Hashtable options, String[] argv) {
 		int optind;
 		for (optind = 0; optind < argv.length; optind++) {
 			String arg = argv[optind];
@@ -171,7 +208,9 @@ public class CommandLine {
 		return optind;
 		}
 
-	private static boolean hasOption(HashMap options, String option) {
+	// Return true if an option exists.
+
+	private static boolean hasOption(Hashtable options, String option) {
 		if (Boolean.getBoolean(option)) return true;
 		else if (options.get(option) == Boolean.TRUE) return true;
 		return false;

@@ -51,7 +51,7 @@
   <!-- compile java sources -->
   <target name="compile" depends="init,prepare,build-parser"
 	  description="Compile java classes.">
-    <javac srcdir="${src}/java" destdir="${build}" deprecation="on" verbose="off">
+    <javac srcdir="${src}/java" destdir="${build}" deprecation="on" verbose="off" debug="on">
       <src path="${src}/java"/>
 	  <src path="${tmp}/src"/>
 	</javac>

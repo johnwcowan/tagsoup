@@ -1,12 +1,11 @@
 // XMLWriter.java - serialize an XML document.
 // Written by David Megginson, david@megginson.com
 // NO WARRANTY!  This class is in the public domain.
-// Modified by John Cowan for the TagSoup project.  Still in the public domain.
+// Modified by John Cowan and Leigh Klotz for the TagSoup project.  Still in the public domain.
 // New features:
 //	it is a LexicalHandler
 //	it prints a comment if the LexicalHandler#comment method is called
-//	it outputs HTML (that is, certain end-tags are suppressed)
-//		if setHTMLMode(true) is called
+//	it supports certain XSLT output properties using get/setOutputProperty
 
 // $Id: XMLWriter.java,v 1.1 2004/01/28 05:35:43 joe Exp $
 
@@ -17,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -327,6 +327,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 	prefixTable = new Hashtable();
 	forcedDeclTable = new Hashtable();
 	doneDeclTable = new Hashtable();
+	outputProperties = new Properties();
     }
 
 
@@ -497,7 +498,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 	throws SAXException
     {
 	reset();
-	if (!htmlMode)
+	if (!("yes".equals(outputProperties.getProperty(OMIT_XML_DECLARATION, "no"))))
 	    write("<?xml version=\"1.0\" standalone=\"yes\"?>\n\n");
 	super.startDocument();
     }
@@ -559,7 +560,8 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 	}
 	writeNSDecls();
 	write('>');
-	if (htmlMode && (localName.equals("script") || localName.equals("style"))) {
+	if ("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
+	    (localName.equals("script") || localName.equals("style"))) {
 		cdataElement = true;
 		}
 	super.startElement(uri, localName, qName, atts);
@@ -587,7 +589,8 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     public void endElement (String uri, String localName, String qName)
 	throws SAXException
     {
-	if (!(htmlMode && uri.equals("http://www.w3.org/1999/xhtml") && (
+	if (!("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
+	    uri.equals("http://www.w3.org/1999/xhtml") && (
 	    localName.equals("area") || localName.equals("base") ||
 	    localName.equals("basefont") || localName.equals("br") ||
 	    localName.equals("col") || localName.equals("frame") ||
@@ -1269,11 +1272,16 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 
 
     ////////////////////////////////////////////////////////////////////
-    // HTML mode
+    // Output properties
     ////////////////////////////////////////////////////////////////////
 
-    public boolean getHTMLMode() { return htmlMode; }
-    public void setHTMLMode(boolean t) { htmlMode = t; }
+    public String getOutputProperty(String key) {
+	return outputProperties.getProperty(key);
+    }
+
+    public void setOutputProperty(String key, String value) {
+	outputProperties.setProperty(key, value);
+    }
 
     
 
@@ -1282,6 +1290,17 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     ////////////////////////////////////////////////////////////////////
 
     private final Attributes EMPTY_ATTS = new AttributesImpl();
+    public static final String CDATA_SECTION_ELEMENTS =
+	"cdata-section-elements";
+    public static final String DOCTYPE_PUBLIC = "doctype-public";
+    public static final String DOCTYPE_SYSTEM = "doctype-system";
+    public static final String ENCODING = "encoding";
+    public static final String INDENT = "indent";
+    public static final String MEDIA_TYPE = "media-type";
+    public static final String METHOD = "method";
+    public static final String OMIT_XML_DECLARATION = "omit-xml-declaration";
+    public static final String STANDALONE = "standalone";
+    public static final String VERSION = "version";
 
 
 
@@ -1296,7 +1315,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     private Writer output;
     private NamespaceSupport nsSupport;
     private int prefixCounter = 0;
-    private boolean htmlMode = false;
+    private Properties outputProperties;
     private boolean cdataElement = false;
     
 }

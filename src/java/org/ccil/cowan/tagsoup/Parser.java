@@ -197,12 +197,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void parse (InputSource input) throws IOException, SAXException {
-		Reader r = input.getCharacterStream();
 		setup();
-		if (r == null) {
-			r = getReader(input.getByteStream(), input.getEncoding(),
-				input.getPublicId(), input.getSystemId());
-			}
+		Reader r = getReader(input);
 		theContentHandler.startDocument();
 		if (!(theSchema.getURI().equals("")))
 			theContentHandler.startPrefixMapping(theSchema.getPrefix(),
@@ -211,10 +207,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void parse (String systemId) throws IOException, SAXException {
-		setup();
-		Reader r = getReader(null, null, null, systemId);
-		theContentHandler.startDocument();
-		theScanner.scan(r, this);
+		parse(new InputSource(systemId));
 		}
 
 	// Sets up instance variables that haven't been set by setFeature
@@ -239,20 +232,30 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	// Return a Reader based on the contents of an InputSource
-	private Reader getReader(InputStream i, String encoding, String publicId, String systemId) throws IOException, SAXException {
-		if (i == null) i = getInputStream(publicId, systemId);
-		if (encoding == null) {
-			return theAutoDetector.autoDetectingReader(i);
-			}
-		else {
-			try {
-				Reader r = new InputStreamReader(i, encoding);
-				return r;
+	// Buffer both the InputStream and the Reader
+	private Reader getReader(InputSource s) throws SAXException, IOException {
+		Reader r = s.getCharacterStream();
+		InputStream i = s.getByteStream();
+		String encoding = s.getEncoding();
+		String publicId = s.getPublicId();
+		String systemId = s.getSystemId();
+		if (r == null) {
+			if (i == null) i = getInputStream(publicId, systemId);
+//			i = new BufferedInputStream(i);
+			if (encoding == null) {
+				r = theAutoDetector.autoDetectingReader(i);
 				}
-			catch (UnsupportedEncodingException e) {
-				return new InputStreamReader(i);
+			else {
+				try {
+					r = new InputStreamReader(i, encoding);
+					}
+				catch (UnsupportedEncodingException e) {
+					r = new InputStreamReader(i);
+					}
 				}
 			}
+//		r = new BufferedReader(r);
+		return r;
 		}
 
 	// Get an InputStream based on a publicId and a systemId
@@ -371,12 +374,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		while (theStack.isPreclosed()) {
 			pop();
 			}
-		restart();
+		restart(null);
 		}
 
 	// Push restartables on the stack if possible
-	private void restart() throws SAXException {
-		while (theSaved != null && theStack.canContain(theSaved)) {
+	// e is the next element to be started, if we know what it is
+	private void restart(Element e) throws SAXException {
+		while (theSaved != null && theStack.canContain(theSaved) &&
+				(e == null || theSaved.canContain(e))) {
 			Element next = theSaved.next();
 			push(theSaved);
 			theSaved = next;
@@ -517,7 +522,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			Element nexte = e.next();
 			if (!e.name().equals("<pcdata>")) push(e);
 			e = nexte;
-			restart();
+			restart(e);
 			}
 		theNewElement = null;
 		}

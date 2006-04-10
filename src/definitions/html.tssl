@@ -357,11 +357,6 @@
         <memberOf group='M_NOLINK'/>
         <attribute name='clear' default='none'/>
       </element>
-      <element name='caption' type='mixed'>
-        <memberOf group='M_TABLE'/>
-        <contains group='M_INLINE'/>
-        <attribute name='align' type='NMTOKEN' />
-      </element>
       <element name='center' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
@@ -472,17 +467,6 @@
           <contains group='M_INLINE'/>
           <attribute name='for' type='IDREF' />
         </element>
-        <element name='optgroup' type='element'>
-          <memberOf group='M_OPTIONS'/>
-          <contains group='M_OPTIONS'/>
-          <attribute name='disabled' type='BOOLEAN' />
-          <element name='option' type='string'>
-            <memberOf group='M_OPTION'/>
-            <memberOf group='M_OPTIONS'/>
-            <attribute name='disabled' type='BOOLEAN' />
-            <attribute name='selected' type='BOOLEAN' />
-          </element>
-        </element>
         <element name='select' type='element'>
           <memberOf group='M_INLINE'/>
           <contains group='M_OPTIONS'/>
@@ -490,6 +474,17 @@
           <attribute name='multiple' type='BOOLEAN' />
           <attribute name='size' type='NMTOKEN' />
           <attribute name='tabindex' type='NMTOKEN' />
+          <element name='optgroup' type='element'>
+            <memberOf group='M_OPTIONS'/>
+            <contains group='M_OPTIONS'/>
+            <attribute name='disabled' type='BOOLEAN' />
+          </element>
+          <element name='option' type='string'>
+            <memberOf group='M_OPTION'/>
+            <memberOf group='M_OPTIONS'/>
+            <attribute name='disabled' type='BOOLEAN' />
+            <attribute name='selected' type='BOOLEAN' />
+          </element>
         </element>
         <element name='textarea' type='string'>
           <memberOf group='M_INLINE'/>
@@ -499,12 +494,6 @@
           <attribute name='rows' type='NMTOKEN' />
           <attribute name='tabindex' type='NMTOKEN' />
         </element>
-      </element>
-      <element name='frame' type='empty'>
-        <memberOf group='M_FRAME'/>
-        <attribute name='frameborder' default='1'/>
-        <attribute name='noresize' type='BOOLEAN' />
-        <attribute name='scrolling' default='auto'/>
       </element>
       <element name='h1' type='mixed'>
         <memberOf group='M_BLOCK'/>
@@ -603,6 +592,10 @@
         <attribute name='align' type='NMTOKEN' />
         <attribute name='declare' type='BOOLEAN' />
         <attribute name='tabindex' type='NMTOKEN' />
+        <element name='param' type='empty'>
+          <memberOf group='M_PARAM'/>
+          <attribute name='valuetype' default='data'/>
+        </element>
       </element>
       <element name='ol' type='element'>
         <memberOf group='M_BLOCK'/>
@@ -615,10 +608,6 @@
         <memberOf group='M_P'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
-      </element>
-      <element name='param' type='empty'>
-        <memberOf group='M_PARAM'/>
-        <attribute name='valuetype' default='data'/>
       </element>
       <element name='pre' type='mixed'>
         <memberOf group='M_BLOCK'/>
@@ -677,6 +666,11 @@
         <attribute name='align' type='NMTOKEN' />
         <attribute name='frame' type='NMTOKEN' />
         <attribute name='rules' type='NMTOKEN' />
+        <element name='caption' type='mixed'>
+          <memberOf group='M_TABLE'/>
+          <contains group='M_INLINE'/>
+          <attribute name='align' type='NMTOKEN' />
+        </element>
         <element name='col' type='empty'>
           <memberOf group='M_COL'/>
           <memberOf group='M_TABLE'/>
@@ -774,6 +768,12 @@
       <memberOf group='M_FRAME'/>
       <memberOf group='M_HTML'/>
       <contains group='M_FRAME'/>
+      <element name='frame' type='empty'>
+        <memberOf group='M_FRAME'/>
+        <attribute name='frameborder' default='1'/>
+        <attribute name='noresize' type='BOOLEAN' />
+        <attribute name='scrolling' default='auto'/>
+      </element>
     </element>
     <element name='head' type='element'>
       <memberOf group='M_HTML'/>

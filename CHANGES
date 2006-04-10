@@ -1,3 +1,15 @@
+Changes from 1.0rc3 to 1.0rc4
+=============================
+Support proper options and help message internally
+Do proper buffering of InputStream and Reader
+Removed htmlMode in XMLWriter
+Added support for XSLT output options METHOD=html and OMIT_XML_DECLARATION=yes
+Command line option --html sets both of these
+Wrote simple validator for TSSL schemas (tssl/tssl-validator.xslt)
+Removed various validity problems in html.tssl
+When processing a start-tag, don't restart elements that aren't in the new
+	element's content model
+
 Changes from 1.0rc2 to 1.0rc3
 =============================
 Convert CR and CRLF to LF in comments and PIs
