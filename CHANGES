@@ -1,0 +1,9 @@
+Changes from 0.8 to 0.9:
+========================
+Ant-ified by Martin Rademacher
+Don't suppress colons in element names
+Entity problems fixed (I hope)
+Can now set namespace and namespace-prefixes features (without effect)
+Properly templatize HTMLModels.java
+Attributes are no longer in the HTML namespace
+Updated license to Academic Free License 2.0 + GPL 2.0

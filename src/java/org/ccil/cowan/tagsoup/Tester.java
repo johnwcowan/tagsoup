@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 1.2 of the Academic Free License.
+// and/or modify it under version 2.0 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,19 +27,18 @@ public class Tester {
 	// Test harness
 
 	public static void main(String[] argv) throws IOException, SAXException {
-		StringBuffer flags = new StringBuffer();
-		if (Boolean.getBoolean("html")) flags.append('h');
-		if (Boolean.getBoolean("newline")) flags.append('n');
-System.out.println("flags: "+flags);
 		for (int fileno = 0; fileno < argv.length; fileno++) {
 			XMLReader r = new Parser();
 			String source = argv[fileno];
 			String dst = source+".xml";
-System.out.println("source: "+source);
-System.out.println("dst: "+dst);
-			OutputStream os = new FileOutputStream(dst);
-			ContentHandler h = new XMLWriter(new OutputStreamWriter
-				(os, "UTF-8"), flags.toString());
+			System.err.println("source: "+source);
+			System.err.println("dst: "+dst);
+//			OutputStream os = new FileOutputStream(dst);
+			OutputStream os = System.out;
+			XMLWriter h = new XMLWriter(new OutputStreamWriter
+				(os, "UTF-8"));
+			if (Boolean.getBoolean("html")) h.setHTMLMode(true);
+			if (Boolean.getBoolean("newline")) h.setNewlineMode(true);
 			r.setContentHandler(h);
 			System.err.println("Parsing " + source);
 			r.parse(source);

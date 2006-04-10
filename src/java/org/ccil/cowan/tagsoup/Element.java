@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 1.2 of the Academic Free License.
+// and/or modify it under version 2.0 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,6 @@ public class Element {
 	/**
 	Return an Element from a specified ElementType.
 	@param type The element type of the newly constructed element
-	@return The newly constructed element
 	*/
 
 	public Element(ElementType type) {
@@ -128,7 +127,7 @@ public class Element {
 	*/
 
 	public void setAttribute(String name, String type, String value) {
-		ElementType.setAttribute(theAtts, theType.schema().getURI(), name, type, value);
+		ElementType.setAttribute(theAtts, "", name, type, value);
 		}
 
 	/**

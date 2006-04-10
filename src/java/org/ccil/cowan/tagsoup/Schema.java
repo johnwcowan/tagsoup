@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 1.2 of the Academic Free License.
+// and/or modify it under version 2.0 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,25 +98,24 @@ public class Schema {
 
 	public char getEntity(String name) {
 //		System.err.println("%% Looking up entity " + name);
-		if (name.length() > 0 &&name.charAt(0) == '#') {
+		if (name.length() <= 1) return '&';
+		if (name.charAt(1) == '#') {
 			if (name.charAt(1) == 'x') {
 				try {
-					return (char)Integer.parseInt(name.substring(2), 16);
+					return (char)Integer.parseInt(name.substring(3), 16);
 					}
-				catch (NumberFormatException e) { return ' '; }
+				catch (NumberFormatException e) { return 0; }
 				}
 			try {
-				return (char)Integer.parseInt(name.substring(1));
+				return (char)Integer.parseInt(name.substring(2));
 				}
-			catch (NumberFormatException e) { return ' '; }
+			catch (NumberFormatException e) { return 0; }
 			}
 		Character c = (Character)theEntities.get(name);
 		if (c == null) {
 			return 0;
 			}
-		else {
-			return c.charValue();
-			}
+		return c.charValue();
 		}
 
 	public String getURI() {

@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 1.2 of the Academic Free License.
+// and/or modify it under version 2.0 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -111,6 +111,7 @@ Integer.toString(theState));
 				h.aname(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				h.adup(theOutputBuffer, 0, theSize);
+				h.stagc(theOutputBuffer, 0, theSize);
 				break;
         		case A_AVAL:
 				h.aval(theOutputBuffer, 0, theSize);
@@ -124,7 +125,7 @@ Integer.toString(theState));
 			case A_ENTSAVE:
 				char ch1 = (char)ch;
 				if (Character.isLetterOrDigit(ch1) ||
-				    ch1 == '&' || ch1 == '#') {
+				    ch1 == '#' || ch1 == '&') {
 					save(ch, h);
 					break;
 					}
@@ -142,6 +143,9 @@ Integer.toString(theState));
 						ch = theWinMap[ch-0x80];
 						}
 					save(c, h);
+					}
+				else {
+					save(';', h);
 					}
 				theNextState = savedState;
 				break;
@@ -188,6 +192,7 @@ Integer.toString(theState));
 				break;
 			case A_PCDATA_SAVE_PUSH:
 				h.pcdata(theOutputBuffer, 0, theSize);
+				theSize = 0;
 				// fall through into A_SAVE_PUSH
         		case A_SAVE_PUSH:
 				savedState = theState;

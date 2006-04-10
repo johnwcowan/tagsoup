@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 1.2 of the Academic Free License.
+// and/or modify it under version 2.0 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,7 +42,6 @@ public class ElementType {
 	   with this element type
 	@param schema The schema with which this element type will be
 	associated
-	@returns The new element type
 	*/
 
 	public ElementType(String name, int model, int memberOf, int flags, Schema schema) {
@@ -125,7 +124,7 @@ public class ElementType {
 
 	/**
 	Sets an attribute and its value into an AttributesImpl object.
-	@param AttributesImpl The AttributesImpl object
+	@param atts The AttributesImpl object
 	@param uri The namespace name of the attribute
 	@param name The local name of the attribute
 	@param type The type of the attribute

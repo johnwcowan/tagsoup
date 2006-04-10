@@ -6,3 +6,5 @@ Attributes:
 	Figure out a cure for unquoted attribute values without blanks (!)
 	Figure out 'bar baz="zam"' when bar is usually minimized
 	Cope with missing unquote in attribute value
+PRE doesn't preserve whitespace
+Consecutive entities without semicolons aren't recognized

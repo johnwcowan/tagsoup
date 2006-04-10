@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 1.2 of the Academic Free License.
+// and/or modify it under version 2.0 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,9 +75,20 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
 	public void setFeature (String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		boolean v = getFeature(name);
-		if (v != value) {
-			throw new SAXNotSupportedException("Can't change features");
+		if (name.equals("http://xml.org/sax/features/namespaces") ||
+		    name.equals("http://xml.org/sax/features/namespace-prefixes")) {
+			// These features can be changed but have no effect
+			if (value)
+				theFeatures.put(name, Boolean.TRUE);
+			else
+				theFeatures.put(name, Boolean.FALSE);
+			}
+		else {
+			// All other features are immutable
+			boolean v = getFeature(name);
+			if (v != value) {
+				throw new SAXNotSupportedException("Can't change features");
+				}
 			}
 		}
 
@@ -406,7 +417,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		int len = src.length();
 		for (int i = 0; i < len; i++) {
 			char ch = Character.toLowerCase(src.charAt(i));
-			if (Character.isLetterOrDigit(ch)) {
+			if (Character.isLetterOrDigit(ch) || ch == ':') {
 				if (dst == null) dst = new StringBuffer();
 				dst.append(ch);
 				}
@@ -420,17 +431,17 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
 	public static void main(String[] argv) throws IOException, SAXException {
 		XMLReader r = new Parser();
-		StringBuffer flags = new StringBuffer();
 		ContentHandler h;
 		if (Boolean.getBoolean("pyx")) {
 			h = new PYXWriter(new OutputStreamWriter
 				(System.out, "UTF-8"));
 			}
 		else {
-			if (Boolean.getBoolean("html")) flags.append('h');
-			if (Boolean.getBoolean("newline")) flags.append('n');
-			h = new XMLWriter(new OutputStreamWriter
-				(System.out, "UTF-8"), flags.toString());
+			XMLWriter h1 = new XMLWriter(new OutputStreamWriter
+				(System.out, "UTF-8"));
+			if (Boolean.getBoolean("html")) h1.setHTMLMode(true);
+			if (Boolean.getBoolean("newline")) h1.setNewlineMode(true);
+			h = h1;
 			}
 		r.setContentHandler(h);
 		String source = "/dev/stdin";
