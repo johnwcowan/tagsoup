@@ -3,5 +3,6 @@ Support namespace declarations
 Support prefixed elements
 Make sure PIs have WF names
 Make feature to suppress attribute defaulting
-Entity references in attribute values don't work except at the beginning
 Configure testing to deal with charsets
+If the root element is non-HTML, it vanishes completely: fix
+document.write('</scr + ipt>');

@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 2.0 of the Academic Free License.
+// and/or modify it under version 2.1 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -278,7 +278,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void aname(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null) return;
-		theAttributeName = alphatize(new String(buff, offset, length));
+		theAttributeName = makeName(buff, offset, length);
 //		System.err.println("%% Attribute name " + theAttributeName);
 		}
 
@@ -292,6 +292,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void entity(char[] buff, int offset, int length) throws SAXException {
+		if (length < 1) {
+			theEntity = 0;
+			return;
+			}
 //		System.err.println("%% Entity at " + offset + " " + length);
 		String name = new String(buff, offset, length);
 //		System.err.println("%% Got entity [" + name + "]");
@@ -310,7 +314,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void etag(char[] buff, int offset, int length) throws SAXException {
 		theNewElement = null;
-		String name = alphatize(new String(buff, offset, length));
+		String name = makeName(buff, offset, length);
 		// Handle empty tags and SGML end-tag minimization
 		if (name == null || name.equals("")) {
 			name = theStack.name();
@@ -321,13 +325,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		// restart CDATA mode and process the tag as characters.
 		if ((theStack.flags() & Schema.F_CDATA) != 0 &&
 				!(theStack.name().equalsIgnoreCase(name))) {
-			char[] lostData = new char[2];
+			char[] lostData = new char[length + 3];
 			lostData[0] = '<';
 			lostData[1] = '/';
-			theContentHandler.characters(lostData, 0, 2);
-			lostData[0] = '>';
-			theContentHandler.characters(lostData, 0, 1);
+			System.arraycopy(buff, offset, lostData, 2, length);
+			lostData[length + 2] = '>';
 			theScanner.startCDATA();
+			theContentHandler.characters(lostData, 0, length + 3);
 			return;
 			}
 		Element sp;
@@ -393,7 +397,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void gi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
-		String name = alphatize(new String(buff, offset, length));
+		String name = makeName(buff, offset, length);
 		if (name == null) return;
 		ElementType type = theSchema.getElementType(name);
 		if (type == null) {
@@ -429,7 +433,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void pitarget(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
-		thePITarget = new String(buff, offset, length).intern();
+		thePITarget = makeName(buff, offset, length);
 		}
 
 	public void pi(char[] buff, int offset, int length) throws SAXException {
@@ -482,22 +486,24 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		return theEntity;
 		}
 
-	// Return the argument with non-alphanumerics stripped
-	// and letters lowercased
-	private String alphatize(String src) {
-		StringBuffer dst = null;
-		int len = src.length();
-		for (int i = 0; i < len; i++) {
-			char ch = Character.toLowerCase(src.charAt(i));
+	// Return the argument as a valid XML name, lowercased
+	private String makeName(char[] buff, int offset, int length) {
+		StringBuffer dst = new StringBuffer(length + 2);
+//		String src = new String(buff, offset, length); // DEBUG
+		char start = buff[offset];
+		if (!(Character.isLetter(start) || start == '_')) {
+			dst.append('_');
+			}
+		for (; length-- > 0; offset++) {
+			char ch = Character.toLowerCase(buff[offset]);
 			if (Character.isLetterOrDigit(ch) || ch == ':'
 					|| ch == '-' || ch == '.' || ch == '_') {
-				if (dst == null) dst = new StringBuffer();
 				dst.append(ch);
 				}
 			}
-		if (dst == null) return null;
-//		System.err.println("Alphatized \"" + src + "\" to \"" + dst + "\"");
-		return dst.toString();
+		if (offset > 0 && buff[offset - 1] == ':') dst.append('_');
+//		System.err.println("Made name \"" + dst + "\" from \"" + src + "\"");
+		return dst.toString().intern();
 		}
 
 	// Default LexicalHandler implementation

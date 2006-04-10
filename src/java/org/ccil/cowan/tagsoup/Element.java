@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 2.0 of the Academic Free License.
+// and/or modify it under version 2.1 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -172,18 +172,11 @@ public class Element {
 			if (theAtts.getType(i).equals("BOOLEAN")) {
 				theAtts.setType(i, "NMTOKEN");
 				}
-			char start = name.charAt(0);
-			if (!(Character.isLetter(start) || start == '_')) {
-				theAtts.setLocalName(i, "_" + name);
-				}
-			if (name.charAt(name.length() - 1) == ':') {
-				theAtts.setLocalName(i, name + "_");
-				}
-			int c = name.indexOf(':');
-			if (c != -1) {
-				theAtts.setLocalName(i, name.substring(c+1));
+			int colon = name.indexOf(':');
+			if (colon != -1) {
+				theAtts.setLocalName(i, name.substring(colon+1));
 				theAtts.setQName(i, name);
-				String p = name.substring(0, c);
+				String p = name.substring(0, colon);
 				if (p.equals("xml"))
 					theAtts.setURI(i, xmlURI);
 				else

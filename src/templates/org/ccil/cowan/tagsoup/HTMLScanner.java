@@ -4,7 +4,7 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.  You may also distribute
-// and/or modify it under version 2.0 of the Academic Free License.
+// and/or modify it under version 2.1 of the Academic Free License.
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,6 +51,7 @@ public class HTMLScanner implements Scanner {
 	public void scan(Reader r0, ScanHandler h) throws IOException, SAXException {
 		theState = S_PCDATA;
 		int savedState = 0;
+		int savedSize = 0;
 		PushbackReader r;
 		if (r0 instanceof PushbackReader) {
 			r = (PushbackReader)r0;
@@ -140,11 +141,11 @@ Integer.toString(theState));
 					break;
 					}
 //				System.err.println("%%" + new String(theOutputBuffer, 0, theSize));
-				h.entity(theOutputBuffer, 1, theSize - 1);
+				h.entity(theOutputBuffer, savedSize + 1, theSize - savedSize - 1);
 				int ent = h.getEntity();
 //				System.err.println("%% value = " + ent);
 				if (ent != 0) {
-					theSize = 0;
+					theSize = savedSize;
 					if (ent >= 0x80 && ent <= 0x9F) {
 						ent = theWinMap[ent-0x80];
 						}
@@ -215,6 +216,7 @@ Integer.toString(theState));
 				// fall through into A_SAVE_PUSH
         		case A_SAVE_PUSH:
 				savedState = theState;
+				savedSize = theSize;
 				save(ch, h);
 				break;
         		case A_SAVE:
@@ -231,9 +233,10 @@ Integer.toString(theState));
 				break;
 			case A_EMPTYTAG:
 //				System.err.println("%%% Empty tag seen");
+				if (theSize > 0) h.gi(theOutputBuffer, 0, theSize);
+				theSize = 0;
 				h.stagc(theOutputBuffer, 0, theSize);
 				h.etag(theOutputBuffer, 0, theSize);
-				theSize = 0;
 				break;
 			case A_UNGET:
 				r.unread(ch);

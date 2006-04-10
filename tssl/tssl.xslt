@@ -1,4 +1,19 @@
 <!-- Generate Java code to be inserted into HTMLSchema.java.  -->
+
+<!--
+// This file is part of TagSoup.
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.  You may also distribute
+// and/or modify it under version 2.1 of the Academic Free License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+-->
+
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:tssl="http://www.ccil.org/~cowan/XML/tagsoup/tssl"
 	version="1.0">

@@ -1,5 +1,15 @@
+Changes from 0.10.1 to 0.10.2
+=============================
+Removed misfeature whereby > terminated a tag even inside quotes
+Added licensing language to XSLT scripts, RELAX NG schemas
+Removed long-standing mishandling of entity references in attributes
+Cleaned up logic for converting junky strings to proper XML Names
+Correctly handle empty tag that has no whitespace or attributes
+Restore correct 0.9.3 handling of an apparent end-tag in a CDATA element
+Added script element to content model of head element
+
 Changes from 0.9.7 to 0.10.1 (there is no 0.10.0):
-============================
+==================================================
 Convert to XSLT configuration exclusively;
 	Perl code and tab-separated tables are gone
 Remove xmlns:* attributes
@@ -21,7 +31,7 @@ Upgraded AFL to version 2.1
 Passed through newlines in character content (very old bug)
 
 Changes from 0.9.5 to 0.9.6:
-=============================
+============================
 Script element can appear directly in body
 ">" terminates a start-tag even inside a quoted attribute,
 	to protect against unbalanced quotes
@@ -37,14 +47,14 @@ STML is a new XML format for modeling state-table changes
 License updated to AFL 2.1
 
 Changes from 0.9.4 to 0.9.5:
-=============================
+============================
 S in the statetable now means \r and \n and \t as well as space
 	(as was always intended; brain fart!)
 Ins and del elements are now allowed everywhere
 TSSL now correctly supports attributes that are legal on all elements
 
 Changes from 0.9.3 to 0.9.4:
-=============================
+============================
 Fixed paper-bag bug that revealed attribute type BOOLEAN to applications.
 Obsolete ABSTRACT removed in favor of README.
 Improved implementation of CDATA restart after bogus end-tag.
@@ -54,7 +64,7 @@ Support CDATA sections on input.
 Don't generate built-in entities within CDATA elements.
 
 Changes from 0.9.2 to 0.9.3:
-=============================
+============================
 Convenience main program "tagsoup" in bin directory.
 Begin to integrate tests.
 Introduced BOOLEAN type (currently just converted to NMTOKEN).
