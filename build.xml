@@ -1,0 +1,131 @@
+<project name="tagsoup" default="compile" basedir=".">
+
+  <!-- generic properties -->
+  <property file="etc/build/build.properties"/>
+  <!-- additional tasks -->
+  <taskdef file="etc/build/taskdefs.txt" classpath="bin"/>
+
+  <!-- some folder settings -->
+  <property name="bin" value="bin"/>
+  <property name="src" value="src"/>
+  <property name="build" value="build"/>
+  <property name="dist"  value="dist"/>
+  <property name="docs" value="docs"/>
+  <property name="tmp" value="tmp"/>
+
+
+  <!-- initialize project -->
+  <target name="init" description="Init project.">
+    <tstamp/>
+  </target>
+
+
+  <!-- ensure needed folders are available -->
+  <target name="prepare" description="Set up folders.">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${tmp}"/>
+  </target>
+
+  <!-- Builld a distribution jar file -->
+  <target name="dist" depends="init,compile"
+	  description="Build a binary distribution file.">
+    <antcall target="jar-release">
+      <param name="buildDir" value="build"/>
+      <param name="version" value="${tagsoup.version}"/>
+    </antcall>
+  </target>
+
+
+	<target name="jar-release" depends="init"
+			description="Build a release jar file.">
+	  <jar jarfile="${dist}/lib/tagsoup-${tagsoup.version}.jar" basedir="${buildDir}"
+		  	includes="org/**,*.class" update="no">
+      <manifest>
+        <attribute name="Version" value="${tagsoup.version}"/>
+      </manifest>
+    </jar>
+  </target>
+
+
+  <!-- compile java sources -->
+  <target name="compile" depends="init,prepare,build-parser"
+	  description="Compile java classes.">
+    <javac srcdir="${src}/java" destdir="${build}" deprecation="on" verbose="off">
+      <src path="${src}/java"/>
+	  <src path="${tmp}/src"/>
+	</javac>
+  </target>
+
+
+  <!-- prepare generation of the parser classes based on the definition files -->
+  <target name="prepare-parser" depends="init,prepare"
+	  description="Prepare generation of parser classes.">
+	<exec executable="perl" dir="." output="${tmp}/HTMLModels.i" append="false">
+      <arg value="${bin}/compile-enums"/>
+      <arg value="${src}/definitions/html/elements"/>
+    </exec>
+	<exec executable="perl" dir="." output="${tmp}/HTMLSchema.i" append="false">
+      <arg value="${bin}/compile-elements"/>
+      <arg value="${src}/definitions/html/elements"/>
+    </exec>
+	<exec executable="perl" dir="." output="${tmp}/HTMLSchema.i" append="true">
+      <arg value="${bin}/compile-attributes"/>
+      <arg value="${src}/definitions/html/attributes"/>
+    </exec>
+	<exec executable="perl" dir="." output="${tmp}/HTMLSchema.i" append="true">
+      <arg value="${bin}/compile-entities"/>
+      <arg value="${src}/definitions/html/entities"/>
+    </exec>
+	<exec executable="perl" dir="." output="${tmp}/HTMLScanner.i" append="false">
+      <arg value="${bin}/compile-statetable"/>
+      <arg value="${src}/definitions/html/statetable"/>
+    </exec>
+  </target>
+
+
+  <!-- patch the parser class files -->
+  <target name="build-parser" depends="prepare-parser"
+	  description="Generate parser class files.">
+	<property name="parser.pkg-path" value="org/ccil/cowan/tagsoup"/>
+	<mkdir dir="${tmp}/src/${parser.pkg-path}"/>
+	<antcall target="patch-file">
+      <param name="file-pref" value="HTMLModels"/><param name="token" value="MODEL_DEFINITIONS"/>
+	</antcall>
+	<antcall target="patch-file">
+      <param name="file-pref" value="HTMLSchema"/><param name="token" value="SCHEMA_CALLS"/>
+	</antcall>
+	<antcall target="patch-file">
+      <param name="file-pref" value="HTMLScanner"/><param name="token" value="STATE_TABLE"/>
+	</antcall>
+  </target>
+
+
+  <!-- patch one parser class file -->
+  <target name="patch-file" depends="" description="Patch a parser class file.">
+	<copy file="${src}/templates/${parser.pkg-path}/${file-pref}.java" toDir="${tmp}/src/${parser.pkg-path}"/>
+    <loadfile property="patch" srcFile="${tmp}/${file-pref}.i"/>
+	<replace file="${tmp}/src/${parser.pkg-path}/${file-pref}.java" token="@@${token}@@" value="${patch}"/>
+  </target>
+
+  <!-- clean up the mess -->
+  <target name="clean" description="Clean up folders.">
+    <delete dir="${build}"/>
+    <delete dir="${tmp}"/>
+    <delete dir="${docs}"/>
+  </target>
+
+
+  <!-- generate javadoc for the java classes -->
+  <target name="docs-api" depends="init"
+	  description="Generate javadoc documentation.">
+	<mkdir dir="${docs}/api"/>
+	<javadoc packagenames="org.*"
+		sourcepath="${src}/java" destdir="${docs}/api"
+		use="true"
+		windowtitle="TagSoup ${tagsoup.version} API">
+      <doctitle><![CDATA[<h1>TagSoup Package Documentation</h1>]]></doctitle>
+	  <bottom><![CDATA[<em>Licence</em>: <strong>Academic Free License 1.2</strong> and <strong> GPL 2.0</strong>]]></bottom>
+    </javadoc>
+  </target>
+
+</project>

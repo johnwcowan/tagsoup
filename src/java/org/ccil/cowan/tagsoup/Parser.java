@@ -406,7 +406,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		int len = src.length();
 		for (int i = 0; i < len; i++) {
 			char ch = Character.toLowerCase(src.charAt(i));
-			if (Character.isLetterOrDigit(ch) || ch == ':') {
+			if (Character.isLetterOrDigit(ch)) {
 				if (dst == null) dst = new StringBuffer();
 				dst.append(ch);
 				}

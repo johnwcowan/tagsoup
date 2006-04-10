@@ -1,7 +1,0 @@
-#!/usr/bin/perl
-$/ = undef;
-
-while (<>) {
-	@entrefs = /&[a-zA-Z0-9]+/g;
-	print join("\n", @entrefs), "\n";
-	}

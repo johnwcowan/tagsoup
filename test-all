@@ -1,7 +1,0 @@
-#!/bin/sh
-java -Dnewline=true Tester html/*
-cd xml
-for f in *.html
-do	echo $f
-	parse -wno-valid $f >/dev/null
-done 2>parse.log

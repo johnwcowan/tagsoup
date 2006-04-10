@@ -30,10 +30,13 @@ public class Tester {
 		StringBuffer flags = new StringBuffer();
 		if (Boolean.getBoolean("html")) flags.append('h');
 		if (Boolean.getBoolean("newline")) flags.append('n');
+System.out.println("flags: "+flags);
 		for (int fileno = 0; fileno < argv.length; fileno++) {
 			XMLReader r = new Parser();
 			String source = argv[fileno];
-			String dst = "x" + source.substring(2);
+			String dst = source+".xml";
+System.out.println("source: "+source);
+System.out.println("dst: "+dst);
 			OutputStream os = new FileOutputStream(dst);
 			ContentHandler h = new XMLWriter(new OutputStreamWriter
 				(os, "UTF-8"), flags.toString());
