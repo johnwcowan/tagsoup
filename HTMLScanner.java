@@ -256,6 +256,7 @@ Integer.toString(theState));
 				h.aname(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				h.adup(theOutputBuffer, 0, theSize);
+				h.stagc(theOutputBuffer, 0, theSize);
 				break;
         		case A_AVAL:
 				h.aval(theOutputBuffer, 0, theSize);
