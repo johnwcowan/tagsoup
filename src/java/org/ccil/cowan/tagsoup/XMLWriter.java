@@ -1252,7 +1252,11 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     public void comment(char[] ch, int start, int length) throws SAXException
     {
 	write("<!--");
-	for (int i = start; i < start + length; i++) write(ch[i]);
+	for (int i = start; i < start + length; i++) {
+		write(ch[i]);
+		if (ch[i] == '-' && i + 1 <= start + length && ch[i+1] == '-')
+			write(' ');
+		}
 	write("-->");
     }
 

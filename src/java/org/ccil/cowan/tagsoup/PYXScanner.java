@@ -98,9 +98,9 @@ public class PYXScanner implements Scanner {
 				h.entity(buff, 1, size - 1);
 				break;
 			default:
-				System.err.print("Gotcha ");
-				System.err.print(s);
-				System.err.print('\n');
+//				System.err.print("Gotcha ");
+//				System.err.print(s);
+//				System.err.print('\n');
 				break;
 				}
 			}

@@ -275,6 +275,7 @@
   <group id='M_CELL'/>
   <group id='M_COL'/>
   <group id='M_DEF'/>
+  <group id='M_FORM'/>
   <group id='M_FRAME'/>
   <group id='M_HEAD'/>
   <group id='M_HTML'/>
@@ -288,38 +289,38 @@
   <group id='M_PARAM'/>
   <group id='M_TABLE'/>
   <group id='M_TR'/>
-  <element name='html' type='element' >
+  <element name='html' type='element'>
     <isRoot/>
     <contains group='M_HTML'/>
     <attribute name='version' default='-//W3C//DTD HTML 4.01 Transitional//EN'/>
-    <element name='body' type='mixed' text-parent='true' >
+    <element name='body' type='mixed' text-parent='true'>
       <memberOf group='M_HTML'/>
       <memberOf group='M_BODY'/>
       <contains group='M_INLINE'/>
       <contains group='M_BLOCK'/>
-      <element name='a' type='mixed' >
+      <element name='a' type='mixed'>
         <memberOf group='M_INLINE'/>
         <contains group='M_NOLINK'/>
         <attribute name='hreflang' type='NMTOKEN' />
         <attribute name='shape' default='rect'/>
         <attribute name='tabindex' type='NMTOKEN' />
       </element>
-      <element name='abbr' restartable='true' type='mixed' >
+      <element name='abbr' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='acronym' restartable='true' type='mixed' >
+      <element name='acronym' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='address' type='mixed' >
+      <element name='address' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_P'/>
       </element>
-      <element name='applet' type='mixed' >
+      <element name='applet' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_PARAM'/>
@@ -327,109 +328,113 @@
         <contains group='M_BLOCK'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='b' restartable='true' type='mixed' >
+      <element name='b' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='basefont' type='empty' >
+      <element name='basefont' type='empty'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
       </element>
-      <element name='bdo' restartable='true' type='mixed' >
-        <memberOf group='M_INLINE'/>
-        <memberOf group='M_NOLINK'/>
-        <contains group='M_INLINE'/>
-      </element>
-      <element name='big' restartable='true' type='mixed' >
+      <element name='bdo' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='blockquote' type='mixed' >
+      <element name='big' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='blockquote' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
       </element>
-      <element name='br' type='empty' >
+      <element name='br' type='empty'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <attribute name='clear' default='none'/>
       </element>
-      <element name='caption' type='mixed' >
+      <element name='caption' type='mixed'>
         <memberOf group='M_TABLE'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='center' type='mixed' >
+      <element name='center' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
       </element>
-      <element name='cite' restartable='true' type='mixed' >
+      <element name='cite' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='code' restartable='true' type='mixed' >
+      <element name='code' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='del' restartable='true' type='mixed' >
+      <element name='del' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_BLOCKINLINE'/>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
       </element>
-      <element name='dfn' restartable='true' type='mixed' >
+      <element name='dfn' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='dir' type='element' >
+      <element name='dir' type='element'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_LI'/>
         <attribute name='compact' type='BOOLEAN' />
       </element>
-      <element name='div' type='mixed' >
+      <element name='div' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='dl' type='element' >
+      <element name='dl' type='element'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_DEF'/>
         <attribute name='compact' type='BOOLEAN' />
-        <element name='dd' type='mixed' >
+        <element name='dd' type='mixed'>
           <memberOf group='M_DEF'/>
           <contains group='M_INLINE'/>
           <contains group='M_BLOCK'/>
         </element>
-        <element name='dt' type='mixed' >
+        <element name='dt' type='mixed'>
           <memberOf group='M_DEF'/>
           <contains group='M_INLINE'/>
         </element>
       </element>
-      <element name='em' restartable='true' type='mixed' >
+      <element name='em' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='font' type='mixed' >
+      <element name='font' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='form' type='mixed' >
+      <element name='form' closeMode='unclosable' type='mixed'>
         <memberOf group='M_BLOCK'/>
+        <memberOf group='M_FORM'/>
         <contains group='M_INLINE'/>
+        <contains group='M_NOLINK'/>
         <contains group='M_BLOCK'/>
+        <contains group='M_TR'/>
+        <contains group='M_CELL'/>
         <attribute name='enctype' default='application/x-www-form-urlencoded'/>
         <attribute name='method' default='get'/>
-        <element name='button' type='element' >
+        <element name='button' type='mixed'>
           <memberOf group='M_INLINE'/>
           <memberOf group='M_NOLINK'/>
           <contains group='M_INLINE'/>
@@ -438,18 +443,18 @@
           <attribute name='tabindex' type='NMTOKEN' />
           <attribute name='type' default='submit'/>
         </element>
-        <element name='fieldset' type='mixed' >
+        <element name='fieldset' type='mixed'>
           <memberOf group='M_BLOCK'/>
           <contains group='M_LEGEND'/>
           <contains group='M_INLINE'/>
           <contains group='M_BLOCK'/>
-          <element name='legend' type='mixed' >
+          <element name='legend' type='mixed'>
             <memberOf group='M_LEGEND'/>
             <contains group='M_INLINE'/>
             <attribute name='align' type='NMTOKEN' />
           </element>
         </element>
-        <element name='input' type='empty' >
+        <element name='input' type='empty'>
           <memberOf group='M_INLINE'/>
           <memberOf group='M_NOLINK'/>
           <attribute name='align' type='NMTOKEN' />
@@ -461,24 +466,24 @@
           <attribute name='tabindex' type='NMTOKEN' />
           <attribute name='type' default='text'/>
         </element>
-        <element name='label' type='mixed' >
+        <element name='label' type='mixed'>
           <memberOf group='M_INLINE'/>
           <memberOf group='M_NOLINK'/>
           <contains group='M_INLINE'/>
           <attribute name='for' type='IDREF' />
         </element>
-        <element name='optgroup' type='element' >
+        <element name='optgroup' type='element'>
           <memberOf group='M_OPTIONS'/>
           <contains group='M_OPTIONS'/>
           <attribute name='disabled' type='BOOLEAN' />
-          <element name='option' type='string' >
+          <element name='option' type='string'>
             <memberOf group='M_OPTION'/>
             <memberOf group='M_OPTIONS'/>
             <attribute name='disabled' type='BOOLEAN' />
             <attribute name='selected' type='BOOLEAN' />
           </element>
         </element>
-        <element name='select' type='element' >
+        <element name='select' type='element'>
           <memberOf group='M_INLINE'/>
           <contains group='M_OPTIONS'/>
           <attribute name='disabled' type='BOOLEAN' />
@@ -486,7 +491,7 @@
           <attribute name='size' type='NMTOKEN' />
           <attribute name='tabindex' type='NMTOKEN' />
         </element>
-        <element name='textarea' type='string' >
+        <element name='textarea' type='string'>
           <memberOf group='M_INLINE'/>
           <attribute name='cols' type='NMTOKEN' />
           <attribute name='disabled' type='BOOLEAN' />
@@ -495,53 +500,53 @@
           <attribute name='tabindex' type='NMTOKEN' />
         </element>
       </element>
-      <element name='frame' type='empty' >
+      <element name='frame' type='empty'>
         <memberOf group='M_FRAME'/>
         <attribute name='frameborder' default='1'/>
         <attribute name='noresize' type='BOOLEAN' />
         <attribute name='scrolling' default='auto'/>
       </element>
-      <element name='h1' type='mixed' >
+      <element name='h1' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='h2' type='mixed' >
+      <element name='h2' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='h3' type='mixed' >
+      <element name='h3' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='h4' type='mixed' >
+      <element name='h4' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='h5' type='mixed' >
+      <element name='h5' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='h6' type='mixed' >
+      <element name='h6' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='hr' type='empty' >
+      <element name='hr' type='empty'>
         <memberOf group='M_BLOCK'/>
         <attribute name='align' type='NMTOKEN' />
         <attribute name='noshade' type='BOOLEAN' />
       </element>
-      <element name='i' restartable='true' type='mixed' >
+      <element name='i' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='iframe' type='mixed' >
+      <element name='iframe' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
@@ -550,45 +555,45 @@
         <attribute name='frameborder' default='1'/>
         <attribute name='scrolling' default='auto'/>
       </element>
-      <element name='img' type='empty' >
+      <element name='img' type='empty'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <attribute name='align' type='NMTOKEN' />
         <attribute name='ismap' type='BOOLEAN' />
       </element>
-      <element name='ins' restartable='true' type='mixed' >
+      <element name='ins' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
       </element>
-      <element name='kbd' restartable='true' type='mixed' >
+      <element name='kbd' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='map' type='element' >
+      <element name='map' type='element'>
         <memberOf group='M_INLINE'/>
         <contains group='M_BLOCK'/>
         <contains group='M_AREA'/>
-        <element name='area' type='empty' >
+        <element name='area' type='empty'>
           <memberOf group='M_AREA'/>
           <attribute name='nohref' type='BOOLEAN' />
           <attribute name='shape' default='rect'/>
           <attribute name='tabindex' type='NMTOKEN' />
         </element>
       </element>
-      <element name='menu' type='element' >
+      <element name='menu' type='element'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_LI'/>
         <attribute name='compact' type='BOOLEAN' />
       </element>
-      <element name='noscript' type='mixed' >
+      <element name='noscript' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
       </element>
-      <element name='object' type='mixed' >
+      <element name='object' type='mixed'>
         <memberOf group='M_HEAD'/>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
@@ -599,104 +604,106 @@
         <attribute name='declare' type='BOOLEAN' />
         <attribute name='tabindex' type='NMTOKEN' />
       </element>
-      <element name='ol' type='element' >
+      <element name='ol' type='element'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_LI'/>
         <attribute name='compact' type='BOOLEAN' />
         <attribute name='start' type='NMTOKEN' />
       </element>
-      <element name='p' type='mixed' >
+      <element name='p' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <memberOf group='M_P'/>
         <contains group='M_INLINE'/>
         <attribute name='align' type='NMTOKEN' />
       </element>
-      <element name='param' type='empty' >
+      <element name='param' type='empty'>
         <memberOf group='M_PARAM'/>
         <attribute name='valuetype' default='data'/>
       </element>
-      <element name='pre' type='mixed' >
+      <element name='pre' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
         <attribute name='width' type='NMTOKEN' />
       </element>
-      <element name='q' restartable='true' type='mixed' >
+      <element name='q' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='s' restartable='true' type='mixed' >
+      <element name='s' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='samp' restartable='true' type='mixed' >
+      <element name='samp' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='small' restartable='true' type='mixed' >
+      <element name='small' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='span' restartable='true' type='mixed' >
+      <element name='span' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='strike' restartable='true' type='mixed' >
+      <element name='strike' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='strong' restartable='true' type='mixed' >
+      <element name='strong' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='sub' restartable='true' type='mixed' >
+      <element name='sub' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='sup' restartable='true' type='mixed' >
+      <element name='sup' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='table' type='element' >
+      <element name='table' closeMode='unclosable' type='element'>
         <memberOf group='M_BLOCK'/>
+        <contains group='M_FORM'/>
         <contains group='M_TABLE'/>
         <attribute name='align' type='NMTOKEN' />
         <attribute name='frame' type='NMTOKEN' />
         <attribute name='rules' type='NMTOKEN' />
-        <element name='col' type='empty' >
+        <element name='col' type='empty'>
           <memberOf group='M_COL'/>
           <memberOf group='M_TABLE'/>
           <attribute name='align' type='NMTOKEN' />
           <attribute name='span' default='1'/>
           <attribute name='valign' type='NMTOKEN' />
         </element>
-        <element name='colgroup' type='element' >
+        <element name='colgroup' type='element'>
           <memberOf group='M_TABLE'/>
           <contains group='M_COL'/>
           <attribute name='align' type='NMTOKEN' />
           <attribute name='span' default='1'/>
           <attribute name='valign' type='NMTOKEN' />
         </element>
-        <element name='tbody' type='element' >
+        <element name='tbody' type='element'>
           <memberOf group='M_TABLE'/>
           <contains group='M_TR'/>
           <attribute name='align' type='NMTOKEN' />
           <attribute name='valign' type='NMTOKEN' />
-          <element name='tr' type='element' >
+          <element name='tr' type='element'>
             <memberOf group='M_TR'/>
             <memberOf group='M_TABLE'/>
+            <contains group='M_FORM'/>
             <contains group='M_CELL'/>
             <attribute name='align' type='NMTOKEN' />
             <attribute name='valign' type='NMTOKEN' />
-            <element name='td' type='mixed' >
+            <element name='td' type='mixed'>
               <memberOf group='M_CELL'/>
               <contains group='M_INLINE'/>
               <contains group='M_BLOCK'/>
@@ -708,7 +715,7 @@
               <attribute name='scope' type='NMTOKEN' />
               <attribute name='valign' type='NMTOKEN' />
             </element>
-            <element name='th' type='mixed' >
+            <element name='th' type='mixed'>
               <memberOf group='M_CELL'/>
               <contains group='M_INLINE'/>
               <contains group='M_BLOCK'/>
@@ -722,85 +729,85 @@
             </element>
           </element>
         </element>
-        <element name='tfoot' type='element' >
+        <element name='tfoot' type='element'>
           <memberOf group='M_TABLE'/>
           <contains group='M_TR'/>
           <attribute name='align' type='NMTOKEN' />
           <attribute name='valign' type='NMTOKEN' />
         </element>
-        <element name='thead' type='element' >
+        <element name='thead' type='element'>
           <memberOf group='M_TABLE'/>
           <contains group='M_TR'/>
           <attribute name='align' type='NMTOKEN' />
           <attribute name='valign' type='NMTOKEN' />
         </element>
       </element>
-      <element name='tt' restartable='true' type='mixed' >
+      <element name='tt' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='u' restartable='true' type='mixed' >
+      <element name='u' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='ul' type='element' >
+      <element name='ul' type='element'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_LI'/>
         <attribute name='compact' type='BOOLEAN' />
         <attribute name='type' type='NMTOKEN' />
-        <element name='li' type='mixed' >
+        <element name='li' type='mixed'>
           <memberOf group='M_LI'/>
           <contains group='M_INLINE'/>
           <contains group='M_BLOCK'/>
           <attribute name='value' type='NMTOKEN' />
         </element>
       </element>
-      <element name='var' type='mixed' >
+      <element name='var' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
     </element>
-    <element name='frameset' type='element' >
+    <element name='frameset' type='element'>
       <memberOf group='M_FRAME'/>
       <memberOf group='M_HTML'/>
       <contains group='M_FRAME'/>
     </element>
-    <element name='head' type='element' >
+    <element name='head' type='element'>
       <memberOf group='M_HTML'/>
       <contains group='M_HEAD'/>
-      <element name='base' type='empty' >
+      <element name='base' type='empty'>
         <memberOf group='M_HEAD'/>
       </element>
-      <element name='isindex' type='empty' >
+      <element name='isindex' type='empty'>
         <memberOf group='M_HEAD'/>
       </element>
-      <element name='link' type='empty' >
+      <element name='link' type='empty'>
         <memberOf group='M_HEAD'/>
         <attribute name='hreflang' type='NMTOKEN' />
       </element>
-      <element name='meta' type='empty' >
+      <element name='meta' type='empty'>
         <memberOf group='M_HEAD'/>
         <attribute name='http-equiv' type='NMTOKEN' />
         <attribute name='name' type='NMTOKEN' />
       </element>
-      <element name='style' type='cdata' >
+      <element name='style' type='cdata'>
         <memberOf group='M_HEAD'/>
         <memberOf group='M_INLINE'/>
       </element>
-      <element name='title' type='string' >
+      <element name='title' type='string'>
         <memberOf group='M_HEAD'/>
       </element>
     </element>
-    <element name='noframes' type='element' >
+    <element name='noframes' type='element'>
       <memberOf group='M_BLOCK'/>
       <memberOf group='M_HTML'/>
       <memberOf group='M_FRAME'/>
       <contains group='M_BODY'/>
     </element>
-    <element name='script' type='cdata' >
+    <element name='script' type='cdata'>
       <memberOfAny/>
       <attribute name='defer' type='BOOLEAN' />
     </element>

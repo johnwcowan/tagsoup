@@ -23,9 +23,18 @@
   <xsl:strip-space elements="*"/>
 
   <!-- The main template.  This generates calls on the Schema routines
-       elementType(), parent(), attribute(), and entity() in that order.
-       Several special cases which are handled by template calls.  -->
+       setURI(), setPrefix(), elementType(), parent(), attribute(),
+       and entity() in that order.  Several special cases are
+       handled by template calls.  -->
   <xsl:template match="tssl:schema">
+    <!-- setURI() -->
+    <xsl:text>&#x9;&#x9;setURI("</xsl:text>
+    <xsl:value-of select="@ns"/>
+    <xsl:text>");&#xA;</xsl:text>
+    <!-- setPrefix() -->
+    <xsl:text>&#x9;&#x9;setPrefix("</xsl:text>
+    <xsl:value-of select="@prefix"/>
+    <xsl:text>");&#xA;</xsl:text>
     <!-- elementType() special cases -->
     <xsl:text>&#x9;&#x9;elementType("&lt;pcdata>", M_EMPTY, M_PCDATA, 0);&#xA;</xsl:text>
     <xsl:text>&#x9;&#x9;elementType("&lt;root>", </xsl:text>
@@ -97,8 +106,11 @@
       <xsl:when test="@type = 'cdata'">
         <xsl:text>F_CDATA</xsl:text>
       </xsl:when>
-      <xsl:when test="@restartable = 'true'">
+      <xsl:when test="@closeMode = 'restartable'">
         <xsl:text>F_RESTART</xsl:text>
+      </xsl:when>
+      <xsl:when test="@closeMode = 'unclosable'">
+        <xsl:text>F_NOFORCE</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>0</xsl:text>

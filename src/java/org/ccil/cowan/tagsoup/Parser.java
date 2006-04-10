@@ -24,7 +24,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 
 /**
-The main TagSoup class; the SAX parser and stand-alone program.
+The SAX parser class.
 **/
 public class Parser extends DefaultHandler implements ScanHandler, XMLReader, LexicalHandler {
 
@@ -204,8 +204,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				input.getPublicId(), input.getSystemId());
 			}
 		theContentHandler.startDocument();
-		if (!(getURI().equals("")))
-			theContentHandler.startPrefixMapping(getPrefix(), getURI());
+		if (!(theSchema.getURI().equals("")))
+			theContentHandler.startPrefixMapping(theSchema.getPrefix(),
+				theSchema.getURI());
 		theScanner.scan(r, this);
 		}
 
@@ -310,45 +311,64 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		while (theStack.next() != null) {
 			pop();
 			}
-		if (!(getURI().equals("")))
-			theContentHandler.endPrefixMapping(getPrefix());
+		if (!(theSchema.getURI().equals("")))
+			theContentHandler.endPrefixMapping(theSchema.getPrefix());
 		theContentHandler.endDocument();
 		}
 
+	private static char[] etagchars = {'<', '/', '>'};
 	public void etag(char[] buff, int offset, int length) throws SAXException {
+		String lastName = theStack.name();
+		// If this is a CDATA element and the tag doesn't match,
+		// restart CDATA mode and process the tag as characters.
+		if (((theStack.flags() & Schema.F_CDATA) != 0) &&
+				length == lastName.length()) {
+			boolean falseClose = false;
+			for (int i = 0; i < length; i++) {
+				if (buff[offset + i] != lastName.charAt(i)) {
+					falseClose = true;
+					break;
+					}
+				}
+			if (falseClose) {
+				theContentHandler.characters(etagchars, 0, 2);
+				theContentHandler.characters(buff, offset, length);
+				theContentHandler.characters(etagchars, 2, 1);
+				theScanner.startCDATA();
+				return;
+				}
+			}
+
 		theNewElement = null;
 		String name = makeName(buff, offset, length);
 		// Handle empty tags and SGML end-tag minimization
 		if (name == null || name.equals("")) {
-			name = theStack.name();
+			name = lastName;
 			}
 //		System.err.println("%% Got end of " + name);
 
-		// If this is a CDATA element and the tag doesn't match,
-		// restart CDATA mode and process the tag as characters.
-		if ((theStack.flags() & Schema.F_CDATA) != 0 &&
-				!(theStack.name().equalsIgnoreCase(name))) {
-			char[] lostData = new char[length + 3];
-			lostData[0] = '<';
-			lostData[1] = '/';
-			System.arraycopy(buff, offset, lostData, 2, length);
-			lostData[length + 2] = '>';
-			theScanner.startCDATA();
-			theContentHandler.characters(lostData, 0, length + 3);
-			return;
-			}
 		Element sp;
+		boolean inNoforce = false;
 		for (sp = theStack; sp != null; sp = sp.next()) {
 			if (sp.name().equals(name)) break;
+			if ((sp.flags() & Schema.F_NOFORCE) != 0) inNoforce = true;
 			}
-		if (sp == null) return;		// unknown etag, do nothing
-		if (sp.next() == null) return;	// can't happen: matched <root>
-		if (sp.next().next() == null) return;	// ignore outermost etag
 
-		while (theStack != sp) {
-			restartablyPop();
+		if (sp == null) return;		// Ignore unknown etags
+		if (sp.next() == null || sp.next().next() == null) return;
+		if (inNoforce) {		// inside an F_NOFORCE element?
+			sp.preclose();		// preclose the matching element
 			}
-		pop();
+		else {			// restartably pop everything above us
+			while (theStack != sp) {
+				restartablyPop();
+				}
+			pop();
+			}
+		// pop any preclosed elements now at the top
+		while (theStack.isPreclosed()) {
+			pop();
+			}
 		restart();
 		}
 
@@ -363,13 +383,15 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	// Pop the stack irrevocably
 	private void pop() throws SAXException {
+		if (theStack == null) return;		// empty stack
 		String name = theStack.name();
 //		System.err.println("%% Popping " + name);
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
 			theLexicalHandler.endCDATA();
 			}
-		theContentHandler.endElement(theStack.namespace(),
-				theStack.localName(), name);
+		String namespace = theStack.namespace();
+		if (theFeatures.get(namespacesFeature) == Boolean.FALSE) namespace = "";
+		theContentHandler.endElement(namespace, theStack.localName(), name);
 		theStack = theStack.next();
 		}
 
@@ -389,7 +411,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private void push(Element e) throws SAXException {
 //		System.err.println("%% Pushing " + e.name());
 		e.clean();
-		theContentHandler.startElement(e.namespace(),
+		String namespace = e.namespace();
+		if (theFeatures.get(namespacesFeature) == Boolean.FALSE) namespace = "";
+		theContentHandler.startElement(namespace,
 				e.localName(), e.name(), e.atts());
 		e.setNext(theStack);
 		theStack = e;
@@ -475,6 +499,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			}
 		if (sp == null) return;		// don't know what to do
 		while (theStack != sp) {
+			if (theStack == null || theStack.next() == null ||
+				theStack.next().next() == null) break;
 			restartablyPop();
 			}
 		while (e != null) {
@@ -493,19 +519,29 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// Return the argument as a valid XML name, lowercased
 	private String makeName(char[] buff, int offset, int length) {
 		StringBuffer dst = new StringBuffer(length + 2);
+		boolean seenColon = false;
+		boolean start = true;
 //		String src = new String(buff, offset, length); // DEBUG
-		char start = buff[offset];
-		if (!(Character.isLetter(start) || start == '_')) {
-			dst.append('_');
-			}
 		for (; length-- > 0; offset++) {
 			char ch = Character.toLowerCase(buff[offset]);
-			if (Character.isLetterOrDigit(ch) || ch == ':'
-					|| ch == '-' || ch == '.' || ch == '_') {
+			if (Character.isLetter(ch) || ch == '_') {
+				start = false;
+				dst.append(ch);
+				}
+			else if (Character.isDigit(ch) || ch == '-' || ch == '.') {
+				if (start) dst.append('_');
+				start = false;
+				dst.append(ch);
+				}
+			else if (ch == ':' && !seenColon) {
+				seenColon = true;
+				if (start) dst.append('_');
+				start = true;
 				dst.append(ch);
 				}
 			}
-		if (offset > 0 && buff[offset - 1] == ':') dst.append('_');
+		int dstLength = dst.length();
+		if (dstLength == 0 || dst.charAt(dstLength - 1) == ':') dst.append('_');
 //		System.err.println("Made name \"" + dst + "\" from \"" + src + "\"");
 		return dst.toString().intern();
 		}
@@ -519,112 +555,5 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void startCDATA() throws SAXException { }
 	public void startDTD(String name, String publicId, String systemId) throws SAXException { }
 	public void startEntity(String name) throws SAXException { }
-
-	private String getURI() {
-		if (theFeatures.get(namespacesFeature)
-					== Boolean.TRUE)
-			return theSchema.getURI();
-		else
-			return "";
-		}
-
-	private String getPrefix() {
-		if (theFeatures.get(namespacePrefixesFeature)
-					== Boolean.TRUE)
-			return theSchema.getPrefix();
-		else
-			return "";
-		}
-
-	// Main method: tidies specified files or stdin
-	// -Dfiles=true writes output to separate files with .xhtml extension
-	// -Dnons suppresses namespaces, -Dnobogons suppresses unknown elements
-	// -Dany makes bogons ANY rather than EMPTY,
-	// -Dpyx=true, -Dhtml=true uses Pyx or HTML output
-
-	public static void main(String[] argv) throws IOException, SAXException {
-		if (Boolean.getBoolean("nocdata")) {
-			Schema s = HTMLSchema.sharedSchema();
-			ElementType script = s.getElementType("script");
-			script.setFlags(0);
-			ElementType style = s.getElementType("style");
-			style.setFlags(0);
-			}
-		if (argv.length == 0) {
-			tidy("/dev/stdin", System.out);
-			}
-		else if (Boolean.getBoolean("files")) {
-			for (int i = 0; i < argv.length; i++) {
-				String src = argv[i];
-				String dst;
-				int j = src.lastIndexOf('.');
-				if (j == -1)
-					dst = src + ".xhtml";
-				else if (src.endsWith(".xhtml"))
-					dst = src + "_";
-				else
-					dst = src.substring(0, j) + ".xhtml";
-				System.err.println("src: " + src + " dst: " + dst);
-				OutputStream os = new FileOutputStream(dst);
-				tidy(src, os);
-				}
-			}
-		else {
-			for (int i = 0; i < argv.length; i++) {
-				System.err.println("src: " + argv[i]);
-				tidy(argv[i], System.out);
-				}
-			}
-		}
-
-	private static Parser myParser = null;
-
-	private static void tidy(String src, OutputStream os)
-			throws IOException, SAXException {
-		XMLReader r;
-		if (Boolean.getBoolean("reuse")) {
-			if (myParser == null) myParser = new Parser();
-			r = myParser;
-			}
-		else {
-			r = new Parser();
-			}
-
-		if (Boolean.getBoolean("nons")) {
-			r.setFeature(namespacesFeature, false);
-			r.setFeature(namespacePrefixesFeature, false);
-			}
-
-		if (Boolean.getBoolean("nobogons")) {
-			r.setFeature(ignoreBogonsFeature, true);
-			}
-		if (Boolean.getBoolean("any")) {
-			r.setFeature(bogonsEmptyFeature, false);
-			}
-
-		Writer w = new OutputStreamWriter(os, "UTF-8");
-		ContentHandler h = chooseContentHandler(w);
-		r.setContentHandler(h);
-		if (Boolean.getBoolean("lexical") && h instanceof LexicalHandler) {
-			r.setProperty(lexicalHandlerProperty, h);
-			}
-		r.parse(src);
-		}
-
-	private static ContentHandler chooseContentHandler(Writer w) {
-		ContentHandler h;
-		if (Boolean.getBoolean("pyx")) {
-			h = new PYXWriter(w);
-			}
-		else if (Boolean.getBoolean("html")) {
-			XMLWriter x = new XMLWriter(w);
-			x.setHTMLMode(true);
-			h = x;
-			}
-		else {
-			h = new XMLWriter(w);
-			}
-		return h;
-		}
 
 	}

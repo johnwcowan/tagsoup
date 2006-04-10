@@ -171,6 +171,7 @@ public class PYXWriter
 			qname = atts.getQName(i);
 			if (qname.length() == 0) qname = atts.getLocalName(i);
 			theWriter.print('A');
+//			theWriter.print(atts.getType(i));	// DEBUG
 			theWriter.print(qname);
 			theWriter.print(' ');
 			theWriter.println(atts.getValue(i));

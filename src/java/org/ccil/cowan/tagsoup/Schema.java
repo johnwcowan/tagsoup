@@ -31,11 +31,15 @@ public abstract class Schema {
 
 	public static final int F_RESTART = 1;
 	public static final int F_CDATA = 2;
+	public static final int F_NOFORCE = 4;
 
 	private HashMap theEntities = 
 		new HashMap();		// String -> Character
 	private HashMap theElementTypes = 
 		new HashMap();		// String -> ElementType
+
+	private String theURI = "";
+	private String thePrefix = "";
 
 	/**
 	Add or replace an element type for this schema.
@@ -117,7 +121,7 @@ public abstract class Schema {
 //		System.err.println("%% Looking up entity " + name);
 		if (name.length() == 0) return 0;
 		if (name.charAt(0) == '#') {
-			if (name.charAt(1) == 'x') {
+			if (name.length() > 1 && name.charAt(1) == 'x') {
 				try {
 					return (char)Integer.parseInt(name.substring(2), 16);
 					}
@@ -140,15 +144,31 @@ public abstract class Schema {
 	**/
 
 	public String getURI() {
-		return "";
+		return theURI;
 		}
 
 	/**
-	Return the default prefix of this schema.
+	Return the prefix of this schema.
 	**/
 
 	public String getPrefix() {
-		return "";
+		return thePrefix;
+		}
+
+	/**
+	Change the URI (namespace name) of this schema.
+	**/
+
+	public void setURI(String uri) {
+		theURI = uri;
+		}
+
+	/**
+	Change the prefix of this schema.
+	**/
+
+	public void setPrefix(String prefix) {
+		thePrefix = prefix;
 		}
 
 	}

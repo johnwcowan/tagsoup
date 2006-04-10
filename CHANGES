@@ -1,3 +1,15 @@
+Changes from 1.0rc1 to 1.0rc2
+=============================
+Isolated & and &# now don't crash parser
+TagSoup no longer depends on /dev/stdin existing
+Refactored Parser class, removing main method to new CommandLine class
+Changes to content models of form, button, table, and tr elements in html.tssl
+'</scr' + 'ipt>' in a script element no longer terminates it
+Introduced "uncloseability" of form and table elements
+"pyxin" property specifies that input is in PYX format
+Correctly cope with unexpected characters around colons, also with multiple colons
+Correctly output comments with "--" in them (by adding a space)
+
 Changes from 0.10.2 to 1.0rc1
 =============================
 Script can now appear anywhere

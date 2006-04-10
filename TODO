@@ -1,8 +1,3 @@
-Normalize attribute values
-Support namespace declarations
-Support prefixed elements
-Make sure PIs have WF names
-Make feature to suppress attribute defaulting
-Configure testing to deal with charsets
-If the root element is non-HTML, it vanishes completely: fix
-document.write('</scr + ipt>');
+Get mangleme outputs working
+Process switches on the command line
+Understand non-default namespace declarations?

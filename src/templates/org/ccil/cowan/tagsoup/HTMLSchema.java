@@ -22,7 +22,7 @@ value are not included.
 package org.ccil.cowan.tagsoup;
 public class HTMLSchema extends Schema implements HTMLModels {
 
-	private static HTMLSchema theSchema = new HTMLSchema();
+	private static HTMLSchema theSharedSchema = new HTMLSchema();
 
 
 	/**
@@ -45,23 +45,7 @@ public class HTMLSchema extends Schema implements HTMLModels {
 	*/
 
 	public static HTMLSchema sharedSchema() {
-		return theSchema;
-		}
-
-	/**
-	Return the HTML namespace name.
-	*/
-
-	public String getURI() {
-		return "http://www.w3.org/1999/xhtml";
-		}
-
-	/**
-	Return the HTML prefix.
-	*/
-
-	public String getPrefix() {
-		return "html";
+		return theSharedSchema;
 		}
 
 

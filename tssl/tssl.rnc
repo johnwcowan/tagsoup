@@ -49,7 +49,7 @@ group = element group {
 		attribute ns {xsd:anyURI}?,
 		attribute name {xsd:NCName},
 		attribute type {type},
-		attribute restartable { "true" | "false" }?,
+		attribute closeMode { "unclosable" | "restartable" }?,
 		attribute text-parent { "true" | "false" }?,
 		(element memberOf { attribute group {xsd:IDREF}}+ |
 		 element isRoot { empty} |

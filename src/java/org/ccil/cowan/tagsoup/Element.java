@@ -25,6 +25,7 @@ public class Element {
 	private ElementType theType;		// type of element
 	private AttributesImpl theAtts;		// attributes of element
 	private Element theNext;		// successor of element
+	private boolean preclosed;		// this element has been preclosed
 
 	/**
 	Return an Element from a specified ElementType.
@@ -35,6 +36,7 @@ public class Element {
 		theType = type;
 		theAtts = new AttributesImpl(type.atts());
 		theNext = null;
+		preclosed = false;
 		}
 
 	/**
@@ -180,6 +182,23 @@ public class Element {
 				theAtts.setType(i, "NMTOKEN");
 				}
 			}
+		}
+
+	/**
+	Force this element to preclosed status, meaning that an end-tag has
+	been seen but the element cannot yet be closed for structural reasons.
+	*/
+
+	public void preclose() {
+		preclosed = true;
+		}
+
+	/**
+	Return true if this element has been preclosed.
+	*/
+
+	public boolean isPreclosed() {
+		return preclosed;
 		}
 
 	}
