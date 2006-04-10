@@ -122,31 +122,34 @@ Integer.toString(theState));
 				theSize = 0;
 				h.stagc(theOutputBuffer, 0, theSize);
 				break;
-			case A_ENTSAVE:
+			case A_ENTITY:
 				char ch1 = (char)ch;
-				if (Character.isLetterOrDigit(ch1) ||
-				    ch1 == '#' || ch1 == '&') {
+				if (Character.isLetterOrDigit(ch1) || ch1 == '#') {
 					save(ch, h);
 					break;
 					}
-				else {
-					if (ch != ';') r.unread(ch);
-					// fall through into A_ENTITY_POP
-					}
-        		case A_ENTITY_POP:
 //				System.err.println("%%" + new String(theOutputBuffer, 0, theSize));
-				h.entity(theOutputBuffer, 0, theSize);
-				ch = h.getEntity();
-				if (ch != 0) {
+				h.entity(theOutputBuffer, 1, theSize - 1);
+				int ent = h.getEntity();
+//				System.err.println("%% value = " + ent);
+				if (ent != 0) {
 					theSize = 0;
-					if (ch >= 0x80 && ch <= 0x9F) {
-						ch = theWinMap[ch-0x80];
+					if (ent >= 0x80 && ent <= 0x9F) {
+						ent = theWinMap[ent-0x80];
 						}
-					if (ch < 0x20) ch = 0x20;
-					save(ch, h);
+					if (ent < 0x20) ent = 0x20;
+					if (ent < 0x10000) {
+						save(ent, h);
+						}
+					else {
+						ent -= 0x10000;
+						save((ent>>10) + 0xD800, h);
+						save((ent&0x3FF) + 0xDC00, h);
+						}
+					if (ch != ';') r.unread(ch);
 					}
 				else {
-					save(';', h);
+					r.unread(ch);
 					}
 				theNextState = savedState;
 				break;

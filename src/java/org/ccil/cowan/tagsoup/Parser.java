@@ -34,6 +34,12 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 	private Schema theSchema;
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
+	private final String namespacesFeature =
+		"http://xml.org/sax/features/namespaces";
+	private final String namespacePrefixesFeature =
+		"http://xml.org/sax/features/namespace-prefixes";
+	private final String ignoreBogonsFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons";
 	private HashMap theFeatures = new HashMap();
 	{
 		theFeatures.put("http://xml.org/sax/features/external-general-entities",
@@ -44,10 +50,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			Boolean.FALSE);
 		theFeatures.put("http://xml.org/sax/features/lexical-handler/parameter-entities",
 			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/namespaces",
-			Boolean.TRUE);
-		theFeatures.put("http://xml.org/sax/features/namespace-prefixes",
-			Boolean.FALSE);
+		theFeatures.put(namespacesFeature, Boolean.TRUE);
+		theFeatures.put(namespacePrefixesFeature, Boolean.FALSE);
 		theFeatures.put("http://xml.org/sax/features/resolve-dtd-uris",
 			Boolean.TRUE);
 		theFeatures.put("http://xml.org/sax/features/string-interning",
@@ -62,6 +66,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			Boolean.FALSE);
 		theFeatures.put("http://xml.org/sax/features/xmlns-uris",
 			Boolean.FALSE);
+		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
 		}
 
 
@@ -76,8 +81,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
 	public void setFeature (String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		if (name.equals("http://xml.org/sax/features/namespaces") ||
-		    name.equals("http://xml.org/sax/features/namespace-prefixes")) {
+		if (name.equals(namespacesFeature) ||
+				name.equals(namespacePrefixesFeature) ||
+				name.equals(ignoreBogonsFeature)) {
 			// These features can be changed but have no effect
 			if (value)
 				theFeatures.put(name, Boolean.TRUE);
@@ -88,7 +94,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			// All other features are immutable
 			boolean v = getFeature(name);
 			if (v != value) {
-				throw new SAXNotSupportedException("Can't change features");
+				throw new SAXNotSupportedException("Can't change feature" + name);
 				}
 			}
 		}
@@ -180,8 +186,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 				input.getPublicId(), input.getSystemId());
 			}
 		theContentHandler.startDocument();
-		theContentHandler.startPrefixMapping(theSchema.getPrefix(),
-			theSchema.getURI());
+		if (!(getURI().equals("")))
+			theContentHandler.startPrefixMapping(getPrefix(), getURI());
 		theScanner.scan(r, this);
 		}
 
@@ -205,6 +211,11 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			}
 		theStack = new Element(theSchema.getElementType("<root>"));
 		thePCDATA = new Element(theSchema.getElementType("<pcdata>"));
+		theNewElement = null;
+		theAttributeName = null;
+		thePITarget = null;
+		theSaved = null;
+		theEntity = 0;
 		}
 
 	// Return a Reader based on the contents of an InputSource
@@ -275,7 +286,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		while (theStack.next() != null) {
 			pop();
 			}
-		theContentHandler.endPrefixMapping(theSchema.getPrefix());
+		if (!(getURI().equals("")))
+			theContentHandler.endPrefixMapping(getPrefix());
 		theContentHandler.endDocument();
 		}
 
@@ -311,7 +323,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 	private void pop() throws SAXException {
 		String name = theStack.name();
 //		System.err.println("%% Popping " + name);
-		theContentHandler.endElement(theSchema.getURI(), name, name);
+		theContentHandler.endElement(getURI(), name, name);
 		theStack = theStack.next();
 		}
 
@@ -330,7 +342,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 	private void push(Element e) throws SAXException {
 //		System.err.println("%% Pushing " + e.name());
 		e.clean();
-		theContentHandler.startElement(theSchema.getURI(), e.name(), e.name(), e.atts());
+		theContentHandler.startElement(getURI(), e.name(), e.name(), e.atts());
 		e.setNext(theStack);
 		theStack = e;
 		if ((theStack.flags() & Schema.F_CDATA) != 0) theScanner.startCDATA();
@@ -342,6 +354,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		if (name == null) return;
 		ElementType type = theSchema.getElementType(name);
 		if (type == null) {
+			// Suppress unknown elements if ignore-bogons is on
+			if (theFeatures.get(ignoreBogonsFeature) == Boolean.TRUE)  {
+				return;
+				}
+			// Suppress unknown and empty root elements in any case
+			if (theStack.parent() == null) return;
+			if (theStack.model() == Schema.M_EMPTY) return;
 			name = name.intern();
 			theSchema.elementType(name, Schema.M_EMPTY, Schema.M_ANY, 0);
 			type = theSchema.getElementType(name);
@@ -430,6 +449,22 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		return dst.toString();
 		}
 
+	private String getURI() {
+		if (theFeatures.get("http://xml.org/sax/features/namespaces")
+					== Boolean.TRUE)
+			return theSchema.getURI();
+		else
+			return "";
+		}
+
+	private String getPrefix() {
+		if (theFeatures.get("http://xml.org/sax/features/namespace-prefixes")
+					== Boolean.TRUE)
+			return theSchema.getPrefix();
+		else
+			return "";
+		}
+
 	// Main method: tidies specified files or stdin
 	// -Dfiles=true writes output to separate files with .xhtml extension
 	// -Dpyx=true, -Dhtml=true uses Pyx or HTML output
@@ -463,6 +498,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 	private static void tidy(String src, OutputStream os)
 			throws IOException, SAXException {
 		XMLReader r = new Parser();
+		if (Boolean.getBoolean("nons")) {
+			r.setFeature("http://xml.org/sax/features/namespaces", false);
+			r.setFeature("http://xml.org/sax/features/namespace-prefixes", false);
+			}
+		if (Boolean.getBoolean("nobogons")) {
+			r.setFeature("http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons", true);
+			}
 		Writer w = new OutputStreamWriter(os, "UTF-8");
 		r.setContentHandler(chooseContentHandler(w));
 		r.parse(src);

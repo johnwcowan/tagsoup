@@ -20,6 +20,6 @@ $_ = <>;
 while (<>) {
 	chomp;
 	my ($entity, $char) = split(/\t/);
-	print "\t\tentity(\"&$entity\", '\\u$char');\n";
+	print "\t\tentity(\"$entity\", '\\u$char');\n";
 	}
 print "\n";

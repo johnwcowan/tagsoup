@@ -1,10 +1,9 @@
-Attribute value normalization
-If document element not known, we still get two document elements
 CDATA element termination (look for whole etag?)
 Attributes:
 	Change state table to cope with missing = in tags
 	Figure out a cure for unquoted attribute values without blanks (!)
 	Figure out 'bar baz="zam"' when bar is usually minimized
 	Cope with missing unquote in attribute value
-Newlines are being removed
-Consecutive entities without semicolons aren't recognized
+	Normalize values
+Support HTML comments through LexicalHandler
+Experiment with opening new elements before closing old ones

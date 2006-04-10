@@ -76,7 +76,7 @@ small	body	#PCDATA+%inline	%inline	R	small text style
 span	body	#PCDATA+%inline	%inline	R	generic language/style container
 strike	body	#PCDATA+%inline	%inline	R	strike-through text
 strong	body	#PCDATA+%inline	%inline	R	strong emphasis
-style	head	#PCDATA	%head	C	style info
+style	head	#PCDATA	%head+%inline	C	style info
 sub	body	#PCDATA+%inline	%inline	R	subscript
 sup	body	#PCDATA+%inline	%inline	R	superscript
 table	body	%table	%block	X	table
@@ -87,7 +87,7 @@ tfoot	table	%tr	%table	X	table footer
 th	tr	#PCDATA+%inline+%block	%cell	X	table header cell
 thead	table	%tr	%table	X	table header
 title	head	#PCDATA	%head	X	document title
-tr	tbody	%cell	%tr	X	table row
+tr	tbody	%cell	%tr+%table	X	table row
 tt	body	#PCDATA+%inline	%inline	R	teletype or monospaced text style
 u	body	#PCDATA+%inline	%inline	R	underlined text style
 ul	body	%li	%block	X	unordered list

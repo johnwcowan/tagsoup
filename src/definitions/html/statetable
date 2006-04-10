@@ -41,8 +41,8 @@ DECL	EOF	skip	DONE
 DECL2		skip	DECL2
 DECL2	>	skip	PCDATA
 DECL2	EOF	skip	DONE
-ENT		entsave	ENT
-ENT	EOF	entity;pop	DONE
+ENT		entity	ENT
+ENT	EOF	entity	DONE
 EQ		adup;save	ANAME
 EQ	=	skip	AVAL
 EQ	>	adup	PCDATA

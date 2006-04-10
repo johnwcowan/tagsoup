@@ -1,3 +1,18 @@
+Changes from 0.9.1 to 0.9.2:
+==========================
+No longer inserts bogus ; after unknown entity reference without ;
+Consecutive entity references now work correctly
+Setting namespaces and namespace-prefixes methods now works
+-Dnons=true option turns off namespace and prefix
+New feature http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons"
+	suppresses unknown start-tags (any end-tag will be automatically ignored)
+-Dnobogons=true option turns ignore-bogons on
+Suppress unknown and/or empty initial start-tag always
+	(prevents double root element)
+Schema now allows style as an inline element, like script
+Schema now allows tr as a child of table to avoid problems with embedded tables
+Clear Parser instance variables to make Parsers properly reusable
+
 Changes from 0.9 to 0.9.1:
 ==========================
 Incorporated patch for -jar support by Joseph Walton
