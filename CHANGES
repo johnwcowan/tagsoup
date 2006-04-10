@@ -1,3 +1,15 @@
+Changes from 0.9 to 0.9.1:
+==========================
+Incorporated patch for -jar support by Joseph Walton
+Incorporated patch for Megginson XMLWriter support by Joseph Walton
+Changed existing XMLWriter to HTMLWriter
+Rewrote Parser.main for better features, removed Tester class
+-Dnewline=true removed, now implied by -DHTML=true
+-Dfiles=true now used to generate separate outputs (old Tester behavior)
+	with extension .xhtml (removing any old extension)
+Fixed nasty bug in HTMLScanner that was failing to fix unusual entities
+Don't attempt to smash whitespace to spaces any more
+
 Changes from 0.8 to 0.9:
 ========================
 Ant-ified by Martin Rademacher

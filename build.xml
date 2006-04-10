@@ -1,4 +1,6 @@
-<project name="tagsoup" default="compile" basedir=".">
+<project name="tagsoup" default="dist">
+
+  <!-- $Id: build.xml,v 1.6 2004/01/29 21:30:38 joe Exp $ -->
 
   <!-- generic properties -->
   <property file="etc/build/build.properties"/>
@@ -38,10 +40,11 @@
 
 	<target name="jar-release" depends="init"
 			description="Build a release jar file.">
-	  <jar jarfile="${dist}/lib/tagsoup-${tagsoup.version}.jar" basedir="${buildDir}"
-		  	includes="org/**,*.class" update="no">
+	  <mkdir dir="${dist}/lib" />
+	  <jar jarfile="${dist}/lib/tagsoup-${tagsoup.version}.jar" basedir="${buildDir}">
       <manifest>
         <attribute name="Version" value="${tagsoup.version}"/>
+        <attribute name="Main-Class" value="org.ccil.cowan.tagsoup.Parser"/>
       </manifest>
     </jar>
   </target>
@@ -112,6 +115,7 @@
     <delete dir="${build}"/>
     <delete dir="${tmp}"/>
     <delete dir="${docs}"/>
+    <delete dir="${dist}"/>
   </target>
 
 

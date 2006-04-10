@@ -18,12 +18,10 @@ import java.io.*;
 import java.util.Stack;
 import org.xml.sax.*;
 
-public class XMLWriter
+public class HTMLWriter
 	implements ContentHandler {
 
 	private PrintWriter theWriter;		// where we write to
-	private boolean htmlMode = false;
-	private boolean newlineMode = false;
 	private boolean cdataMode = false;
 	Stack theStack = new Stack();
 
@@ -61,28 +59,26 @@ public class XMLWriter
 		if (qname.length() == 0) qname = localname;
 		String expected = (String)theStack.pop();
 		if (!localname.equals(expected)) {
-			throw new Error("XMLWriter: expected " + expected +
+			throw new Error("HTMLWriter: expected " + expected +
 				" got " + localname);
 			}
-		if (htmlMode) {
-			if (qname.equals("area")) return;
-			if (qname.equals("base")) return;
-			if (qname.equals("basefont")) return;
-			if (qname.equals("br")) return;
-			if (qname.equals("col")) return;
-			if (qname.equals("frame")) return;
-			if (qname.equals("hr")) return;
-			if (qname.equals("image")) return;
-			if (qname.equals("input")) return;
-			if (qname.equals("isindex")) return;
-			if (qname.equals("link")) return;
-			if (qname.equals("meta")) return;
-			if (qname.equals("param")) return;
-			}
+		if (qname.equals("area")) return;
+		if (qname.equals("base")) return;
+		if (qname.equals("basefont")) return;
+		if (qname.equals("br")) return;
+		if (qname.equals("col")) return;
+		if (qname.equals("frame")) return;
+		if (qname.equals("hr")) return;
+		if (qname.equals("image")) return;
+		if (qname.equals("input")) return;
+		if (qname.equals("isindex")) return;
+		if (qname.equals("link")) return;
+		if (qname.equals("meta")) return;
+		if (qname.equals("param")) return;
 		theWriter.print("</");
 		theWriter.print(qname);
 		theWriter.print('>');
-		if (newlineMode) theWriter.println();
+		theWriter.println();
 		cdataMode = false;
 		}
 
@@ -98,7 +94,7 @@ public class XMLWriter
 		theWriter.print(' ');
 		theWriter.print(data);
 		theWriter.print("?>");
-		if (newlineMode) theWriter.println();
+		theWriter.println();
 		}
 
 	public void setDocumentLocator(Locator locator) { }
@@ -113,7 +109,7 @@ public class XMLWriter
 		theWriter.print('<');
 		theWriter.print(qname);
 		theStack.push(qname);
-		if (newlineMode) theWriter.println();
+		theWriter.println();
 		int length = atts.getLength();
 		for (int i = 0; i < length; i++) {
 			theWriter.print(' ');
@@ -140,11 +136,11 @@ public class XMLWriter
 					}
 				}
 			theWriter.print('"');
-			if (newlineMode) theWriter.println();
+			theWriter.println();
 			}
 		theWriter.print('>');
-		if (newlineMode) theWriter.println();
-		if (htmlMode && (qname.equals("script") || qname.equals("style"))) {
+		theWriter.println();
+		if (qname.equals("script") || qname.equals("style")) {
 			cdataMode = true;
 			}
 		}
@@ -153,7 +149,7 @@ public class XMLWriter
 
 	// Constructor
 
-	public XMLWriter(Writer w) {
+	public HTMLWriter(Writer w) {
 		if (w instanceof PrintWriter) {
 			theWriter = (PrintWriter)w;
 			}
@@ -162,19 +158,4 @@ public class XMLWriter
 			}
 		}
 
-	public void setHTMLMode(boolean b) {
-		htmlMode = b;
-		}
-	
-	public void setNewlineMode(boolean b) {
-		newlineMode = b;
-		}
-
-	public boolean getHTMLMode() {
-		return htmlMode;
-		}
-
-	public boolean getNewlineMode() {
-		return newlineMode;
-		}
 	}

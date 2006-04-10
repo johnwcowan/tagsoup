@@ -100,7 +100,7 @@ public class Schema {
 //		System.err.println("%% Looking up entity " + name);
 		if (name.length() <= 1) return '&';
 		if (name.charAt(1) == '#') {
-			if (name.charAt(1) == 'x') {
+			if (name.charAt(2) == 'x') {
 				try {
 					return (char)Integer.parseInt(name.substring(3), 16);
 					}

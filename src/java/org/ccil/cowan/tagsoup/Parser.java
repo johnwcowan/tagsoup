@@ -18,9 +18,10 @@ import java.util.HashMap;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.MalformedURLException;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.megginson.sax.XMLWriter;
 
 public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 
@@ -287,6 +288,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 			if (sp.name().equals(name)) break;
 			}
 		if (sp == null) return;		// unknown etag, do nothing
+		if (sp.next() == null) return;	// can't happen: matched <root>
+		if (sp.next().next() == null) return;	// ignore outermost etag
 
 		while (theStack != sp) {
 			restartablyPop();
@@ -427,27 +430,53 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader {
 		return dst.toString();
 		}
 
-	// Test harness
+	// Main method: tidies specified files or stdin
+	// -Dfiles=true writes output to separate files with .xhtml extension
+	// -Dpyx=true, -Dhtml=true uses Pyx or HTML output
 
 	public static void main(String[] argv) throws IOException, SAXException {
-		XMLReader r = new Parser();
-		ContentHandler h;
-		if (Boolean.getBoolean("pyx")) {
-			h = new PYXWriter(new OutputStreamWriter
-				(System.out, "UTF-8"));
+		if (argv.length == 0) {
+			tidy("/dev/stdin", System.out);
+			}
+		else if (Boolean.getBoolean("files")) {
+			for (int i = 0; i < argv.length; i++) {
+				String src = argv[i];
+				String dst;
+				int j = src.lastIndexOf('.');
+				if (j == -1)
+					dst = src + ".xhtml";
+				else
+					dst = src.substring(0, j) + ".xhtml";
+				System.err.println("src: " + src + " dst: " + dst);
+				OutputStream os = new FileOutputStream(dst);
+				tidy(src, os);
+				}
 			}
 		else {
-			XMLWriter h1 = new XMLWriter(new OutputStreamWriter
-				(System.out, "UTF-8"));
-			if (Boolean.getBoolean("html")) h1.setHTMLMode(true);
-			if (Boolean.getBoolean("newline")) h1.setNewlineMode(true);
-			h = h1;
+			for (int i = 0; i < argv.length; i++) {
+				System.err.println("src: " + argv[i]);
+				tidy(argv[i], System.out);
+				}
 			}
-		r.setContentHandler(h);
-		String source = "/dev/stdin";
-		if (argv.length != 0) source = argv[0];
-		r.parse(source);
 		}
 
+	private static void tidy(String src, OutputStream os)
+			throws IOException, SAXException {
+		XMLReader r = new Parser();
+		Writer w = new OutputStreamWriter(os, "UTF-8");
+		r.setContentHandler(chooseContentHandler(w));
+		r.parse(src);
+		}
+
+	private static ContentHandler chooseContentHandler(Writer w) {
+		ContentHandler h;
+		if (Boolean.getBoolean("pyx"))
+			h = new PYXWriter(w);
+		else if (Boolean.getBoolean("html"))
+			h = new HTMLWriter(w);
+		else
+			h = new XMLWriter(w);
+		return h;
+		}
 
 	}

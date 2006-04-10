@@ -77,13 +77,13 @@ public class HTMLScanner implements Scanner {
 					action = statetable[i+2];
 					theNextState = statetable[i+3];
 					}
-				else if (statetable[i+1] == ch ||
-				    (statetable[i+1] == ' ' && ch <= ' ')) {
+				else if (statetable[i+1] == ch) {
 					action = statetable[i+2];
 					theNextState = statetable[i+3];
 					break;
 					}
 				}
+//			System.err.println("In " + theState + " got " + ch + " doing " + action + " then " + theNextState);
 			switch (action) {
 			case 0:
 				throw new Error(
@@ -136,13 +136,14 @@ Integer.toString(theState));
         		case A_ENTITY_POP:
 //				System.err.println("%%" + new String(theOutputBuffer, 0, theSize));
 				h.entity(theOutputBuffer, 0, theSize);
-				char c = h.getEntity();
-				if (c != 0) {
+				ch = h.getEntity();
+				if (ch != 0) {
 					theSize = 0;
 					if (ch >= 0x80 && ch <= 0x9F) {
 						ch = theWinMap[ch-0x80];
 						}
-					save(c, h);
+					if (ch < 0x20) ch = 0x20;
+					save(ch, h);
 					}
 				else {
 					save(';', h);

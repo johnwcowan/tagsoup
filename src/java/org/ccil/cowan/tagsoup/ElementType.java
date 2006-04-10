@@ -152,7 +152,7 @@ public class ElementType {
 	*/
 
 	public void setAttribute(String name, String type, String value) {
-		ElementType.setAttribute(theAtts, theSchema.getURI(), name, type, value);
+		ElementType.setAttribute(theAtts, "", name, type, value);
 		}
 
 
