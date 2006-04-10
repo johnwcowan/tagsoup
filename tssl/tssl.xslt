@@ -29,7 +29,7 @@
     <!-- elementType() special cases -->
     <xsl:text>&#x9;&#x9;elementType("&lt;pcdata>", M_EMPTY, M_PCDATA, 0);&#xA;</xsl:text>
     <xsl:text>&#x9;&#x9;elementType("&lt;root>", </xsl:text>
-    <xsl:apply-templates select="tssl:element/tssl:memberOf"/>
+    <xsl:apply-templates select="tssl:element/tssl:isRoot"/>
     <xsl:text>, M_EMPTY, 0);&#xA;</xsl:text>
     <!-- elementType() main loop -->
     <xsl:apply-templates select="//tssl:element">
@@ -90,6 +90,8 @@
     </xsl:choose>
     <xsl:text>, </xsl:text>
     <xsl:apply-templates select="tssl:memberOf"/>
+    <xsl:apply-templates select="tssl:memberOfAny"/>
+    <xsl:apply-templates select="tssl:isRoot"/>
     <xsl:text>, </xsl:text>
     <xsl:choose>
       <xsl:when test="@type = 'cdata'">
@@ -119,6 +121,16 @@
     <xsl:if test="position() != last()">
       <xsl:text>|</xsl:text>
     </xsl:if>
+  </xsl:template>
+
+  <!-- Applied from tssl:element to handle memberOfAny.  -->
+  <xsl:template match="tssl:memberOfAny">
+    <xsl:text>M_ANY</xsl:text>
+  </xsl:template>
+
+  <!-- Applied from tssl:element to handle isRoot.  -->
+  <xsl:template match="tssl:isRoot">
+    <xsl:text>M_ROOT</xsl:text>
   </xsl:template>
 
   <!-- Generates a single call to parent().  The mode is used to prevent XSLT

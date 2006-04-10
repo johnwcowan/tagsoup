@@ -23,7 +23,10 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 
-public class Parser extends DefaultHandler implements ScanHandler, XMLReader, LexicalHandler, HTMLModels {
+/**
+The main TagSoup class; the SAX parser and stand-alone program.
+**/
+public class Parser extends DefaultHandler implements ScanHandler, XMLReader, LexicalHandler {
 
 	// XMLReader implementation
 
@@ -365,7 +368,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
 			theLexicalHandler.endCDATA();
 			}
-		theContentHandler.endElement(getURI(), name, name);
+		theContentHandler.endElement(theStack.namespace(),
+				theStack.localName(), name);
 		theStack = theStack.next();
 		}
 
@@ -385,7 +389,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private void push(Element e) throws SAXException {
 //		System.err.println("%% Pushing " + e.name());
 		e.clean();
-		theContentHandler.startElement(getURI(), e.name(), e.name(), e.atts());
+		theContentHandler.startElement(e.namespace(),
+				e.localName(), e.name(), e.atts());
 		e.setNext(theStack);
 		theStack = e;
 		virginStack = false;
@@ -405,7 +410,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			if (theFeatures.get(ignoreBogonsFeature) == Boolean.TRUE)  {
 				return;
 				}
-			name = name.intern();
 			boolean empty = theFeatures.get(bogonsEmptyFeature) == Boolean.TRUE;
 			theSchema.elementType(name, empty ? Schema.M_EMPTY : Schema.M_ANY, Schema.M_ANY, 0);
 			type = theSchema.getElementType(name);
@@ -541,8 +545,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public static void main(String[] argv) throws IOException, SAXException {
 		if (Boolean.getBoolean("nocdata")) {
 			Schema s = HTMLSchema.sharedSchema();
-			s.elementType("script", M_PCDATA, M_HTML|M_INLINE, 0);
-			s.elementType("style", M_PCDATA, M_HEAD|M_INLINE, 0);
+			ElementType script = s.getElementType("script");
+			script.setFlags(0);
+			ElementType style = s.getElementType("style");
+			style.setFlags(0);
 			}
 		if (argv.length == 0) {
 			tidy("/dev/stdin", System.out);

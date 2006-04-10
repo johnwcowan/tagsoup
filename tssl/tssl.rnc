@@ -19,6 +19,7 @@ start = schema
 ## definitions, a root element, and attributes to be applied to all elements.
 schema = element schema {
 		attribute ns {xsd:anyURI},
+		attribute prefix {xsd:NCName},
 		attribute name {xsd:NCName},
 		attribute version {"1.0"},
 		entity*,
@@ -50,7 +51,9 @@ group = element group {
 		attribute type {type},
 		attribute restartable { "true" | "false" }?,
 		attribute text-parent { "true" | "false" }?,
-		element memberOf { attribute group {xsd:IDREF}}+,
+		(element memberOf { attribute group {xsd:IDREF}}+ |
+		 element isRoot { empty} |
+		 element memberOfAny { empty }),
 		element contains { attribute group {xsd:IDREF}}*,
 		\attribute*,
 		\element*

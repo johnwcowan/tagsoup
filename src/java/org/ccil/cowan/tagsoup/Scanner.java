@@ -18,9 +18,23 @@ import java.io.IOException;
 import java.io.Reader;
 import org.xml.sax.SAXException;
 
+/**
+An interface allowing Parser to invoke scanners.
+**/
+
 public interface Scanner {
 
+	/**
+	Invoke a scanner.
+	@param r A source of characters to scan
+	@param h A ScanHandler to report events to
+	**/
+
 	public void scan(Reader r, ScanHandler h) throws IOException, SAXException;
+	/**
+	Signal to the scanner to start CDATA content mode.
+	**/
+
 	public void startCDATA();
 
 	}

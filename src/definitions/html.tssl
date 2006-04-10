@@ -14,7 +14,7 @@
 
 <schema xmlns='http://www.ccil.org/~cowan/XML/tagsoup/tssl'
 		ns='http://www.w3.org/1999/xhtml' name='html'
-		version='1.0'>
+		prefix='html' version='1.0'>
   <entity name='AElig' codepoint='00C6'/>
   <entity name='Aacute' codepoint='00C1'/>
   <entity name='Acirc' codepoint='00C2'/>
@@ -278,7 +278,6 @@
   <group id='M_FRAME'/>
   <group id='M_HEAD'/>
   <group id='M_HTML'/>
-  <group id='M_ROOT'/>
   <group id='M_INLINE'/>
   <group id='M_LEGEND'/>
   <group id='M_LI'/>
@@ -290,9 +289,8 @@
   <group id='M_TABLE'/>
   <group id='M_TR'/>
   <element name='html' type='element' >
-    <memberOf group='M_ROOT'/>
+    <isRoot/>
     <contains group='M_HTML'/>
-    <contains group='M_ROOT'/>
     <attribute name='version' default='-//W3C//DTD HTML 4.01 Transitional//EN'/>
     <element name='body' type='mixed' text-parent='true' >
       <memberOf group='M_HTML'/>
@@ -788,12 +786,6 @@
         <attribute name='http-equiv' type='NMTOKEN' />
         <attribute name='name' type='NMTOKEN' />
       </element>
-      <element name='script' type='cdata' >
-        <memberOf group='M_HTML'/>
-	<memberOf group='M_HEAD'/>
-        <memberOf group='M_INLINE'/>
-        <attribute name='defer' type='BOOLEAN' />
-      </element>
       <element name='style' type='cdata' >
         <memberOf group='M_HEAD'/>
         <memberOf group='M_INLINE'/>
@@ -807,6 +799,10 @@
       <memberOf group='M_HTML'/>
       <memberOf group='M_FRAME'/>
       <contains group='M_BODY'/>
+    </element>
+    <element name='script' type='cdata' >
+      <memberOfAny/>
+      <attribute name='defer' type='BOOLEAN' />
     </element>
   </element>
   <attribute name='class' type='NMTOKEN' />

@@ -16,41 +16,18 @@
 package org.ccil.cowan.tagsoup;
 import java.util.HashMap;
 
-public class Schema {
+/**
+Abstract class representing a TSSL schema.
+Actual TSSL schemas are compiled into concrete subclasses of this class.
+**/
 
-	public static final int M_ANY = 0x7FFFFFFF;
+public abstract class Schema {
+
+	public static final int M_ANY = 0xFFFFFFFF;
 	public static final int M_EMPTY = 0;
+	public static final int M_PCDATA = 1 << 30;
+	public static final int M_ROOT = 1 << 31;
 
-	public static final int M_1 = 1 << 1;
-	public static final int M_2 = 1 << 2;
-	public static final int M_3 = 1 << 3;
-	public static final int M_4 = 1 << 4;
-	public static final int M_5 = 1 << 5;
-	public static final int M_6 = 1 << 6;
-	public static final int M_7 = 1 << 7;
-	public static final int M_8 = 1 << 8;
-	public static final int M_9 = 1 << 9;
-	public static final int M_10 = 1 << 10;
-	public static final int M_11 = 1 << 11;
-	public static final int M_12 = 1 << 12;
-	public static final int M_13 = 1 << 13;
-	public static final int M_14 = 1 << 14;
-	public static final int M_15 = 1 << 15;
-	public static final int M_16 = 1 << 16;
-	public static final int M_17 = 1 << 17;
-	public static final int M_18 = 1 << 18;
-	public static final int M_19 = 1 << 19;
-	public static final int M_20 = 1 << 20;
-	public static final int M_21 = 1 << 21;
-	public static final int M_22 = 1 << 22;
-	public static final int M_23 = 1 << 23;
-	public static final int M_24 = 1 << 24;
-	public static final int M_25 = 1 << 25;
-	public static final int M_26 = 1 << 26;
-	public static final int M_27 = 1 << 27;
-	public static final int M_28 = 1 << 28;
-	public static final int M_29 = 1 << 29;
-	public static final int M_30 = 1 << 30;
 
 	public static final int F_RESTART = 1;
 	public static final int F_CDATA = 2;
@@ -60,10 +37,26 @@ public class Schema {
 	private HashMap theElementTypes = 
 		new HashMap();		// String -> ElementType
 
+	/**
+	Add or replace an element type for this schema.
+	@param name Name (Qname) of the element
+	@param model Models of the element's content as a vector of bits
+	@param memberOf Models the element is a member of as a vector of bits
+	@param flags Flags for the element
+	**/
+
 	public void elementType(String name, int model, int memberOf, int flags) {
 		ElementType e = new ElementType(name, model, memberOf, flags, this);
 		theElementTypes.put(name, e);
 		}
+
+	/**
+	Add or replace a default attribute for an element type in this schema.
+	@param elemName Name (Qname) of the element type
+	@param attrName Name (Qname) of the attribute
+	@param type Type of the attribute
+	@param value Default value of the attribute; null if no default
+	**/
 
 	public void attribute(String elemName, String attrName,
 				String type, String value) {
@@ -75,6 +68,12 @@ public class Schema {
 			}
 		e.setAttribute(attrName, type, value);
 		}
+
+	/**
+	Specify natural parent of an element in this schema.
+	@param name Name of the child element
+	@param parentName Name of the parent element
+	**/
 
 	public void parent(String name, String parentName) {
 		ElementType child = getElementType(name);
@@ -88,13 +87,31 @@ public class Schema {
 		child.setParent(parent);
 		}
 
+	/**
+	Add to or replace a character entity in this schema.
+	@param name Name of the entity
+	@param value Value of the entity
+	**/
+
 	public void entity(String name, char value) {
 		theEntities.put(name, new Character(value));
 		}
 
+	/**
+	Get an ElementType by name.
+	@param name Name (Qname) of the element type
+	@return The corresponding ElementType
+	**/
+
 	public ElementType getElementType(String name) {
 		return (ElementType)(theElementTypes.get(name));
 		}
+
+	/**
+	Get an entity value by name.
+	@param name Name of the entity
+	@return The corresponding character, or 0 if none
+	**/
 
 	public char getEntity(String name) {
 //		System.err.println("%% Looking up entity " + name);
@@ -118,14 +135,20 @@ public class Schema {
 		return c.charValue();
 		}
 
+	/**
+	Return the URI (namespace name) of this schema.
+	**/
+
 	public String getURI() {
 		return "";
 		}
+
+	/**
+	Return the default prefix of this schema.
+	**/
 
 	public String getPrefix() {
 		return "";
 		}
 
-	public static void main(String[] argv) {
-		}
 	}

@@ -20,6 +20,10 @@ import java.io.*;
 import org.xml.sax.*;
 import org.xml.sax.ext.LexicalHandler;
 
+/**
+A ContentHandler that generates PYX format instead of XML.
+Primarily useful for debugging.
+**/
 public class PYXWriter
 	implements ScanHandler, ContentHandler, LexicalHandler {
 

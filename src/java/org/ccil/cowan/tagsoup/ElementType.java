@@ -9,8 +9,9 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-// 
-// 
+
+package org.ccil.cowan.tagsoup;
+
 /**
 This class represents an element type in the schema.
 An element type has a name, a content model vector, a member-of vector,
@@ -18,10 +19,11 @@ a flags vector, default attributes, and a schema to which it belongs.
 @see Schema
 */
 
-package org.ccil.cowan.tagsoup;
 public class ElementType {
 
-	private String theName;		// element type name
+	private String theName;		// element type name (Qname)
+	private String theNamespace;	// element type namespace name
+	private String theLocalName;	// element type local name
 	private int theModel;		// bitmap: what the element contains
 	private int theMemberOf;	// bitmap: what element is contained in
 	private int theFlags;		// bitmap: element flags
@@ -47,12 +49,51 @@ public class ElementType {
 	public ElementType(String name, int model, int memberOf, int flags, Schema schema) {
 		theName = name;
 		theModel = model;
+		if (memberOf == Schema.M_ANY) memberOf &= ~Schema.M_ROOT;
 		theMemberOf = memberOf;
 		theFlags = flags;
 		theAtts = new AttributesImpl();
 		theSchema = schema;
+		theNamespace = namespace(name, false);
+		theLocalName = localName(name);
 		}
 
+	/**
+	Return a namespace name from a Qname.
+	The attribute flag tells us whether to return an empty namespace
+	name if there is no prefix, or use the schema default instead.
+	@param name The Qname
+	@param attribute True if name is an attribute name
+	@return The namespace name
+	**/
+	public String namespace(String name, boolean attribute) {
+		int colon = name.indexOf(':');
+		if (colon == -1) {
+			return attribute ? "" : theSchema.getURI();
+			}
+		String prefix = name.substring(0, colon);
+		if (prefix.equals("xml")) {
+			return "http://www.w3.org/XML/1998/namespace";
+			}
+		else {
+			return ("urn:x-prefix:" + prefix).intern();
+			}
+		}
+
+	/**
+	Return a local name from a Qname.
+	@param name The Qname
+	@return The local name
+	**/
+	public String localName(String name) {
+		int colon = name.indexOf(':');
+		if (colon == -1) {
+			return name;
+			}
+		else {
+			return name.substring(colon+1).intern();
+			}
+		}
 
 	/**
 	Returns the name of this element type.
@@ -60,6 +101,20 @@ public class ElementType {
 	*/
 
 	public String name() { return theName; }
+
+	/**
+	Returns the namespace name of this element type.
+	@return The namespace name of the element type
+	*/
+
+	public String namespace() { return theNamespace; }
+
+	/**
+	Returns the local name of this element type.
+	@return The local name of the element type
+	*/
+
+	public String localName() { return theLocalName; }
 
 	/**
 	Returns the content models of this element type.
@@ -124,24 +179,59 @@ public class ElementType {
 
 	/**
 	Sets an attribute and its value into an AttributesImpl object.
+	Attempts to set a namespace declaration are ignored.
 	@param atts The AttributesImpl object
-	@param uri The namespace name of the attribute
-	@param name The local name of the attribute
+	@param name The name (Qname) of the attribute
 	@param type The type of the attribute
 	@param value The value of the attribute
 	*/
 
-	public static void setAttribute(AttributesImpl atts, String uri, String name, String type, String value) {
+	public void setAttribute(AttributesImpl atts, String name, String type, String value) {
+		if (name.equals("xmlns") || name.startsWith("xmlns:")) {
+			return;
+			}
+;
+		String namespace = namespace(name, true);
+		String localName = localName(name);
 		int i = atts.getIndex(name);
 		if (i == -1) {
 			name = name.intern();
 			if (type == null) type = "CDATA";
-			atts.addAttribute(uri, name, name, type, value);
+			if (!type.equals("CDATA")) value = normalize(value);
+			atts.addAttribute(namespace, localName, name, type, value);
 			}
 		else {
 			if (type == null) type = atts.getType(i);
-			atts.setAttribute(i, uri, name, name, type, value);
+			if (!type.equals("CDATA")) value=normalize(value);
+			atts.setAttribute(i, namespace, localName, name, type, value);
 			}
+		}
+
+	/**
+	Normalize an attribute value (ID-style).
+	CDATA-style attribute normalization is already done.
+	@param value The value to normalize
+	@return The normalized value
+	**/
+	public static String normalize(String value) {
+		if (value == null) return value;
+		value = value.trim();
+		if (value.indexOf("  ") == -1) return value;
+		boolean space = false;
+		int len = value.length();
+		StringBuffer b = new StringBuffer(len);
+		for (int i = 0; i < len; i++) {
+			char v = value.charAt(i);
+			if (v == ' ') {
+				if (!space) b.append(v);
+				space = true;
+				}
+			else {
+				b.append(v);
+				space = false;
+				}
+			}
+		return b.toString();
 		}
 
 	/**
@@ -152,9 +242,29 @@ public class ElementType {
 	*/
 
 	public void setAttribute(String name, String type, String value) {
-		ElementType.setAttribute(theAtts, "", name, type, value);
+		setAttribute(theAtts, name, type, value);
 		}
 
+	/**
+	Sets the models of this element type.
+	@param model The content models of this element type as a vector of bits
+	*/
+
+	public void setModel(int model) { theModel = model; }
+
+	/**
+	Sets the content models to which this element type belongs.
+	@param memberOf The content models to which this element type belongs as a vector of bits
+	*/
+
+	public void setMemberOf(int memberOf) { theMemberOf = memberOf; }
+
+	/**
+	Sets the flags of this element type.
+	@param flags associated with this element type The flags as a vector of bits
+	*/
+
+	public void setFlags(int flags) { theFlags = flags; }
 
 	/**
 	Sets the parent element type of this element type.

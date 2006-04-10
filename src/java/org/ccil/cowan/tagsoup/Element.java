@@ -9,8 +9,9 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-// 
-// 
+
+package org.ccil.cowan.tagsoup;
+
 /**
 The internal representation of an actual element (not an element type).
 An Element has an element type, attributes, and a successor Element
@@ -18,15 +19,12 @@ for use in constructing stacks and queues of Elements.
 @see ElementType
 @see AttributesImpl
 */
-
-package org.ccil.cowan.tagsoup;
 public class Element {
 
 
 	private ElementType theType;		// type of element
 	private AttributesImpl theAtts;		// attributes of element
 	private Element theNext;		// successor of element
-	private String xmlURI = "http://www.w3.org/XML/1998/namespace";
 
 	/**
 	Return an Element from a specified ElementType.
@@ -77,6 +75,22 @@ public class Element {
 	public String name() { return theType.name(); }
 
 	/**
+	Return the namespace name of the element's type.
+	Convenience method.
+	@return The element type namespace name
+	*/
+
+	public String namespace() { return theType.namespace(); }
+
+	/**
+	Return the local name of the element's type.
+	Convenience method.
+	@return The element type local name
+	*/
+
+	public String localName() { return theType.localName(); }
+
+	/**
 	Return the content model vector of the element's type.
 	Convenience method.
 	@return The content model vector
@@ -122,13 +136,13 @@ public class Element {
 
 	/**
 	Set an attribute and its value into this element.
-	@param name The attribute name
+	@param name The attribute name (Qname)
 	@param type The attribute type
 	@param value The attribute value
 	*/
 
 	public void setAttribute(String name, String type, String value) {
-		ElementType.setAttribute(theAtts, "", name, type, value);
+		theType.setAttribute(theAtts, name, type, value);
 		}
 
 	/**
@@ -151,9 +165,7 @@ public class Element {
 	Attributes with null name (the name was ill-formed)
 	or null value (the attribute was present in the element type but
 	not in this actual element) are removed.  Type BOOLEAN is
-	changed to type NMTOKEN at this time.  We also prepend '_'
-	to numeric attribute names.  Namespaced names are fixed up
-	as best we can.
+	changed to type NMTOKEN at this time.  
 	*/
 
 	public void clean() {
@@ -164,23 +176,8 @@ public class Element {
 				theAtts.removeAttribute(i);
 				continue;
 				}
-			if (name.equals("xmlns") ||
-				 name.startsWith("xmlns:")) {
-				theAtts.removeAttribute(i);
-				continue;
-				}
 			if (theAtts.getType(i).equals("BOOLEAN")) {
 				theAtts.setType(i, "NMTOKEN");
-				}
-			int colon = name.indexOf(':');
-			if (colon != -1) {
-				theAtts.setLocalName(i, name.substring(colon+1));
-				theAtts.setQName(i, name);
-				String p = name.substring(0, colon);
-				if (p.equals("xml"))
-					theAtts.setURI(i, xmlURI);
-				else
-					theAtts.setURI(i, "urn:x-prefix:" + p);
 				}
 			}
 		}

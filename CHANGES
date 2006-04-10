@@ -1,3 +1,15 @@
+Changes from 0.10.2 to 1.0rc1
+=============================
+Script can now appear anywhere
+Switch -nocdata correctly implemented
+Eliminated useless M_n constants in Schema
+Introduced <memberofAny> and <isRoot> as alternatives to
+	<memberOf> in TSSL
+Allow prefixes in element names
+Attributes are now normalized
+Expanded public API for Element and ElementType
+Javadoc improved
+
 Changes from 0.10.1 to 0.10.2
 =============================
 Removed misfeature whereby > terminated a tag even inside quotes

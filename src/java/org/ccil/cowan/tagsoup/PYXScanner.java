@@ -30,6 +30,10 @@ package org.ccil.cowan.tagsoup;
 import java.io.*;
 import org.xml.sax.SAXException;
 
+/**
+A Scanner that accepts PYX format instead of HTML.
+Useful primarily for debugging.
+**/
 public class PYXScanner implements Scanner {
 
 	public void scan(Reader r, ScanHandler h) throws IOException, SAXException {
