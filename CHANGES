@@ -1,6 +1,8 @@
 Changes from 1.0rc3 to 1.0rc4
 =============================
+Add --method and --omit-xml-declaration switches
 Support proper options and help message internally
+Use Hashtable in CommandLine class instead of HashMap
 Do proper buffering of InputStream and Reader
 Removed htmlMode in XMLWriter
 Added support for XSLT output options METHOD=html and OMIT_XML_DECLARATION=yes
@@ -9,6 +11,7 @@ Wrote simple validator for TSSL schemas (tssl/tssl-validator.xslt)
 Removed various validity problems in html.tssl
 When processing a start-tag, don't restart elements that aren't in the new
 	element's content model
+Remove bogus double param in tssl.xslt
 
 Changes from 1.0rc2 to 1.0rc3
 =============================

@@ -40,8 +40,11 @@ public class CommandLine {
 		options.put("--lexical", Boolean.FALSE); // output comments
 		options.put("--pyx", Boolean.FALSE);	// output is PYX
 		options.put("--html", Boolean.FALSE);	// output is HTML
+		options.put("--method=", Boolean.FALSE); // output method
+		options.put("--omit-xml-declaration", Boolean.FALSE);
+							// omit XML decl
 		options.put("--encoding=", Boolean.FALSE); // specify encoding
-		options.put("--help", Boolean.FALSE); 	// specify encoding
+		options.put("--help", Boolean.FALSE); 	// display help
 		}
 
 	/**
@@ -153,6 +156,7 @@ public class CommandLine {
 			s.setByteStream(System.in);
 			}
 		if (hasOption(options, "--encoding=")) {
+//			System.out.println("%% Found --encoding");
 			String encoding = (String)options.get("--encoding=");
 			if (encoding != null) s.setEncoding(encoding);
 			}
@@ -169,6 +173,22 @@ public class CommandLine {
 		else if (hasOption(options, "--html")) {
 			XMLWriter x = new XMLWriter(w);
 			x.setOutputProperty(XMLWriter.METHOD, "html");
+			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
+			h = x;
+			}
+		else if (hasOption(options, "--method=")) {
+//			System.out.println("%% Found --method=");
+			XMLWriter x = new XMLWriter(w);
+			String method = (String)options.get("--method=");
+			if (method != null) {
+//				System.out.println("%% method=[" + method + "]");
+				x.setOutputProperty(XMLWriter.METHOD, method);
+				}
+			h = x;
+			}
+		else if (hasOption(options, "--omit-xml-declaration")) {
+//			System.out.println("%% Found --omit-xml-declaration");
+			XMLWriter x = new XMLWriter(w);
 			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
 			h = x;
 			}
@@ -192,12 +212,9 @@ public class CommandLine {
 				arg = arg.substring(0, eqsign + 1);
 				}
 			if (options.containsKey(arg)) {
-				if (value == null) {
-					options.put(arg, Boolean.TRUE);
-					}
-				else {
-					options.put(arg, value);
-					}
+				if (value == null) options.put(arg, Boolean.TRUE);
+				else options.put(arg, value);
+//				System.out.println("%% Parsed [" + arg + "]=[" + value + "]");
 				}
 			else {
 				System.err.print("Unknown option ");
@@ -212,7 +229,7 @@ public class CommandLine {
 
 	private static boolean hasOption(Hashtable options, String option) {
 		if (Boolean.getBoolean(option)) return true;
-		else if (options.get(option) == Boolean.TRUE) return true;
+		else if (options.get(option) != Boolean.FALSE) return true;
 		return false;
 		}
 

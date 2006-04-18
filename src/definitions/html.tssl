@@ -806,6 +806,8 @@
       <memberOf group='M_HTML'/>
       <memberOf group='M_FRAME'/>
       <contains group='M_BODY'/>
+      <contains group='M_BLOCK'/>
+      <contains group='M_INLINE'/>
     </element>
     <element name='script' type='cdata'>
       <memberOfAny/>

@@ -1,8 +1,9 @@
+Handle EOF correctly in entity reference lookahead
+Install Locator.patch
+Solve Java 5.0 problem if possible
 Unknown root element disappears completely
 XML empty tag does not return correct name to etag callback
 Colon suppressor feature
 Default attribute suppressor feature
 Case sensitivity feature
 Add javadoc for properties and features
-Add --method and --omit-xml-declaration switches.
-Handle EOF correctly in entity reference lookahead.
