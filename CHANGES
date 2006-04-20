@@ -7,6 +7,7 @@ Add --method and --omit-xml-declaration switches
 Support proper options and help message internally
 Use Hashtable in CommandLine class instead of HashMap
 Do proper buffering of InputStream and Reader
+Clean up content model of noframes element
 Removed htmlMode in XMLWriter
 Added support for XSLT output options METHOD=html and OMIT_XML_DECLARATION=yes
 Command line option --html sets both of these
