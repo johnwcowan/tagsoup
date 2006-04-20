@@ -2,8 +2,10 @@ Handle EOF correctly in entity reference lookahead
 Install Locator.patch
 Solve Java 5.0 problem if possible
 Unknown root element disappears completely
-XML empty tag does not return correct name to etag callback
+Explicitly empty CDATA tags malf
 Colon suppressor feature
 Default attribute suppressor feature
 Case sensitivity feature
 Add javadoc for properties and features
+Allow people to increase the HTMLScanner buffer size
+Split NCRs from entity references

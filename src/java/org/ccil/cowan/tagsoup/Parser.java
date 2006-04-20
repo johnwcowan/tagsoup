@@ -321,15 +321,15 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	private static char[] etagchars = {'<', '/', '>'};
 	public void etag(char[] buff, int offset, int length) throws SAXException {
-		String lastName = theStack.name();
+		String currentName = theStack.name();
 		// If this is a CDATA element and the tag doesn't match,
 		// or isn't properly formed (junk after the name),
 		// restart CDATA mode and process the tag as characters.
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
-			boolean realTag = (length == lastName.length());
+			boolean realTag = (length == currentName.length());
 			if (realTag) {
 				for (int i = 0; i < length; i++) {
-					if (Character.toLowerCase(buff[offset + i]) != Character.toLowerCase(lastName.charAt(i))) {
+					if (Character.toLowerCase(buff[offset + i]) != Character.toLowerCase(currentName.charAt(i))) {
 						realTag = false;
 						break;
 						}
@@ -345,10 +345,12 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			}
 
 		theNewElement = null;
-		String name = makeName(buff, offset, length);
-		// Handle empty tags and SGML end-tag minimization
-		if (name == null || name.equals("")) {
-			name = lastName;
+		String name;
+		if (length == 0) {
+			name = currentName;
+			}
+		else {
+			name = makeName(buff, offset, length);
 			}
 //		System.err.println("%% Got end of " + name);
 
@@ -484,11 +486,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		rectify(theNewElement);
 		if (theStack.model() == Schema.M_EMPTY) {
 			// Force an immediate end tag
-			String name = theStack.name();
-			int namelen = name.length();
-			char[] namechars = new char[namelen];
-			name.getChars(0, namelen, namechars, 0);
-			etag(namechars, 0, namelen);
+			etag(buff, 0, 0);
 			}
 		}
 

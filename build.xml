@@ -5,6 +5,16 @@
   <!-- additional tasks -->
   <taskdef file="etc/build/taskdefs.txt" classpath="bin"/>
 
+  <available property="transformer.factory"
+     classname="com.icl.saxon.TransformerFactoryImpl"
+     value="com.icl.saxon.TransformerFactoryImpl"/>
+  <available property="transformer.factory"
+     classname="org.apache.xalan.processor.TransformerFactoryImpl"
+     value="org.apache.xalan.processor.TransformerFactoryImpl"/>
+  <available property="transformer.factory"
+     classname="com.sun.org.apache.xalan.processor.TransformerFactoryImpl"
+     value="com.sun.org.apache.xalan.processor.TransformerFactoryImpl"/>
+
   <!-- some folder settings -->
   <property name="bin" value="bin"/>
   <property name="src" value="src"/>
@@ -57,14 +67,27 @@
 	</javac>
   </target>
 
+<!-- prepare generation of the parser classes based on the definition files -->
+   <target depends="init,prepare" description="Prepare generation of parser classes." name="prepare-parser"> 
 
-  <!-- prepare generation of the parser classes based on the definition files -->
-  <target name="prepare-parser" depends="init,prepare"
-	  description="Prepare generation of parser classes.">
-	<xslt style="tssl/tssl-models.xslt" in="${src}/definitions/html.tssl" out="${tmp}/HTMLModels.i"/>
-	<xslt style="tssl/tssl.xslt" in="${src}/definitions/html.tssl" out="${tmp}/HTMLSchema.i"/>
-	<xslt style="stml/stml.xslt" in="${src}/definitions/html.stml" out="${tmp}/HTMLScanner.i"/>
-  </target>
+     <echo>
+       Using ${transformer.factory} as the TransformerFactory
+     </echo>
+
+     <xslt in="${src}/definitions/html.tssl" out="${tmp}/HTMLModels.i" 
+style="tssl/tssl-models.xslt">
+       <factory name="${transformer.factory}"/>
+     </xslt>
+     <xslt in="${src}/definitions/html.tssl" out="${tmp}/HTMLSchema.i" 
+style="tssl/tssl.xslt">
+       <factory name="${transformer.factory}"/>
+     </xslt>
+     <xslt in="${src}/definitions/html.stml" out="${tmp}/HTMLScanner.i" 
+style="stml/stml.xslt">
+       <factory name="${transformer.factory}"/>
+     </xslt>
+   </target>
+
 
 
   <!-- patch the parser class files -->

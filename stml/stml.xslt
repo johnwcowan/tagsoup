@@ -105,7 +105,6 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:call-template name="dump-tr">
-          <xsl:with-param name="char" select="@char"/>
           <xsl:with-param name="char"
 		select="concat(&quot;'&quot;, @char, &quot;'&quot;)"/>
         </xsl:call-template>
