@@ -7,5 +7,4 @@ Colon suppressor feature
 Default attribute suppressor feature
 Case sensitivity feature
 Add javadoc for properties and features
-Allow people to increase the HTMLScanner buffer size
 Split NCRs from entity references

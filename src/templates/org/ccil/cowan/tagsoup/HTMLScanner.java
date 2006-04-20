@@ -266,11 +266,17 @@ Integer.toString(theState));
 	private void save(int ch, ScanHandler h) throws IOException, SAXException {
 		if (theSize >= theOutputBuffer.length - 20) {
 			if (theState == S_PCDATA || theState == S_CDATA) {
+				// Return a buffer-sized chunk of PCDATA
 				h.pcdata(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				}
 			else {
-				return;
+				// Grow the buffer size
+				char[] newOutputBuffer = new char[theOutputBuffer.length * 2];
+				for (int i = 0; i <= theSize; i++) {
+					newOutputBuffer[i] = theOutputBuffer[i];
+					}
+				theOutputBuffer = newOutputBuffer;
 				}
 			}
 		theOutputBuffer[theSize++] = (char)ch;
