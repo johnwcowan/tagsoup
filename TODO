@@ -4,7 +4,6 @@ Solve Java 5.0 problem if possible
 Unknown root element disappears completely
 Explicitly empty CDATA tags malf
 Colon suppressor feature
-Default attribute suppressor feature
 Case sensitivity feature
 Add javadoc for properties and features
 Split NCRs from entity references

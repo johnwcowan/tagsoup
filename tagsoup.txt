@@ -38,6 +38,9 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        [1m--nobogons[0m
               suppress unknown non-HTML elements in output
 
+       [1m--nodefaults[0m
+              suppress default attribute values
+
        [1m--any  [22mtreat unknown non-HTML elements as allowing any content
 
        [1m--nocdata[0m

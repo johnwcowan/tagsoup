@@ -45,6 +45,8 @@ public class CommandLine {
 							// omit XML decl
 		options.put("--encoding=", Boolean.FALSE); // specify encoding
 		options.put("--help", Boolean.FALSE); 	// display help
+		options.put("--nodefaults", Boolean.FALSE);
+							// no default attrs
 		}
 
 	/**
@@ -134,8 +136,13 @@ public class CommandLine {
 		if (hasOption(options, "--nobogons")) {
 			r.setFeature(Parser.ignoreBogonsFeature, true);
 			}
+
 		if (hasOption(options, "--any")) {
 			r.setFeature(Parser.bogonsEmptyFeature, false);
+			}
+
+		if (hasOption(options, "--nodefaults")) {
+			r.setFeature(Parser.defaultAttributesFeature, false);
 			}
 
 		if (hasOption(options, "--pyxin")) {

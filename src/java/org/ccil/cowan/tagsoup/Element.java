@@ -168,13 +168,14 @@ public class Element {
 	or null value (the attribute was present in the element type but
 	not in this actual element) are removed.  Type BOOLEAN is
 	changed to type NMTOKEN at this time.  
+	@param defaults True if default attributes are kept
 	*/
 
-	public void clean() {
+	public void clean(boolean defaults) {
 		for (int i = theAtts.getLength() - 1; i >= 0; i--) {
 			String name = theAtts.getLocalName(i);
 			if (theAtts.getValue(i) == null || name == null ||
-					name.length() == 0) {
+					name.length() == 0 || !defaults) {
 				theAtts.removeAttribute(i);
 				continue;
 				}

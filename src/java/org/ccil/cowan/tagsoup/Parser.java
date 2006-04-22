@@ -51,6 +51,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		"http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons";
 	public final static String bogonsEmptyFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/bogons-empty";
+	public final static String defaultAttributesFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/default-attributes";
 	public final static String lexicalHandlerProperty =
 		"http://xml.org/sax/properties/lexical-handler";
 	public final static String scannerProperty =
@@ -86,6 +88,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			Boolean.FALSE);
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
 		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
+		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
 		}
 
 
@@ -419,7 +422,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private boolean virginStack = true;
 	private void push(Element e) throws SAXException {
 //		System.err.println("%% Pushing " + e.name());
-		e.clean();
+		e.clean(theFeatures.get(defaultAttributesFeature) == Boolean.TRUE);
 		String namespace = e.namespace();
 		if (theFeatures.get(namespacesFeature) == Boolean.FALSE) namespace = "";
 		theContentHandler.startElement(namespace,
