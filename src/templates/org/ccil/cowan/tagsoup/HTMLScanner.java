@@ -185,10 +185,30 @@ Integer.toString(theState));
 			case A_ENTITY:
 				mark();
 				char ch1 = (char)ch;
-				if (Character.isLetterOrDigit(ch1) || ch1 == '#') {
+//				System.out.println("Got " + ch1 + " in state " + ((theState == S_ENT) ? "S_ENT" : ((theState == S_NCR) ? "S_NCR" : "UNK")));
+				if (theState == S_ENT && ch1 == '#') {
+					theNextState = S_NCR;
 					save(ch, h);
 					break;
 					}
+				else if (theState == S_NCR && (ch1 == 'x' || ch1 == 'X')) {
+					theNextState = S_XNCR;
+					save(ch, h);
+					break;
+					}
+				else if (theState == S_ENT && Character.isLetterOrDigit(ch1)) {
+					save(ch, h);
+					break;
+					}
+				else if (theState == S_NCR && Character.isDigit(ch1)) {
+					save(ch, h);
+					break;
+					}
+				else if (theState == S_XNCR && (Character.isDigit(ch1) || "abcdefABCDEF".indexOf(ch1) != -1)) {
+					save(ch, h);
+					break;
+					}
+
 //				System.err.println("%%" + new String(theOutputBuffer, 0, theSize));
 				h.entity(theOutputBuffer, savedSize + 1, theSize - savedSize - 1);
 				int ent = h.getEntity();

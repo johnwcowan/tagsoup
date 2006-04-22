@@ -147,6 +147,14 @@
 		<tr symbol='EOF' action='A_SKIP' newstate='S_DONE'/>
 		<tr symbol='S' action='A_GI' newstate='S_TAGWS'/>
 	</state>
+	<state id='S_NCR'>
+		<tr symbol='default' action='A_ENTITY' newstate='S_NCR'/>
+		<tr symbol='EOF' action='A_ENTITY' newstate='S_DONE'/>
+	</state>
+	<state id='S_XNCR'>
+		<tr symbol='default' action='A_ENTITY' newstate='S_XNCR'/>
+		<tr symbol='EOF' action='A_ENTITY' newstate='S_DONE'/>
+	</state>
 	<state id='S_PCDATA'>
 		<tr symbol='default' action='A_SAVE' newstate='S_PCDATA'/>
 		<tr char='&amp;' action='A_PCDATA_SAVE_PUSH' newstate='S_ENT'/>
