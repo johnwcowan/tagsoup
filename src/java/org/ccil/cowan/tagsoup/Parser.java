@@ -93,7 +93,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 
 	public boolean getFeature (String name)
-        throws SAXNotRecognizedException, SAXNotSupportedException {
+		throws SAXNotRecognizedException, SAXNotSupportedException {
 		Boolean b = (Boolean)theFeatures.get(name);
 		if (b == null) {
 			throw new SAXNotRecognizedException("Unknown feature " + name);
@@ -203,6 +203,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		setup();
 		Reader r = getReader(input);
 		theContentHandler.startDocument();
+		theScanner.resetDocumentLocator(input.getPublicId(), input.getSystemId());
+		if (theScanner instanceof Locator) {
+			theContentHandler.setDocumentLocator((Locator)theScanner);
+			}
 		if (!(theSchema.getURI().equals("")))
 			theContentHandler.startPrefixMapping(theSchema.getPrefix(),
 				theSchema.getURI());

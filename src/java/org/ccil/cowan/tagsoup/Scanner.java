@@ -31,6 +31,15 @@ public interface Scanner {
 	**/
 
 	public void scan(Reader r, ScanHandler h) throws IOException, SAXException;
+
+	/**
+	Reset the embedded locator.
+	@param publicid The publicid of the source
+	@param systemid The systemid of the source
+	**/
+
+	public void resetDocumentLocator(String publicid, String systemid);
+
 	/**
 	Signal to the scanner to start CDATA content mode.
 	**/

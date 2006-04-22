@@ -1,6 +1,7 @@
 Changes from 1.0rc3 to 1.0rc4
 =============================
 Added Parser feature and --nodefaults switch to ignore default attribute values
+Added support for SAX Locator
 Updated AFL license to version 3.0
 Scanner buffer size increases as needed, allowing large attribute values
 Look for various XSLT implementations as available (still fails in raw 5.0)

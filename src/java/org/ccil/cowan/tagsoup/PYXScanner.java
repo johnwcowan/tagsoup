@@ -36,6 +36,11 @@ Useful primarily for debugging.
 **/
 public class PYXScanner implements Scanner {
 
+        public void resetDocumentLocator(String publicid, String systemid) {
+	// Need this method for interface compatibility, but note
+	// that PyxScanner does not implement Locator.
+        }
+
 	public void scan(Reader r, ScanHandler h) throws IOException, SAXException {
 		BufferedReader br = new BufferedReader(r);
 		String s;

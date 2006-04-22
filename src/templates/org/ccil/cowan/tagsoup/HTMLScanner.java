@@ -14,6 +14,7 @@
 package org.ccil.cowan.tagsoup;
 import java.io.*;
 import org.xml.sax.SAXException;
+import org.xml.sax.Locator;
 
 /**
 This class implements a table-driven scanner for HTML, allowing for lots of
@@ -22,11 +23,18 @@ object to fetch characters from and a ScanHandler object to report lexical
 events to.
 */
 
-public class HTMLScanner implements Scanner {
+public class HTMLScanner implements Scanner, Locator {
 
 	// Start of state table
 	@@STATE_TABLE@@
 	// End of state table
+
+	private String thePublicid;			// Locator state
+	private String theSystemid;
+	private int theLastLine;
+	private int theLastColumn;
+	private int theCurrentLine;
+	private int theCurrentColumn;
 
 	int theState;					// Current state
 	int theNextState;				// Next state
@@ -39,14 +47,41 @@ public class HTMLScanner implements Scanner {
 		0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0xFFFD, 0x017E, 0x0178};
 
 
+	// Locator implementation
+
+	public int getLineNumber() {
+		return theLastLine;
+		}
+	public int getColumnNumber() {
+		return theLastColumn;
+		}
+	public String getPublicId() {
+		return thePublicid;
+		}
+	public String getSystemId() {
+		return theSystemid;
+		}
+
+
 	// Scanner implementation
+
+	/**
+	Reset document locator, supplying systemid and publicid.
+	@param systemid System id
+	@param publicid Public id
+	*/
+
+	public void resetDocumentLocator(String publicid, String systemid) {
+		thePublicid = publicid;
+		theSystemid = systemid;
+		theLastLine = theLastColumn = theCurrentLine = theCurrentColumn = 0;
+		}
 
 	/**
 	Scan HTML source, reporting lexical events.
 	@param r0 Reader that provides characters
 	@param h ScanHandler that accepts lexical events.
 	*/
-
 
 	public void scan(Reader r0, ScanHandler h) throws IOException, SAXException {
 		theState = S_PCDATA;
@@ -66,6 +101,13 @@ public class HTMLScanner implements Scanner {
 		while (theState != S_DONE) {
 			int ch = r.read();
 			if (ch >= 0x80 && ch <= 0x9F) ch = theWinMap[ch-0x80];
+			if (ch == '\n') {
+				theCurrentLine++;
+				theCurrentColumn = 0;
+				}
+			else {
+				theCurrentColumn++;
+				}
 			if (ch < 0x20 && ch != '\n' && ch != '\r' && ch != '\t' && ch != -1) continue;
 			// Search state table
 			int action = 0;
@@ -129,12 +171,14 @@ Integer.toString(theState));
 				h.stagc(theOutputBuffer, 0, theSize);
 				break;
 			case A_CDATA:
+				mark();
 				// suppress the final "]]" in the buffer
 				if (theSize > 1) theSize -= 2;
 				h.pcdata(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
 			case A_ENTITY:
+				mark();
 				char ch1 = (char)ch;
 				if (Character.isLetterOrDigit(ch1) || ch1 == '#') {
 					save(ch, h);
@@ -158,10 +202,14 @@ Integer.toString(theState));
 						save((ent>>10) + 0xD800, h);
 						save((ent&0x3FF) + 0xDC00, h);
 						}
-					if (ch != ';') r.unread(ch);
+					if (ch != ';') {
+						r.unread(ch);
+						theCurrentColumn--;
+						}
 					}
 				else {
 					r.unread(ch);
+					theCurrentColumn--;
 					}
 				theNextState = savedState;
 				break;
@@ -182,22 +230,27 @@ Integer.toString(theState));
 				save('\n', h);
 				break;
         		case A_LT:
+				mark();
 				save('<', h);
 				break;
 			case A_LT_PCDATA:
+				mark();
 				save('<', h);
 				h.pcdata(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
         		case A_PCDATA:
+				mark();
 				h.pcdata(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
 			case A_CMNT:
+				mark();
 				h.cmnt(theOutputBuffer, 1, theSize - 3);
 				theSize = 0;
 				break;
         		case A_PI:
+				mark();
 				h.pi(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
@@ -232,6 +285,7 @@ Integer.toString(theState));
 				theSize = 0;
 				break;
 			case A_EMPTYTAG:
+				mark();
 //				System.err.println("%%% Empty tag seen");
 				if (theSize > 0) h.gi(theOutputBuffer, 0, theSize);
 				theSize = 0;
@@ -240,6 +294,7 @@ Integer.toString(theState));
 				break;
 			case A_UNGET:
 				r.unread(ch);
+				theCurrentColumn--;
 				break;
         		case A_UNSAVE_PCDATA:
 				if (theSize > 0) theSize--;
@@ -254,6 +309,15 @@ Integer.toString(theState));
 		h.eof(theOutputBuffer, 0, 0);
 		}
 
+	/**
+	* Mark the current scan position as a "point of interest" - start of a tag,
+	* cdata, processing instruction etc.
+	*/
+
+	private void mark() {
+		theLastColumn = theCurrentColumn;
+		theLastLine = theCurrentLine;
+		}
 
 	/**
 	A callback for the ScanHandler that allows it to force
