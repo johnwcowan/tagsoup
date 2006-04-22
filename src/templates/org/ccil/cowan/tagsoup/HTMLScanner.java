@@ -46,6 +46,11 @@ public class HTMLScanner implements Scanner, Locator {
 		0xFFFD, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
 		0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0xFFFD, 0x017E, 0x0178};
 
+	// Compensate for bug in PushbackReader that allows
+	// pushing back EOF.
+	private void unread(PushbackReader r, int c) throws IOException {
+		if (c != -1) r.unread(c);
+		}
 
 	// Locator implementation
 
@@ -203,12 +208,12 @@ Integer.toString(theState));
 						save((ent&0x3FF) + 0xDC00, h);
 						}
 					if (ch != ';') {
-						r.unread(ch);
+						unread(r, ch);
 						theCurrentColumn--;
 						}
 					}
 				else {
-					r.unread(ch);
+					unread(r, ch);
 					theCurrentColumn--;
 					}
 				theNextState = savedState;
@@ -293,7 +298,7 @@ Integer.toString(theState));
 				h.etag(theOutputBuffer, 0, theSize);
 				break;
 			case A_UNGET:
-				r.unread(ch);
+				unread(r, ch);
 				theCurrentColumn--;
 				break;
         		case A_UNSAVE_PCDATA:
