@@ -620,6 +620,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void pi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null || thePITarget == null) return;
 		if (thePITarget.toLowerCase().equals("xml")) return;
+//		if (length > 0 && buff[length - 1] == '?') System.out.println("%% Removing ? from PI");
+		if (length > 0 && buff[length - 1] == '?') length--;	// remove trailing ?
 		theContentHandler.processingInstruction(thePITarget,
 			new String(buff, offset, length));
 		thePITarget = null;
