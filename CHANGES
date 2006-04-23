@@ -10,7 +10,6 @@ Updated AFL license to version 3.0
 Scanner buffer size increases as needed, allowing large attribute values
 Look for various XSLT implementations as available (still fails in raw 5.0)
 Clean up handling of XML empty tags and SGML minimized end-tags
-Add --method and --omit-xml-declaration switches
 Support proper options and help message internally
 Use Hashtable in CommandLine class instead of HashMap
 Do proper buffering of InputStream and Reader

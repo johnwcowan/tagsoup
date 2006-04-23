@@ -55,6 +55,11 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        [1m--reuse[0m
               reuse the same Parser object internally (for testing only)
 
+       [1m--help [22moutput basic help
+
+       [1m--version[0m
+              output version number
+
        [1mTagSoup [22mis a parser and reformatter for nasty, ugly HTML.   Its  normal
        processing  mode  is  to accept HTML files on the command line, or from
        the standard input if none are given, and output them as clean  XML  to

@@ -45,6 +45,7 @@ public class CommandLine {
 							// omit XML decl
 		options.put("--encoding=", Boolean.FALSE); // specify encoding
 		options.put("--help", Boolean.FALSE); 	// display help
+		options.put("--version", Boolean.FALSE);	// display version
 		options.put("--nodefaults", Boolean.FALSE);
 							// no default attrs
 		}
@@ -58,6 +59,10 @@ public class CommandLine {
 		int optind = getopts(options, argv);
 		if (hasOption(options, "--help")) {
 			doHelp();
+			return;
+			}
+		if (hasOption(options, "--version")) {
+			System.err.println("TagSoup version 1.0rc4");
 			return;
 			}
 		if (hasOption(options, "--nocdata")) {
