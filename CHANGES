@@ -1,5 +1,6 @@
 Changes from 1.0rc3 to 1.0rc4
 =============================
+Added Javadocs for all SAX standard and TagSoup-specific features and properties
 Fixed termination conditions for entity/character references
 Fixed EOF-pushback bug that was generating bogus &#x65535; references
 Added Parser feature and --nodefaults switch to ignore default attribute values
@@ -175,4 +176,3 @@ Entity problems fixed (I hope).
 Can now set namespace and namespace-prefixes features (without effect).
 Properly templatize HTMLModels.java.
 Attributes are no longer in the HTML namespace.
-Updated license to Academic Free License 2.0 + GPL 2.0.

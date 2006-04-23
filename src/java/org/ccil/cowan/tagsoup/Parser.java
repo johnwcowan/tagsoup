@@ -39,26 +39,171 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
 
+	/**
+	A value of "true" indicates namespace URIs and unprefixed local
+	names for element and attribute names will be available.
+	**/
 	public final static String namespacesFeature =
 		"http://xml.org/sax/features/namespaces";
+
+	/**
+	A value of "true" indicates that XML qualified names (with prefixes)
+	and attributes (including xmlns* attributes) will be available.
+	**/
 	public final static String namespacePrefixesFeature =
 		"http://xml.org/sax/features/namespace-prefixes";
+
+	/**
+	Reports whether this parser processes external general entities
+	(it doesn't).
+	**/
 	public final static String externalGeneralEntitiesFeature =
 		"http://xml.org/sax/features/external-general-entities";
+
+	/**
+	Reports whether this parser processes external parameter entities
+	(it doesn't).
+	**/
 	public final static String externalParameterEntitiesFeature =
 		"http://xml.org/sax/features/external-parameter-entities";
+
+	/**
+	May be examined only during a parse, after the startDocument()
+	callback has been completed; read-only. The value is true if
+	the document specified standalone="yes" in its XML declaration,
+	and otherwise is false.  (It's always false.)
+	**/
+	public final static String isStandaloneFeature =
+		"http://xml.org/sax/features/is-standalone";
+
+	/**
+	A value of "true" indicates that the LexicalHandler will report
+	the beginning and end of parameter entities (it won't).
+	**/
+	public final static String lexicalHandlerParameterEntitiesFeature =
+		"http://xml.org/sax/features/lexical-handler/parameter-entities";
+
+	/**
+	A value of "true" indicates that system IDs in declarations will
+	be absolutized (relative to their base URIs) before reporting.
+	(This returns true but doesn't actually do anything.)
+	**/
+	public final static String resolveDTDURIsFeature =
+		"http://xml.org/sax/features/resolve-dtd-uris";
+
+	/**
+	Has a value of "true" if all XML names (for elements,
+	prefixes, attributes, entities, notations, and local
+	names), as well as Namespace URIs, will have been interned
+	using java.lang.String.intern. This supports fast testing of
+	equality/inequality against string constants, rather than forcing
+	slower calls to String.equals().  (We always intern.)
+	**/
+	public final static String stringInterningFeature =
+		"http://xml.org/sax/features/string-interning";
+
+	/**
+	Returns "true" if the Attributes objects passed by this
+	parser in ContentHandler.startElement() implement the
+	org.xml.sax.ext.Attributes2 interface.	(They don't.)
+	**/
+
+	public final static String useAttributes2Feature =
+		"http://xml.org/sax/features/use-attributes2";
+
+	/**
+	Returns "true" if the Locator objects passed by this parser
+	in ContentHandler.setDocumentLocator() implement the
+	org.xml.sax.ext.Locator2 interface.  (They don't.)
+	**/
+	public final static String useLocator2Feature =
+		"http://xml.org/sax/features/use-locator2";
+
+	/**
+	Returns "true" if, when setEntityResolver is given an object
+	implementing the org.xml.sax.ext.EntityResolver2 interface,
+	those new methods will be used.  (They won't be.)
+	**/
+	public final static String useEntityResolver2Feature =
+		"http://xml.org/sax/features/use-entity-resolver2";
+
+	/**
+	Controls whether the parser is reporting all validity errors
+	(We don't report any validity errors.)
+	**/
+	public final static String validationFeature =
+		"http://xml.org/sax/features/validation";
+
+	/**
+	Controls whether the parser reports Unicode normalization
+	errors as described in section 2.13 and Appendix B of the XML
+	1.1 Recommendation.  (We don't normalize.)
+	**/
+	public final static String unicodeNormalizationCheckingFeature =
+"http://xml.org/sax/features/unicode-normalization-checking";
+
+	/**
+	Controls whether, when the namespace-prefixes feature is set,
+	the parser treats namespace declaration attributes as being in
+	the http://www.w3.org/2000/xmlns/ namespace.  (It doesn't.)
+	**/
+	public final static String xmlnsURIsFeature =
+		"http://xml.org/sax/features/xmlns-uris";
+
+	/**
+	Returns "true" if the parser supports both XML 1.1 and XML 1.0.
+	(Always false.)
+	**/
+	public final static String XML11Feature =
+		"http://xml.org/sax/features/xml-1.1";
+
+	/**
+	A value of "true" indicates that the parser will ignore
+	unknown elements.
+	**/
 	public final static String ignoreBogonsFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons";
+
+	/**
+	A value of "true" indicates that the parser will give unknown
+	elements a content model of EMPTY; a value of "false", a
+	content model of ANY.
+	**/
 	public final static String bogonsEmptyFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/bogons-empty";
+
+	/**
+	A value of "true" indicates that the parser will return default
+	attribute values for missing attributes that have default values.
+	**/
 	public final static String defaultAttributesFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/default-attributes";
+
+	/**
+	Used to see some syntax events that are essential in some
+	applications: comments, CDATA delimiters, selected general
+	entity inclusions, and the start and end of the DTD (and
+	declaration of document element name). The Object must implement
+	org.xml.sax.ext.LexicalHandler.
+	**/
 	public final static String lexicalHandlerProperty =
 		"http://xml.org/sax/properties/lexical-handler";
+
+	/**
+	Specifies the Scanner object this Parser uses.
+	**/
 	public final static String scannerProperty =
 		"http://www.ccil.org/~cowan/tagsoup/properties/scanner";
+
+	/**
+	Specifies the Schema object this Parser uses.
+	**/
 	public final static String schemaProperty =
 		"http://www.ccil.org/~cowan/tagsoup/properties/schema";
+
+	/**
+	Specifies the AutoDetector (for encoding detection) this Parser uses.
+	**/
 	public final static String autoDetectorProperty =
 		"http://www.ccil.org/~cowan/tagsoup/properties/auto-detector";
 
@@ -66,26 +211,18 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	{
 		theFeatures.put(externalGeneralEntitiesFeature, Boolean.FALSE);
 		theFeatures.put(externalParameterEntitiesFeature, Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/is-standalone",
-			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/lexical-handler/parameter-entities",
+		theFeatures.put(isStandaloneFeature, Boolean.FALSE);
+		theFeatures.put(lexicalHandlerParameterEntitiesFeature,
 			Boolean.FALSE);
 		theFeatures.put(namespacesFeature, Boolean.TRUE);
 		theFeatures.put(namespacePrefixesFeature, Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/resolve-dtd-uris",
-			Boolean.TRUE);
-		theFeatures.put("http://xml.org/sax/features/string-interning",
-			Boolean.TRUE);
-		theFeatures.put("http://xml.org/sax/features/use-attributes2",
-			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/use-locator2",
-			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/use-entity-resolver2",
-			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/validation",
-			Boolean.FALSE);
-		theFeatures.put("http://xml.org/sax/features/xmlns-uris",
-			Boolean.FALSE);
+		theFeatures.put(resolveDTDURIsFeature, Boolean.TRUE);
+		theFeatures.put(stringInterningFeature, Boolean.TRUE);
+		theFeatures.put(useAttributes2Feature, Boolean.FALSE);
+		theFeatures.put(useLocator2Feature, Boolean.FALSE);
+		theFeatures.put(useEntityResolver2Feature, Boolean.FALSE);
+		theFeatures.put(validationFeature, Boolean.FALSE);
+		theFeatures.put(xmlnsURIsFeature, Boolean.FALSE);
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
 		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
 		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
