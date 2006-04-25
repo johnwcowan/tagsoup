@@ -1,3 +1,8 @@
+Changes from 1.0rc4 to 1.0rc5
+=============================
+Added all known features to feature hashtable
+Reimplemented namespacePrefixes feature (broken since 1.0rc3)
+
 Changes from 1.0rc3 to 1.0rc4
 =============================
 Remove trailing ? from processing instructions (in case the input is XHTML)

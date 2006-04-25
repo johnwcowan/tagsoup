@@ -38,6 +38,12 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Schema theSchema;
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
+	// Feature flags
+	private boolean namespaces = true;
+	private boolean namespacePrefixes = true;
+	private boolean ignoreBogons = false;
+	private boolean bogonsEmpty = true;
+	private boolean defaultAttributes = true;
 
 	/**
 	A value of "true" indicates namespace URIs and unprefixed local
@@ -209,13 +215,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	private HashMap theFeatures = new HashMap();
 	{
+		theFeatures.put(namespacesFeature, Boolean.TRUE);
+		theFeatures.put(namespacePrefixesFeature, Boolean.TRUE);
 		theFeatures.put(externalGeneralEntitiesFeature, Boolean.FALSE);
 		theFeatures.put(externalParameterEntitiesFeature, Boolean.FALSE);
 		theFeatures.put(isStandaloneFeature, Boolean.FALSE);
 		theFeatures.put(lexicalHandlerParameterEntitiesFeature,
 			Boolean.FALSE);
-		theFeatures.put(namespacesFeature, Boolean.TRUE);
-		theFeatures.put(namespacePrefixesFeature, Boolean.FALSE);
 		theFeatures.put(resolveDTDURIsFeature, Boolean.TRUE);
 		theFeatures.put(stringInterningFeature, Boolean.TRUE);
 		theFeatures.put(useAttributes2Feature, Boolean.FALSE);
@@ -223,6 +229,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(useEntityResolver2Feature, Boolean.FALSE);
 		theFeatures.put(validationFeature, Boolean.FALSE);
 		theFeatures.put(xmlnsURIsFeature, Boolean.FALSE);
+		theFeatures.put(xmlnsURIsFeature, Boolean.FALSE);
+		theFeatures.put(XML11Feature, Boolean.FALSE);
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
 		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
 		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
@@ -240,10 +248,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void setFeature (String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		if (value)
-			theFeatures.put(name, Boolean.TRUE);
-		else
-			theFeatures.put(name, Boolean.FALSE);
+		if (value) theFeatures.put(name, Boolean.TRUE);
+		else theFeatures.put(name, Boolean.FALSE);
+
+		if (name.equals(namespacesFeature)) namespaces = value;
+		else if (name.equals(namespacePrefixesFeature)) namespacePrefixes = value;
+		else if (name.equals(ignoreBogonsFeature)) ignoreBogons = value;
+		else if (name.equals(bogonsEmptyFeature)) bogonsEmpty = value;
+		else if (name.equals(defaultAttributesFeature)) defaultAttributes = value;
 		}
 
 	public Object getProperty (String name)
@@ -538,12 +550,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private void pop() throws SAXException {
 		if (theStack == null) return;		// empty stack
 		String name = theStack.name();
+		String localName = theStack.localName();
 //		System.err.println("%% Popping " + name);
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
 			theLexicalHandler.endCDATA();
 			}
 		String namespace = theStack.namespace();
-		if (theFeatures.get(namespacesFeature) == Boolean.FALSE) namespace = "";
+		if (!namespaces) namespace = "";
+		if (!namespacePrefixes) name = "";
 		theContentHandler.endElement(namespace, theStack.localName(), name);
 		theStack = theStack.next();
 		}
@@ -562,12 +576,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// Push element onto stack
 	private boolean virginStack = true;
 	private void push(Element e) throws SAXException {
-//		System.err.println("%% Pushing " + e.name());
-		e.clean(theFeatures.get(defaultAttributesFeature) == Boolean.TRUE);
+		String name = e.name();
+		String localName = e.localName();
+//		System.err.println("%% Pushing " + name);
+		e.clean(defaultAttributes);
 		String namespace = e.namespace();
-		if (theFeatures.get(namespacesFeature) == Boolean.FALSE) namespace = "";
-		theContentHandler.startElement(namespace,
-				e.localName(), e.name(), e.atts());
+		if (!namespaces) namespace = "";
+		if (!namespacePrefixes) name = "";
+		theContentHandler.startElement(namespace, localName, name, e.atts());
 		e.setNext(theStack);
 		theStack = e;
 		virginStack = false;
@@ -584,11 +600,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		ElementType type = theSchema.getElementType(name);
 		if (type == null) {
 			// Suppress unknown elements if ignore-bogons is on
-			if (theFeatures.get(ignoreBogonsFeature) == Boolean.TRUE)  {
-				return;
-				}
-			boolean empty = theFeatures.get(bogonsEmptyFeature) == Boolean.TRUE;
-			theSchema.elementType(name, empty ? Schema.M_EMPTY : Schema.M_ANY, Schema.M_ANY, 0);
+			if (ignoreBogons) return;
+			theSchema.elementType(name, bogonsEmpty ? Schema.M_EMPTY : Schema.M_ANY, Schema.M_ANY, 0);
 			type = theSchema.getElementType(name);
 			}
 
