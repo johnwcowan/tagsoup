@@ -49,7 +49,6 @@ public class ElementType {
 	public ElementType(String name, int model, int memberOf, int flags, Schema schema) {
 		theName = name;
 		theModel = model;
-		if (memberOf == Schema.M_ANY) memberOf &= ~Schema.M_ROOT;
 		theMemberOf = memberOf;
 		theFlags = flags;
 		theAtts = new AttributesImpl();

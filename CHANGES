@@ -1,7 +1,6 @@
 Changes from 1.0rc4 to 1.0rc5
 =============================
-Full separation of close-tags and empty-tags internally
-Separation of CDATA checking from basic etag processing
+Empty <script/> and <style/> tags now work
 Added all known features to feature hashtable
 Reimplemented namespacePrefixes feature (broken since 1.0rc3)
 

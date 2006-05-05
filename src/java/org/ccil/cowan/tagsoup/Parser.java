@@ -642,19 +642,21 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void stagc(char[] buff, int offset, int length) throws SAXException {
+//		System.err.println("%% Start-tag");
 		if (theNewElement == null) return;
 		rectify(theNewElement);
 		if (theStack.model() == Schema.M_EMPTY) {
 			// Force an immediate end tag
-			etag_basic(buff, 0, 0);
+			etag_basic(buff, offset, length);
 			}
 		}
 
 	public void stage(char[] buff, int offset, int length) throws SAXException {
+//		System.err.println("%% Empty-tag");
 		if (theNewElement == null) return;
 		rectify(theNewElement);
 		// Force an immediate end tag
-		etag_basic(buff, 0, 0);
+		etag_basic(buff, offset, length);
 		}
 
 	public void cmnt(char[] buff, int offset, int length) throws SAXException {
