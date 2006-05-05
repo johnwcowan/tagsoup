@@ -314,8 +314,7 @@ Integer.toString(theState));
 //				System.err.println("%%% Empty tag seen");
 				if (theSize > 0) h.gi(theOutputBuffer, 0, theSize);
 				theSize = 0;
-				h.stagc(theOutputBuffer, 0, theSize);
-				h.etag(theOutputBuffer, 0, theSize);
+				h.stage(theOutputBuffer, 0, theSize);
 				break;
 			case A_UNGET:
 				unread(r, ch);

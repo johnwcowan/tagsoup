@@ -126,6 +126,10 @@ public class PYXWriter
 		theWriter.println("!");			// FIXME
 		}
 
+	public void stage(char[] buff, int offset, int length) throws SAXException {
+		theWriter.println("!");			// FIXME
+		}
+
 	// SAX ContentHandler implementation
 
 	public void characters(char[] buff, int offset, int length) throws SAXException {

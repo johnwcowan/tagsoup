@@ -475,8 +475,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theContentHandler.endDocument();
 		}
 
-	private static char[] etagchars = {'<', '/', '>'};
 	public void etag(char[] buff, int offset, int length) throws SAXException {
+		if (etag_cdata(buff, offset, length)) return;
+		etag_basic(buff, offset, length);
+		}
+
+	private static char[] etagchars = {'<', '/', '>'};
+	public boolean etag_cdata(char[] buff, int offset, int length) throws SAXException {
 		String currentName = theStack.name();
 		// If this is a CDATA element and the tag doesn't match,
 		// or isn't properly formed (junk after the name),
@@ -496,18 +501,17 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				theContentHandler.characters(buff, offset, length);
 				theContentHandler.characters(etagchars, 2, 1);
 				theScanner.startCDATA();
-				return;
+				return true;
 				}
 			}
+		return false;
+		}
 
+	public void etag_basic(char[] buff, int offset, int length) throws SAXException {
 		theNewElement = null;
 		String name;
-		if (length == 0) {
-			name = currentName;
-			}
-		else {
-			name = makeName(buff, offset, length);
-			}
+		if (length != 0) name = makeName(buff, offset, length);
+		else name = theStack.name();
 //		System.err.println("%% Got end of " + name);
 
 		Element sp;
@@ -605,9 +609,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			type = theSchema.getElementType(name);
 			}
 
-		// The root element mustn't be empty
-		if ((theStack.name()).equals("<root>") && type.parent() == null) return;
-
 		theNewElement = new Element(type);
 //		System.err.println("%% Got GI " + theNewElement.name());
 		}
@@ -645,8 +646,15 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		rectify(theNewElement);
 		if (theStack.model() == Schema.M_EMPTY) {
 			// Force an immediate end tag
-			etag(buff, 0, 0);
+			etag_basic(buff, 0, 0);
 			}
+		}
+
+	public void stage(char[] buff, int offset, int length) throws SAXException {
+		if (theNewElement == null) return;
+		rectify(theNewElement);
+		// Force an immediate end tag
+		etag_basic(buff, 0, 0);
 		}
 
 	public void cmnt(char[] buff, int offset, int length) throws SAXException {

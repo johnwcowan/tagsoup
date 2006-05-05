@@ -88,6 +88,12 @@ public interface ScanHandler {
 	public void stagc(char[] buff, int offset, int length) throws SAXException;
 
 	/**
+	Reports the close of an empty-tag.
+	**/
+
+	public void stage(char[] buff, int offset, int length) throws SAXException;
+
+	/**
 	Reports a comment.
 	**/
 
