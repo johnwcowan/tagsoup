@@ -1,5 +1,6 @@
 Changes from 1.0rc4 to 1.0rc5
 =============================
+The root element can be unknown without problem
 Empty <script/> and <style/> tags now work
 Added all known features to feature hashtable
 Reimplemented namespacePrefixes feature (broken since 1.0rc3)
