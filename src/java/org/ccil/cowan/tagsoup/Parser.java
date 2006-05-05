@@ -44,6 +44,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private boolean ignoreBogons = false;
 	private boolean bogonsEmpty = true;
 	private boolean defaultAttributes = true;
+	private boolean translateColons = false;
 
 	/**
 	A value of "true" indicates namespace URIs and unprefixed local
@@ -186,6 +187,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		"http://www.ccil.org/~cowan/tagsoup/features/default-attributes";
 
 	/**
+	A value of "true" indicates that the parser will 
+	translate colons into underscores in names.
+	**/
+	public final static String translateColonsFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/translate-colons";
+
+	/**
 	Used to see some syntax events that are essential in some
 	applications: comments, CDATA delimiters, selected general
 	entity inclusions, and the start and end of the DTD (and
@@ -256,6 +264,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		else if (name.equals(ignoreBogonsFeature)) ignoreBogons = value;
 		else if (name.equals(bogonsEmptyFeature)) bogonsEmpty = value;
 		else if (name.equals(defaultAttributesFeature)) defaultAttributes = value;
+		else if (name.equals(translateColonsFeature)) translateColons = value;
 		}
 
 	public Object getProperty (String name)
@@ -719,7 +728,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				seenColon = true;
 				if (start) dst.append('_');
 				start = true;
-				dst.append(ch);
+				dst.append(translateColons ? '_' : ch);
 				}
 			}
 		int dstLength = dst.length();

@@ -48,6 +48,8 @@ public class CommandLine {
 		options.put("--version", Boolean.FALSE);	// display version
 		options.put("--nodefaults", Boolean.FALSE);
 							// no default attrs
+		options.put("--nocolons", Boolean.FALSE);
+							// colon to underscore
 		}
 
 	/**
@@ -148,6 +150,9 @@ public class CommandLine {
 
 		if (hasOption(options, "--nodefaults")) {
 			r.setFeature(Parser.defaultAttributesFeature, false);
+			}
+		if (hasOption(options, "--nocolons")) {
+			r.setFeature(Parser.translateColonsFeature, true);
 			}
 
 		if (hasOption(options, "--pyxin")) {
