@@ -1,3 +1,4 @@
-Solve Java 5.0 problem if possible
-Colon suppressor feature
-Case sensitivity feature
+Possible post-1.0 features:
+	Solve Java 5.0 build problem if possible
+	Hook up a hacked version of AElfred as an alternative scanner
+	Allow case sensitivity as a standard feature

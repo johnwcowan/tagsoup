@@ -30,11 +30,13 @@ public class Element {
 	/**
 	Return an Element from a specified ElementType.
 	@param type The element type of the newly constructed element
+	@param defaultAttributes True if default attributes are wanted
 	*/
 
-	public Element(ElementType type) {
+	public Element(ElementType type, boolean defaultAttributes) {
 		theType = type;
-		theAtts = new AttributesImpl(type.atts());
+		if (defaultAttributes) theAtts = new AttributesImpl(type.atts());
+		else theAtts = new AttributesImpl();
 		theNext = null;
 		preclosed = false;
 		}
@@ -168,14 +170,13 @@ public class Element {
 	or null value (the attribute was present in the element type but
 	not in this actual element) are removed.  Type BOOLEAN is
 	changed to type NMTOKEN at this time.  
-	@param defaults True if default attributes are kept
 	*/
 
-	public void clean(boolean defaults) {
+	public void clean() {
 		for (int i = theAtts.getLength() - 1; i >= 0; i--) {
 			String name = theAtts.getLocalName(i);
 			if (theAtts.getValue(i) == null || name == null ||
-					name.length() == 0 || !defaults) {
+					name.length() == 0) {
 				theAtts.removeAttribute(i);
 				continue;
 				}

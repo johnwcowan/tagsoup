@@ -1,10 +1,11 @@
 Changes from 1.0rc4 to 1.0rc5
 =============================
+The --nodefault switch now removes only default attributes, not all of them
 Added --nocolons switch and translate-colons feature to convert ":"
 	in names to "_" (thus suppressing namespaces other than the basic one)
 The root element can be unknown without problem
 Empty <script/> and <style/> tags now work
-Added all known features to feature hashtable
+Added all standard SAX2 features to feature hashtable
 Reimplemented namespacePrefixes feature (broken since 1.0rc3)
 
 Changes from 1.0rc3 to 1.0rc4

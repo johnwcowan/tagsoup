@@ -386,8 +386,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 					}
 				};
 			}
-		theStack = new Element(theSchema.getElementType("<root>"));
-		thePCDATA = new Element(theSchema.getElementType("<pcdata>"));
+		theStack = new Element(theSchema.getElementType("<root>"), defaultAttributes);
+		thePCDATA = new Element(theSchema.getElementType("<pcdata>"), defaultAttributes);
 		theNewElement = null;
 		theAttributeName = null;
 		thePITarget = null;
@@ -592,7 +592,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		String name = e.name();
 		String localName = e.localName();
 //		System.err.println("%% Pushing " + name);
-		e.clean(defaultAttributes);
+		e.clean();
 		String namespace = e.namespace();
 		if (!namespaces) namespace = "";
 		if (!namespacePrefixes) name = "";
@@ -618,7 +618,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			type = theSchema.getElementType(name);
 			}
 
-		theNewElement = new Element(type);
+		theNewElement = new Element(type, defaultAttributes);
 //		System.err.println("%% Got GI " + theNewElement.name());
 		}
 
@@ -683,7 +683,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			if (sp != null) break;
 			ElementType parentType = e.parent();
 			if (parentType == null) break;
-			Element parent = new Element(parentType);
+			Element parent = new Element(parentType, defaultAttributes);
 //			System.err.println("%% Ascending from " + e.name() + " to " + parent.name());
 			parent.setNext(e);
 			e = parent;
