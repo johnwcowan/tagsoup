@@ -26,6 +26,21 @@
    1.4, or else install Xalan or Saxon, and the result will then work
    fine under either 1.4 or 5.0.
 
+  TagSoup 1.0 Release Candidate 5 released
+
+   This is the last release candidate unless someone finds another bug,
+   as all the features I intend to provide in TagSoup 1.0 are now
+   provided. A pair of nasty paper-bag bugs in 1.0rc4 are now fixed: the
+   new --nodefaults switch and its corresponding SAX feature now work
+   properly, and the SAX features namespaces and namespace-prefixes now
+   also work -- this last has been broken since 1.0rc3.
+
+   In addition, the root element can now be unknown, and script and style
+   tags will now work if they are explicitly empty.
+
+   I have also rebuilt TSaxon to use 1.0rc5 -- there was no 1.0rc4
+   version.
+
   TagSoup 1.0 Release Candidate 4 released!!!
 
    Tagsoup 1.0rc4 is the fourth release candidate for TagSoup 1.0. Sorry
@@ -68,12 +83,12 @@
    extra tags being inserted in highly malformed documents.
 
    Note: If you go through and replace all references to HashMap with
-   Hashtable in the source code and recompile under 1.4, TagSoup will
-   work fine in Java 1.1 VMs. Thanks to Thorbjørn Vinne for this
+   Hashtable in the source code and recompile under Java 1.4, TagSoup
+   will work fine in Java 1.1 VMs. Thanks to Thorbjírn Vinne for this
    discovery.
 
-   [4]Download the TagSoup 1.0rc4 jar file here. It's about 47K long.
-   [5]Download the full TagSoup 1.0rc4 source here. If you don't have
+   [4]Download the TagSoup 1.0rc5 jar file here. It's about 48K long.
+   [5]Download the full TagSoup 1.0rc5 source here. If you don't have
    zip, you can use jar to unpack it.
 
   What TagSoup does
@@ -121,7 +136,7 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
   TagSoup as a stand-alone program
 
    It is possible to run TagSoup as a program by saying java -jar
-   tagsoup-1.0rc4 [option ...] [file ...]. Files mentioned on the command
+   tagsoup-1.0rc5 [option ...] [file ...]. Files mentioned on the command
    line will be parsed individually. If no files are specified, the
    standard input is read.
 
@@ -154,6 +169,13 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
    --nobogons
           Bogons (unknown elements) are suppressed. Normally, they are
           treated as empty.
+
+   --nodefaults
+          suppress default attribute values
+
+   --nocolons
+          change explicit colons in element and attribute names to
+          underscores
 
    --any
           Bogons are given a content model of ANY rather than EMPTY.
@@ -207,21 +229,21 @@ References
    1. http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html
    2. http://www.opensource.org/licenses/afl-3.0.php
    3. http://www.opensource.org/licenses/gpl-license.php
-   4. http://mercury.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc4.jar
-   5. http://mercury.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc4-src.zip
+   4. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/tagsoup-1.0rc5.jar
+   5. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/tagsoup-1.0rc5-src.zip
    6. http://tidy.sf.net/
    7. http://www.crumbmuseum.com/truckin.html
    8. http://www.cafeconleche.org/XOM
    9. http://gnosis.cx/publish/programming/xml_matters_17.html
   10. http://jchardet.sourceforge.net/
   11. http://www.ccil.org/~cowan
-  12. http://mercury.ccil.org/~cowan/XML/tagsoup/tsaxon
+  12. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/tsaxon
   13. http://www.extrememarkup.com/extreme/2004
-  14. http://mercury.ccil.org/~cowan/XML/tagsoup/tagsoup.odp
-  15. http://mercury.ccil.org/~cowan/XML/tagsoup/tagsoup.ppt
-  16. http://mercury.ccil.org/~cowan/XML/tagsoup/tagsoup.pdf
-  17. http://mercury.ccil.org/~cowan/XML/tagsoup/extreme.html
-  18. http://mercury.ccil.org/~cowan/XML/tagsoup/extreme.xhtml
+  14. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/tagsoup.odp
+  15. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/tagsoup.ppt
+  16. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/tagsoup.pdf
+  17. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/extreme.html
+  18. file://localhost/mnt/var/home/c/cowan/public_html/XML/tagsoup/extreme.xhtml
   19. http://groups.yahoo.com/group/tagsoup-friends
   20. http://groups.yahoo.com/
   21. http://groups.yahoo.com/group/tagsoup-friends/join
