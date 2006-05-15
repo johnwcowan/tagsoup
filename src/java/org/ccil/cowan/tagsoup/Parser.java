@@ -40,7 +40,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private AutoDetector theAutoDetector;
 	// Feature flags
 	private boolean namespaces = true;
-	private boolean namespacePrefixes = true;
 	private boolean ignoreBogons = false;
 	private boolean bogonsEmpty = true;
 	private boolean defaultAttributes = true;
@@ -56,6 +55,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	/**
 	A value of "true" indicates that XML qualified names (with prefixes)
 	and attributes (including xmlns* attributes) will be available.
+	We don't support this value.
 	**/
 	public final static String namespacePrefixesFeature =
 		"http://xml.org/sax/features/namespace-prefixes";
@@ -224,7 +224,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private HashMap theFeatures = new HashMap();
 	{
 		theFeatures.put(namespacesFeature, Boolean.TRUE);
-		theFeatures.put(namespacePrefixesFeature, Boolean.TRUE);
+		theFeatures.put(namespacePrefixesFeature, Boolean.FALSE);
 		theFeatures.put(externalGeneralEntitiesFeature, Boolean.FALSE);
 		theFeatures.put(externalParameterEntitiesFeature, Boolean.FALSE);
 		theFeatures.put(isStandaloneFeature, Boolean.FALSE);
@@ -256,11 +256,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void setFeature (String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
+		Boolean b = (Boolean)theFeatures.get(name);
+		if (b == null) {
+			throw new SAXNotRecognizedException("Unknown feature " + name);
+			}
 		if (value) theFeatures.put(name, Boolean.TRUE);
 		else theFeatures.put(name, Boolean.FALSE);
 
 		if (name.equals(namespacesFeature)) namespaces = value;
-		else if (name.equals(namespacePrefixesFeature)) namespacePrefixes = value;
 		else if (name.equals(ignoreBogonsFeature)) ignoreBogons = value;
 		else if (name.equals(bogonsEmptyFeature)) bogonsEmpty = value;
 		else if (name.equals(defaultAttributesFeature)) defaultAttributes = value;
@@ -564,14 +567,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (theStack == null) return;		// empty stack
 		String name = theStack.name();
 		String localName = theStack.localName();
+		String namespace = theStack.namespace();
 //		System.err.println("%% Popping " + name);
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
 			theLexicalHandler.endCDATA();
 			}
-		String namespace = theStack.namespace();
-		if (!namespaces) namespace = "";
-		if (!namespacePrefixes) name = "";
-		theContentHandler.endElement(namespace, theStack.localName(), name);
+		if (!namespaces) namespace = localName = "";
+		theContentHandler.endElement(namespace, localName, name);
 		theStack = theStack.next();
 		}
 
@@ -591,11 +593,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private void push(Element e) throws SAXException {
 		String name = e.name();
 		String localName = e.localName();
+		String namespace = e.namespace();
 //		System.err.println("%% Pushing " + name);
 		e.clean();
-		String namespace = e.namespace();
-		if (!namespaces) namespace = "";
-		if (!namespacePrefixes) name = "";
+		if (!namespaces) namespace = localName = "";
 		theContentHandler.startElement(namespace, localName, name, e.atts());
 		e.setNext(theStack);
 		theStack = e;

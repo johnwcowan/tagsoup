@@ -1243,7 +1243,12 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 	    write(prefix);
 	    write(':');
 	}
-	write(localName);
+	if (localName != null && !"".equals(localName)) {
+	    write(localName);
+	} else {
+	    int i = qName.indexOf(':');
+	    write(qName.substring(i + 1, qName.length()));
+	}
     }
 
 

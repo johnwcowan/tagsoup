@@ -50,14 +50,17 @@ public class CommandLine {
 							// no default attrs
 		options.put("--nocolons", Boolean.FALSE);
 							// colon to underscore
+							// use Xerces
 		}
+
+	// The schema we are going to use
+	private static HTMLSchema theSchema = HTMLSchema.sharedSchema();
 
 	/**
 	Main method.  Processes specified files or standard input.
 	**/
 
 	public static void main(String[] argv) throws IOException, SAXException {
-		HTMLSchema s = HTMLSchema.sharedSchema();
 		int optind = getopts(options, argv);
 		if (hasOption(options, "--help")) {
 			doHelp();
@@ -68,9 +71,9 @@ public class CommandLine {
 			return;
 			}
 		if (hasOption(options, "--nocdata")) {
-			ElementType script = s.getElementType("script");
+			ElementType script = theSchema.getElementType("script");
 			script.setFlags(0);
-			ElementType style = s.getElementType("style");
+			ElementType style = theSchema.getElementType("style");
 			style.setFlags(0);
 			}
 		if (argv.length == optind) {
@@ -135,10 +138,10 @@ public class CommandLine {
 			r = new Parser();
 			}
 
-		if (hasOption(options, "--nons")) {
+		if (hasOption(options, "--nons") || hasOption(options, "--html")) {
 			r.setFeature(Parser.namespacesFeature, false);
-			r.setFeature(Parser.namespacePrefixesFeature, false);
 			}
+
 
 		if (hasOption(options, "--nobogons")) {
 			r.setFeature(Parser.ignoreBogonsFeature, true);
@@ -183,36 +186,27 @@ public class CommandLine {
 	// Pick a content handler to generate the desired format.
 
 	private static ContentHandler chooseContentHandler(Writer w) {
-		ContentHandler h;
+		XMLWriter x;
 		if (hasOption(options, "--pyx")) {
-			h = new PYXWriter(w);
+			return new PYXWriter(w);
 			}
-		else if (hasOption(options, "--html")) {
-			XMLWriter x = new XMLWriter(w);
+
+		x = new XMLWriter(w);
+		if (hasOption(options, "--html")) {
 			x.setOutputProperty(XMLWriter.METHOD, "html");
 			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
-			h = x;
 			}
 		else if (hasOption(options, "--method=")) {
-//			System.out.println("%% Found --method=");
-			XMLWriter x = new XMLWriter(w);
 			String method = (String)options.get("--method=");
 			if (method != null) {
-//				System.out.println("%% method=[" + method + "]");
 				x.setOutputProperty(XMLWriter.METHOD, method);
 				}
-			h = x;
 			}
 		else if (hasOption(options, "--omit-xml-declaration")) {
-//			System.out.println("%% Found --omit-xml-declaration");
-			XMLWriter x = new XMLWriter(w);
 			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
-			h = x;
 			}
-		else {
-			h = new XMLWriter(w);
-			}
-		return h;
+		x.setPrefix(theSchema.getURI(), "");
+		return x;
 		}
 
 	// Options processing

@@ -21,8 +21,8 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        [1m--encoding=[4m[22mencoding[0m
               specifies the encoding of input files
 
-       [1m--html [22moutput rectified HTML rather than XML and omit the XML  declara-
-              tion
+       [1m--html [22moutput rectified HTML rather than XML, omitting the XML declara-
+              tion and any namespace declarations
 
        [1m--method=html[0m
               output rectified HTML rather than XML

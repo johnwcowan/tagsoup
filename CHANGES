@@ -1,3 +1,12 @@
+Changes from 1.0rc5 to 1.0rc6
+=============================
+If namespaceFeature is false, uri and localname are passed as empty strings
+The namespacePrefixesFeature is now always false
+Command line switch --nons no longer affects namespacePrefixesFeature
+Command line switch --html now implies --nons
+XMLWriter is now told directly to use the schema's URI as default namespace
+XMLWriter now takes the element name from the qname if localname is empty
+
 Changes from 1.0rc4 to 1.0rc5
 =============================
 The --nodefault switch now removes only default attributes, not all of them
