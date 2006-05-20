@@ -1,6 +1,5 @@
 Bugs:
-	Weird extra newline after CDATA-element close
-	Explicitly empty CDATA element still not working
+	Extra newline if CDATA element (script, style) is root
 Possible post-1.0 features:
 	Solve Java 5.0 build problem if possible
 	Hook up a hacked version of AElfred as an alternative scanner

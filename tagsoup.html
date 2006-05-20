@@ -1,0 +1,237 @@
+<html><head><title>TagSoup home page</title></head><body>
+<h1>TagSoup - Just Keep On Truckin'</h1>
+
+<h3>Introduction</h3>
+<p>This is the home page of TagSoup, a SAX-compliant parser written in Java
+that, instead of parsing well-formed or valid XML, parses HTML as it is
+found in the wild:
+<a href="http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html">
+nasty and brutish</a>, though quite often far from short.
+TagSoup is designed for people who have to process this stuff using some
+semblance of a rational application design.  By providing a SAX interface,
+it allows standard XML tools to be applied to even the worst HTML.</p>
+
+<p>TagSoup is free and Open Source software, licensed under the
+<a href="http://www.opensource.org/licenses/afl-3.0.php">
+Academic Free License</a>, a cleaned-up and patent-safe BSD-style license
+which allows proprietary re-use.  It's also licensed under the 
+<a href="http://www.opensource.org/licenses/gpl-license.php">GNU GPL</a>,
+since unfortunately the GPL and the AFL are incompatible.  You can choose
+to license TagSoup from me under either the GPL or the AFL.  As of 1.0rc4,
+we are using the AFL version 3.0, which is upward compatible with 2.1.</p>
+
+<h3><i>New Warning:</i> Multi-threading Parsers</h3>
+
+<p>When using TagSoup in a multi-threaded environment, you <i>must</i>
+ensure that each separate Parser object has its own HTMLSchema object,
+or there will be NullPointerExceptions and other problems.  The following
+snippet will serve:</p>
+
+<pre>	Parser parser = new Parser();
+	parser.setProperty(Parser.schemaProperty, new HTMLSchema());
+</pre>
+
+<h3><i>Warning:</i> TagSoup will not build in Java 5.0!</h3>
+
+<p>Due to a bug in Java 5.0's default XSLT implementation, TagSoup will
+not build out of the box on Java 5.0.  Instead, build it under Java 1.4,
+or else install Xalan or Saxon, and the result will then work fine under
+either 1.4 or 5.0.</p>
+
+<h3>Note: TagSoup in Java 1.1</h3>
+
+<p>If you go through the TagSoup source and replace all references to
+<code>HashMap</code> with <code>Hashtable</code> and recompile under Java
+1.4, TagSoup will work fine in Java 1.1 VMs.  Thanks to Thorbj&oslash;rn
+Vinne for this discovery.<p>
+
+<h3>TagSoup 1.0 Release Candidate 6 released</h3>
+
+<p>This release fixed a bunch of bugs around namespaces.  The SAX spec was
+a little hard to follow, so I am now doing a subset of what Xerces does,
+in hopes that that will be compatible with what most SAX applications
+expect.  In particular, the <code>namespace-prefixes</code> feature is
+now false by default, as it should be, and <i>cannot</i> be made true.
+It used to be true by default, but did not meet the contract that
+implies, namely that <code>xmlns:</code> attributes would be provided
+to the application.</p>
+
+<p>This also involved fixing a bug in XMLWriter that made it work
+incorrectly when the <code>namespaces</code> feature is false.  In addition,
+most people don't want namespaces in HTML mode, so <code>--html</code>
+now implies <code>--nons</code>.  To get the namespaces back, use
+<code>--no-xml-declaration --method=html</code> instead.
+
+<h3>TagSoup 1.0 Release Candidate 5 released</h3>
+
+<p>This is the last release candidate unless someone finds another bug,
+as all the features I intend to provide in TagSoup 1.0 are now provided.
+A pair of nasty paper-bag bugs in 1.0rc4 are now fixed:  the new
+<code>--nodefaults</code> switch and its corresponding SAX feature now
+work properly, and the SAX features <code>namespaces</code> and
+<code>namespace-prefixes</code> now also work -- this last has been
+broken since 1.0rc3.</p>
+
+<p>In addition, the root element can now be unknown, and <code>script</code>
+and <code>style</code> tags will now work if they are explicitly empty.</p>
+
+<p>I have also rebuilt TSaxon to use 1.0rc5 -- there was no 1.0rc4 version.</p>
+
+<p><a href="tagsoup-1.0rc5.jar">Download</a> the TagSoup 1.0rc5 jar file here.
+It's about 48K long.<br/>
+<a href="tagsoup-1.0rc5-src.zip">Download</a> the full TagSoup 1.0rc5 source
+here.  If you don't have zip, you can use jar to unpack it.  </p>
+
+
+<h3>What TagSoup does</h3>
+<p>TagSoup is designed as a parser, not a whole application; it isn't
+intended to permanently clean up bad HTML, as 
+<a href="http://tidy.sf.net">HTML Tidy</a> does, only to
+parse it on the fly.  Therefore, it does not convert presentation HTML
+to CSS or anything similar.  It does guarantee well-structured results:
+tags will wind up properly nested, default attributes will appear
+appropriately, and so on.</p>
+
+<p>The semantics of TagSoup are as far as practical those of actual HTML
+browsers.  In particular, never, never will it throw any sort of syntax
+error: the TagSoup motto is
+<a href="http://www.crumbmuseum.com/truckin.html">
+"Just Keep On Truckin'"</a>.  But there's much,
+much more.  For example, if the first tag is LI, it will supply the
+application with enclosing HTML, BODY, and UL tags.  Why UL?  Because
+that's what browsers assume in this situation.  For the same reason,
+overlapping tags are correctly restarted whenever possible: text like:</p>
+
+<pre>This is &lt;B>bold, &lt;I>bold italic, &lt;/b>italic, &lt;/i>normal text
+</pre>
+
+<p>gets correctly rewritten as:</p>
+
+<pre>This is &lt;b>bold, &lt;i>bold italic, &lt;/i>&lt;/b>&lt;i>italic, &lt;/i>normal text.
+</pre>
+
+<p>By intention, TagSoup is small and fast.  Eventually, I will spend
+some time making it faster if it turns out to be too slow.  It does not
+depend on the existence of any framework other than SAX, and should be
+able to work with any framework that can accept SAX parsers.
+In particular, <a href="http://www.cafeconleche.org/XOM">XOM</a> 
+is known to work.
+
+<p>You can replace the low-level HTML scanner with one based on Sean McGrath's
+<a href="http://gnosis.cx/publish/programming/xml_matters_17.html">PYX</a>
+format (very close to James Clark's ESIS format).  You can also supply
+an AutoDetector that peeks at the incoming byte stream and guesses a
+character encoding for it.  (Otherwise, the platform default is used. If
+someone supplies a good AutoDetector I may package it with later releases
+-- the <a href="http://jchardet.sourceforge.net/">Mozilla one</a>
+is too big.</p>
+
+
+<h3>The TSaxon XSLT-for-HTML processor</h3>
+<p><a href="http://www.ccil.org/~cowan">I</a>
+am also distributing <a href="tsaxon">TSaxon</a>, a repackaging
+of version 6.5.3
+of Michael Kay's Saxon XSLT 1.0 implementation that includes TagSoup.
+TSaxon is a drop-in replacement for Saxon, and can be used to
+process either HTML or XML documents with XSLT stylesheets.
+
+
+<h3>TagSoup as a stand-alone program</h3>
+<p>It is possible to run TagSoup as a program by saying <code>java
+-jar tagsoup-1.0rc5 [<i>option ...</i>] [<i>file ...</i>]</code>.
+Files mentioned on the command line will be parsed individually.  If no
+files are specified, the standard input is read.</p>
+
+<p>The following options are understood:</p>
+
+<dl>
+<dt><code>--files</code></dt>
+<dd>Output into individual files, with <code>html</code> extensions changed
+to <code>xhtml</code>.  Otherwise, all output is sent to the standard output.</dd>
+
+<dt><code>--html</code></dt>
+<dd>Output is in clean HTML: the XML declaration is suppressed, as are end-tags
+for the known empty elements.</dd>
+
+<dt><code>--omit-xml-declaration</code></dt>
+<dd>The XML declaration is suppressed.</dd>
+
+<dt><code>--method=html</code></dt>
+<dd>End-tags for the known empty HTML elements are suppressed.</dd>
+
+<dt><code>--pyx</code></dt>
+<dd>Output is in PYX format.</dd>
+
+<dt><code>--pyxin</code></dt>
+<dd>Input is in PYXoid format (need not be well-formed).</dd>
+
+<dt><code>--nons</code></dt>
+<dd>Namespaces are suppressed.  Normally, all elements are in the XHTML 1.x
+namespace, and all attributes are in no namespace.</dd>
+
+<dt><code>--nobogons</code></dt>
+<dd>Bogons (unknown elements) are suppressed.  Normally, they are treated as empty.</dd>
+
+<dt><code>--nodefaults</code></dt>
+<dd>suppress default attribute values</dd>
+
+<dt><code>--nocolons</code></dt>
+<dd>change  explicit colons in element and attribute names to underscores</dd>
+
+<dt><code>--any</code></dt>
+<dd>Bogons are given a content model of ANY rather than EMPTY.</dd>
+
+<dt><code>--lexical</code></dt>
+<dd>Pass through HTML comments.  Has no effect when output is in PYX format.</dd>
+
+<dt><code>--reuse</code></dt>
+<dd>Reuse a single instance of TagSoup parser throughout.  Normally, a new one
+is instantiated for each input file.</dd>
+
+<dt><code>--nocdata</code></dt>
+<dd>Change the content models of the <code>script</code> and <code>style</code> elements
+to treat them as ordinary #PCDATA (text-only) elements, as in XHTML, rather than
+with the special CDATA content model.</dd>
+
+<dt><code>--encoding=</code><i>encoding</i></dt>
+<dd>Specify the input encoding.  The default is the Java platform default.</dd>
+
+<dt><code>--help</code></dt>
+<dd>Print help.</dd>
+
+<dt><code>--version</code></dt>
+<dd>Print the version number.</dd>
+
+</dl>
+
+ 
+
+<h3>More information</h3>
+<p>I gave a presentation (a nocturne, so it's not on the schedule) at
+<a href="http://www.extrememarkup.com/extreme/2004">Extreme Markup Languages 2004</a>
+about TagSoup, updated from the one
+presented in 2002 at the New York City XML SIG and at XML 2002.
+This is the main high-level documentation about how TagSoup works.
+Formats:
+<a href="tagsoup.odp">OpenDocument</a>
+<a href="tagsoup.ppt">Powerpoint</a>
+<a href="tagsoup.pdf">PDF</a>.
+
+<p>I also had people add <a href="extreme.html">"evil" HTML</a> to a large
+poster so that I could <a href="extreme.xhtml">clean it up</a>;
+View Source is probably more useful than ordinary browsing.
+The original instructions were:</p>
+
+<p align="center">SOUPE DE BALISES (BE EVIL)!</br>
+Ecritez une balise ouvrante (sans attributs)<br/> ou fermante HTML ici, s.v.p.<p/>
+
+
+<p>There is a <a href="http://groups.yahoo.com/group/tagsoup-friends">
+tagsoup-friends</a> mailing list hosted at <a href="http://groups.yahoo.com">
+Yahoo Groups</a>.  You can
+<a href="http://groups.yahoo.com/group/tagsoup-friends/join">join</a>
+via the Web, or by sending a blank email to
+<a href="mailto:tagsoup-friends-subscribe@yahoogroups.com"><i>
+tagsoup-friends-subscribe@yahoogroups.com</i></a>.
+The <a href="http://groups.yahoo.com/group/tagsoup-friends/messages">
+archives</a> are open to all.</p>
