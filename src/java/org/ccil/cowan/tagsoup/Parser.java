@@ -380,7 +380,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	// Sets up instance variables that haven't been set by setFeature
 	private void setup() {
-		if (theSchema == null) theSchema = HTMLSchema.sharedSchema();
+		if (theSchema == null) theSchema = new HTMLSchema();
 		if (theScanner == null) theScanner = new HTMLScanner();
 		if (theAutoDetector == null) {
 			theAutoDetector = new AutoDetector() {

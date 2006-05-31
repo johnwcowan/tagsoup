@@ -54,7 +54,6 @@ public class CommandLine {
 		}
 
 	// The schema we are going to use
-	private static HTMLSchema theSchema = HTMLSchema.sharedSchema();
 
 	/**
 	Main method.  Processes specified files or standard input.
@@ -69,12 +68,6 @@ public class CommandLine {
 		if (hasOption(options, "--version")) {
 			System.err.println("TagSoup version 1.0rc4");
 			return;
-			}
-		if (hasOption(options, "--nocdata")) {
-			ElementType script = theSchema.getElementType("script");
-			script.setFlags(0);
-			ElementType style = theSchema.getElementType("style");
-			style.setFlags(0);
 			}
 		if (argv.length == optind) {
 			process("", System.out);
@@ -123,7 +116,8 @@ public class CommandLine {
 		System.err.println("]*");
 	}
 
-	private static Parser myParser = null;
+	private static Parser theParser = null;
+	private static HTMLSchema theSchema = null;
 
 	// Process one source onto an output stream.
 
@@ -131,13 +125,21 @@ public class CommandLine {
 			throws IOException, SAXException {
 		XMLReader r;
 		if (hasOption(options, "--reuse")) {
-			if (myParser == null) myParser = new Parser();
-			r = myParser;
+			if (theParser == null) theParser = new Parser();
+			r = theParser;
 			}
 		else {
 			r = new Parser();
 			}
+		theSchema = new HTMLSchema();
+		r.setProperty(Parser.schemaProperty, theSchema);
 
+		if (hasOption(options, "--nocdata")) {
+			ElementType script = theSchema.getElementType("script");
+			script.setFlags(0);
+			ElementType style = theSchema.getElementType("style");
+			style.setFlags(0);
+			}
 		if (hasOption(options, "--nons") || hasOption(options, "--html")) {
 			r.setFeature(Parser.namespacesFeature, false);
 			}

@@ -22,9 +22,6 @@ value are not included.
 package org.ccil.cowan.tagsoup;
 public class HTMLSchema extends Schema implements HTMLModels {
 
-	private static HTMLSchema theSharedSchema = new HTMLSchema();
-
-
 	/**
 	Returns a newly constructed HTMLSchema object independent of
 	any existing ones.
@@ -34,18 +31,6 @@ public class HTMLSchema extends Schema implements HTMLModels {
 		// Start of Schema calls
 		@@SCHEMA_CALLS@@
 		// End of Schema calls
-		}
-
-	/**
-	Returns the shared HTMLSchema object.  This object is initialized
-	when the HTMLSchema class is loaded.  The parser uses this schema
-	by default.  Any declarations that are automatically or manually
-	added to it will be shared with every (default) parser.  To avoid
-	this, use the HTMLSchema constructor instead.
-	*/
-
-	public static HTMLSchema sharedSchema() {
-		return theSharedSchema;
 		}
 
 
