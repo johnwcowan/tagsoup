@@ -40,6 +40,11 @@ public interface ScanHandler {
 	public void aval(char[] buff, int offset, int length) throws SAXException;
 
 	/**
+         * Reports a <!....> declaration - typically a DOCTYPE
+         */
+	public void decl(char[] buff, int offset, int length) throws SAXException;
+
+	/**
 	Reports an entity reference or character reference.
 	**/
 

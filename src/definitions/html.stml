@@ -28,6 +28,7 @@
 	<action id='A_AVAL_STAGC'/>
 	<action id='A_CDATA'/>
 	<action id='A_CMNT'/>
+	<action id='A_DECL'/>
 	<action id='A_ENTITY'/>
 	<action id='A_ETAG'/>
 	<action id='A_EMPTYTAG'/>
@@ -112,15 +113,15 @@
 		<tr symbol='EOF' action='A_SKIP' newstate='S_DONE'/>
 	</state>
 	<state id='S_DECL'>
-		<tr symbol='default' action='A_SKIP' newstate='S_DECL2'/>
+		<tr symbol='default' action='A_SAVE' newstate='S_DECL2'/>
 		<tr char='-' action='A_SKIP' newstate='S_COM'/>
 		<tr char='[' action='A_SKIP' newstate='S_BB'/>
 		<tr char='>' action='A_SKIP' newstate='S_PCDATA'/>
 		<tr symbol='EOF' action='A_SKIP' newstate='S_DONE'/>
 	</state>
 	<state id='S_DECL2'>
-		<tr symbol='default' action='A_SKIP' newstate='S_DECL2'/>
-		<tr char='>' action='A_SKIP' newstate='S_PCDATA'/>
+		<tr symbol='default' action='A_SAVE' newstate='S_DECL2'/>
+		<tr char='>' action='A_DECL' newstate='S_PCDATA'/>
 		<tr symbol='EOF' action='A_SKIP' newstate='S_DONE'/>
 	</state>
 	<state id='S_ENT'>

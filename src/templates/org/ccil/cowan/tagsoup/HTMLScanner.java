@@ -131,7 +131,7 @@ public class HTMLScanner implements Scanner, Locator {
 					break;
 					}
 				}
-//			System.err.println("In " + theState + " got " + ch + " doing " + action + " then " + theNextState);
+//			System.err.println("In " + debug_statenames[theState] + " got " + nicechar(ch) + " doing " + debug_actionnames[action] + " then " + debug_statenames[theNextState]);
 			switch (action) {
 			case 0:
 				throw new Error(
@@ -240,6 +240,10 @@ Integer.toString(theState));
 				break;
         		case A_ETAG:
 				h.etag(theOutputBuffer, 0, theSize);
+				theSize = 0;
+				break;
+        		case A_DECL:
+				h.decl(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
         		case A_GI:
@@ -361,9 +365,7 @@ Integer.toString(theState));
 			else {
 				// Grow the buffer size
 				char[] newOutputBuffer = new char[theOutputBuffer.length * 2];
-				for (int i = 0; i <= theSize; i++) {
-					newOutputBuffer[i] = theOutputBuffer[i];
-					}
+                                System.arraycopy(theOutputBuffer, 0, newOutputBuffer, 0, theSize+1);
 				theOutputBuffer = newOutputBuffer;
 				}
 			}
@@ -383,5 +385,18 @@ Integer.toString(theState));
 		s.scan(r, pw);
 		w.close();
 		}
+
+
+        private static final String nicechar(int in) {
+            if (in=='\n') {
+                return "\n";
+            } else if (in=='\r') {
+                return "\r";
+            } else if (in < 32) {
+                return "0x"+Integer.toHexString(in);
+            } else {
+                return "'"+((char)in)+"'";
+            }
+        }
 
 	}

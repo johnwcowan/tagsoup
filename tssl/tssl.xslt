@@ -137,7 +137,7 @@
 
   <!-- Applied from tssl:element to handle memberOfAny.  -->
   <xsl:template match="tssl:memberOfAny">
-    <xsl:text>M_ANY</xsl:text>
+    <xsl:text>M_ANY &amp; ~M_ROOT</xsl:text>
   </xsl:template>
 
   <!-- Applied from tssl:element to handle isRoot.  -->

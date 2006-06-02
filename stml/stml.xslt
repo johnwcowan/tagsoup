@@ -27,20 +27,32 @@
     <xsl:apply-templates select="stml:state">
       <xsl:sort select="@id"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="stml:action">
       <xsl:sort select="@id"/>
     </xsl:apply-templates>
+
     <xsl:text>&#x9;private static int[] statetable = {&#xA;</xsl:text>
     <xsl:apply-templates select="stml:state/stml:tr">
       <xsl:sort select="../@id"/>
       <xsl:sort select="@symbol"/>
       <xsl:sort select="@char"/>
     </xsl:apply-templates>
-    <xsl:text>&#x9;&#x9;};&#xA;// Actions: </xsl:text>
-    <xsl:apply-templates select="stml:action" mode="comment">
+    <xsl:text>&#xA;&#x9;};&#xA;</xsl:text>
+
+    <xsl:text>&#x9;private static final String[] debug_actionnames = { ""</xsl:text>
+    <xsl:apply-templates select="stml:action" mode="debug">
       <xsl:sort select="@id"/>
     </xsl:apply-templates>
-    <xsl:text>&#xA;&#xA;</xsl:text>
+    <xsl:text>};&#xA;</xsl:text>
+
+    <xsl:text>&#x9;private static final String[] debug_statenames = { ""</xsl:text>
+    <xsl:apply-templates select="stml:state" mode="debug">
+      <xsl:sort select="@id"/>
+    </xsl:apply-templates>
+    <xsl:text>};&#xA;</xsl:text>
+
+    <xsl:text>&#xA;</xsl:text>
   </xsl:template>
 
   <!-- Generate a single state declaration.  -->
@@ -129,11 +141,17 @@
   <!-- Generate a single action name in the "Actions:" comment.
         The mode is used to keep XSLT from confusing this with the
         regular actions template that does the action declarations.  -->
-  <xsl:template match="stml:action" mode="comment">
+  <xsl:template match="stml:action" mode="debug">
+    <xsl:text>, "</xsl:text>
     <xsl:value-of select="@id"/>
-    <xsl:if test="position() != last()">
-      <xsl:text>, </xsl:text>
-    </xsl:if>
+    <xsl:text>"</xsl:text>
+  </xsl:template>
+
+  <!-- Generate a single stat debug name.  -->
+  <xsl:template match="stml:state" mode="debug">
+    <xsl:text>, "</xsl:text>
+    <xsl:value-of select="@id"/>
+    <xsl:text>"</xsl:text>
   </xsl:template>
 
 </xsl:transform>

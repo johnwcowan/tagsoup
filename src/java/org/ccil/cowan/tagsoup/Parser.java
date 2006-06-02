@@ -15,6 +15,7 @@
 
 package org.ccil.cowan.tagsoup;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -397,6 +398,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theSaved = null;
 		theEntity = 0;
 		virginStack = true;
+                doctypename = doctypepublicid = doctypesystemid = null;
 		}
 
 	// Return a Reader based on the contents of an InputSource
@@ -439,6 +441,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	private Element theNewElement = null;
 	private String theAttributeName = null;
+        private String doctypepublicid, doctypesystemid, doctypename;
 	private String thePITarget = null;
 	private Element theStack = null;
 	private Element theSaved = null;
@@ -597,6 +600,11 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 //		System.err.println("%% Pushing " + name);
 		e.clean();
 		if (!namespaces) namespace = localName = "";
+                if (virginStack && localName.equalsIgnoreCase(doctypename)) {
+                    try {
+                        theEntityResolver.resolveEntity(doctypepublicid, doctypesystemid);
+                    } catch (IOException ew) { }   // Can't be thrown for root I believe.
+                }
 		theContentHandler.startElement(namespace, localName, name, e.atts());
 		e.setNext(theStack);
 		theStack = e;
@@ -606,6 +614,107 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			theLexicalHandler.startCDATA();
 			}
 		}
+
+        /**
+         * Parsing the complete XML Document Type Definition is way too complex,
+         * but for many simple cases we can extract something useful from it.
+         *
+         * doctypedecl  ::= '<!DOCTYPE' S Name (S ExternalID)? S? ('[' intSubset ']' S?)? '>'
+         *  DeclSep     ::= PEReference | S
+         *  intSubset   ::= (markupdecl | DeclSep)*
+         *  markupdecl  ::= elementdecl | AttlistDecl | EntityDecl | NotationDecl | PI | Comment
+         *  ExternalID  ::= 'SYSTEM' S SystemLiteral | 'PUBLIC' S PubidLiteral S SystemLiteral
+         */
+	public void decl(char[] buff, int offset, int length) throws SAXException {
+		String s = new String(buff, offset, length);
+		String[] v = split(s);
+		if (v.length > 0 && "DOCTYPE".equals(v[0])) {
+			if (v.length > 1) {
+				name = v[1];
+				if (v.length>3 && "SYSTEM".equals(v[2])) {
+				systemid = v[3];
+				}
+			else if (v.length > 3 && "PUBLIC".equals(v[2])) {
+				publicid = v[3];
+				if (v.length > 4) {
+					systemid = v[4];
+					}
+                    }
+                }
+            }
+		publicid = trimquotes(publicid);
+		systemid = trimquotes(systemid);
+		if (name != null) {
+			theLexicalHandler.startDTD(name, publicid, systemid);
+			theLexicalHandler.endDTD();
+			doctypename = name;
+			doctypepublicid = publicid;
+		if (theScanner instanceof Locator) {    // Must resolve systemid
+                    doctypesystemid  = ((Locator)theScanner).getSystemId();
+                    try {
+                        doctypesystemid = new URL(new URL(doctypesystemid), systemid).toString();
+                    } catch (Exception e) {}
+                }
+            }
+        }
+
+        /**
+         * If the String is quoted, trim the quotes.
+         */
+	private static String trimquotes(String in) {
+		char s = in.charAt(0);
+		char e = in.charAt(in.length() - 1);
+		if (s == e && (s == '\'' || s == '"')) {
+			in = in.substring(1, in.length() - 1);
+			}
+		return in;
+		}
+
+        /**
+         * Split the supplied String into words or phrases seperated by spaces.
+         * Recognises quotes around a phrase and doesn't split it.
+         */
+	private static String[] split(String val) throws IllegalArgumentException {
+		val = val.trim();
+		if (val.length() == 0) {
+			return new String[0];
+			}
+		else {
+			ArrayList l = new ArrayList();
+			int s = 0;
+			int e = 0;
+			boolean sq = false;	// single quote
+			boolean dq = false;	// double quote
+			char lastc = 0;
+			int len = val.length();
+			for (e=0; e < len; e++) {
+				char c = val.charAt(e);
+				if (!dq && c == '\'' && lastc != '\\') {
+				sq = !sq;
+				if (s < 0) s = e;
+				}
+			else if (!sq && c == '\"' && lastc != '\\') {
+				dq = !dq;
+				if (s < 0) s = e;
+				}
+			else if (!sq && !dq) {
+				if (Character.isWhitespace(c)) {
+					if (s >= 0) l.add(val.substring(s, e));
+					s = -1;
+					}
+				else if (s < 0 && c != ' ') {
+					s = e;
+					}
+				}
+			lastc = c;
+			}
+		l.add(val.substring(s, e));
+//                if (sq) throw new IllegalArgumentException("Missing closing quote (') on attribute");
+//                if (dq) throw new IllegalArgumentException("Missing closing quote (\") on attribute");
+		return (String[])l.toArray(new String[0]);
+		}
+        }
+
 
 	public void gi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;

@@ -1,3 +1,13 @@
+Changes from 1.0rc6 to 1.0rc7
+=============================
+LexicalHandler now gets DOCTYPE information (publicid and systemid)
+	Patch due to Mike Bremford
+HTMLScanner now reports more useful debug output when not commented out
+	Patch due to Mike Bremford
+Change "<memberOfAny>" to exclude "<root>" pseudo-element
+	This prevents "script" from being output as a root
+The shared HTMLParser object has been eliminated
+
 Changes from 1.0rc5 to 1.0rc6
 =============================
 If namespaceFeature is false, uri and localname are passed as empty strings

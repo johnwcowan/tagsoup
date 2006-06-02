@@ -71,6 +71,9 @@ public class PYXWriter
 		theWriter.println();
 		}
 
+	public void decl(char[] buff, int offset, int length) throws SAXException {
+        }
+
 	public void gi(char[] buff, int offset, int length) throws SAXException {
 		theWriter.print('(');
 		theWriter.write(buff, offset, length);
