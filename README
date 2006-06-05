@@ -9,7 +9,9 @@
    from short. TagSoup is designed for people who have to process this
    stuff using some semblance of a rational application design. By
    providing a SAX interface, it allows standard XML tools to be applied
-   to even the worst HTML.
+   to even the worst HTML. TagSoup also includes a command-line processor
+   that reads HTML files and can generate either clean HTML or
+   well-formed XML that is a close approximation to XHTML.
 
    TagSoup is free and Open Source software, licensed under the
    [2]Academic Free License, a cleaned-up and patent-safe BSD-style
@@ -19,15 +21,6 @@
    AFL. As of 1.0rc4, we are using the AFL version 3.0, which is upward
    compatible with 2.1.
 
-  New Warning: Multi-threading Parsers
-
-   When using TagSoup in a multi-threaded environment, you must ensure
-   that each separate Parser object has its own HTMLSchema object, or
-   there will be NullPointerExceptions and other problems. The following
-   snippet will serve:
-        Parser parser = new Parser();
-        parser.setProperty(Parser.schemaProperty, new HTMLSchema());
-
   Warning: TagSoup will not build in Java 5.0!
 
    Due to a bug in Java 5.0's default XSLT implementation, TagSoup will
@@ -35,46 +28,29 @@
    1.4, or else install Xalan or Saxon, and the result will then work
    fine under either 1.4 or 5.0.
 
-  Note: TagSoup in Java 1.1
+  TagSoup 1.0 Release Candidate 8 released
 
-   If you go through the TagSoup source and replace all references to
-   HashMap with Hashtable and recompile under Java 1.4, TagSoup will work
-   fine in Java 1.1 VMs. Thanks to Thorbjørn Vinne for this discovery.
+   This fixes a minor configuration glitch that prevented the distributed
+   source code of rc7 from building properly. I also updated the README
+   file. There are no functional changes.
 
-  TagSoup 1.0 Release Candidate 6 released
+  TagSoup 1.0 Release Candidate 7 released
 
-   This release fixed a bunch of bugs around namespaces. The SAX spec was
-   a little hard to follow, so I am now doing a subset of what Xerces
-   does, in hopes that that will be compatible with what most SAX
-   applications expect. In particular, the namespace-prefixes feature is
-   now false by default, as it should be, and cannot be made true. It
-   used to be true by default, but did not meet the contract that
-   implies, namely that xmlns: attributes would be provided to the
-   application.
+   Mike Bremford sent me a patch that causes TagSoup to send the system
+   and public IDs to the LexicalHandler if there is a DOCTYPE declaration
+   present in the input. Formerly, DOCTYPE declarations were simply
+   ignored. This patch is too good to reject even at this stage, and with
+   a few emendations it passed all my acceptance tests, so I've
+   incorporated it.
 
-   This also involved fixing a bug in XMLWriter that made it work
-   incorrectly when the namespaces feature is false. In addition, most
-   people don't want namespaces in HTML mode, so --html now implies
-   --nons. To get the namespaces back, use --no-xml-declaration
-   --method=html instead.
+   In addition, the last known remaining bug was removed. In the last few
+   releases, the script element was allowed to be a root element (a
+   by-product of allowing it anywhere). Now it will be wrapped in an html
+   element instead. This eliminates some random newlines that were being
+   added at the end of such a root-level script element as well.
 
-  TagSoup 1.0 Release Candidate 5 released
-
-   This is the last release candidate unless someone finds another bug,
-   as all the features I intend to provide in TagSoup 1.0 are now
-   provided. A pair of nasty paper-bag bugs in 1.0rc4 are now fixed: the
-   new --nodefaults switch and its corresponding SAX feature now work
-   properly, and the SAX features namespaces and namespace-prefixes now
-   also work -- this last has been broken since 1.0rc3.
-
-   In addition, the root element can now be unknown, and script and style
-   tags will now work if they are explicitly empty.
-
-   I have also rebuilt TSaxon to use 1.0rc5 -- there was no 1.0rc4
-   version.
-
-   [4]Download the TagSoup 1.0rc5 jar file here. It's about 48K long.
-   [5]Download the full TagSoup 1.0rc5 source here. If you don't have
+   [4]Download the TagSoup 1.0rc8 jar file here. It's about 49K long.
+   [5]Download the full TagSoup 1.0rc8 source here. If you don't have
    zip, you can use jar to unpack it.
 
   What TagSoup does
@@ -112,6 +88,12 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
    default is used. If someone supplies a good AutoDetector I may package
    it with later releases -- the [10]Mozilla one is too big.
 
+  Note: TagSoup in Java 1.1
+
+   If you go through the TagSoup source and replace all references to
+   HashMap with Hashtable and recompile under Java 1.4, TagSoup will work
+   fine in Java 1.1 VMs. Thanks to Thorbjørn Vinne for this discovery.
+
   The TSaxon XSLT-for-HTML processor
 
    [11]I am also distributing [12]TSaxon, a repackaging of version 6.5.3
@@ -122,7 +104,7 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
   TagSoup as a stand-alone program
 
    It is possible to run TagSoup as a program by saying java -jar
-   tagsoup-1.0rc5 [option ...] [file ...]. Files mentioned on the command
+   tagsoup-1.0rc8 [option ...] [file ...]. Files mentioned on the command
    line will be parsed individually. If no files are specified, the
    standard input is read.
 
@@ -215,21 +197,21 @@ References
    1. http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html
    2. http://www.opensource.org/licenses/afl-3.0.php
    3. http://www.opensource.org/licenses/gpl-license.php
-   4. file://localhost/home/JCowan/tagsoup/trunk/tagsoup-1.0rc5.jar
-   5. file://localhost/home/JCowan/tagsoup/trunk/tagsoup-1.0rc5-src.zip
+   4. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc8.jar
+   5. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc8-src.zip
    6. http://tidy.sf.net/
    7. http://www.crumbmuseum.com/truckin.html
    8. http://www.cafeconleche.org/XOM
    9. http://gnosis.cx/publish/programming/xml_matters_17.html
   10. http://jchardet.sourceforge.net/
   11. http://www.ccil.org/~cowan
-  12. file://localhost/home/JCowan/tagsoup/trunk/tsaxon
+  12. http://home.ccil.org/~cowan/XML/tagsoup/tsaxon
   13. http://www.extrememarkup.com/extreme/2004
-  14. file://localhost/home/JCowan/tagsoup/trunk/tagsoup.odp
-  15. file://localhost/home/JCowan/tagsoup/trunk/tagsoup.ppt
-  16. file://localhost/home/JCowan/tagsoup/trunk/tagsoup.pdf
-  17. file://localhost/home/JCowan/tagsoup/trunk/extreme.html
-  18. file://localhost/home/JCowan/tagsoup/trunk/extreme.xhtml
+  14. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup.odp
+  15. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup.ppt
+  16. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup.pdf
+  17. http://home.ccil.org/~cowan/XML/tagsoup/extreme.html
+  18. http://home.ccil.org/~cowan/XML/tagsoup/extreme.xhtml
   19. http://groups.yahoo.com/group/tagsoup-friends
   20. http://groups.yahoo.com/
   21. http://groups.yahoo.com/group/tagsoup-friends/join

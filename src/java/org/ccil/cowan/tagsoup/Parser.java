@@ -627,9 +627,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
          */
 	public void decl(char[] buff, int offset, int length) throws SAXException {
 		String s = new String(buff, offset, length);
-		String name = "";
-		String systemid = "";
-		String publicid = "";
+		String name = null;
+		String systemid = null;
+		String publicid = null;
 		String[] v = split(s);
 		if (v.length > 0 && "DOCTYPE".equals(v[0])) {
 			if (v.length > 1) {
@@ -665,8 +665,11 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
          * If the String is quoted, trim the quotes.
          */
 	private static String trimquotes(String in) {
+		if (in == null) return in;
+		int length = in.length();
+		if (length == 0) return in;
 		char s = in.charAt(0);
-		char e = in.charAt(in.length() - 1);
+		char e = in.charAt(length - 1);
 		if (s == e && (s == '\'' || s == '"')) {
 			in = in.substring(1, in.length() - 1);
 			}

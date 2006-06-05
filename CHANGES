@@ -1,3 +1,7 @@
+Changes from 1.0rc7 to 1.0rc8
+=============================
+Fixed paper-bag bug (source didn't match binary in release)
+
 Changes from 1.0rc6 to 1.0rc7
 =============================
 LexicalHandler now gets DOCTYPE information (publicid and systemid)
