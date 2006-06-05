@@ -627,6 +627,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
          */
 	public void decl(char[] buff, int offset, int length) throws SAXException {
 		String s = new String(buff, offset, length);
+		String name = "";
+		String systemid = "";
+		String publicid = "";
 		String[] v = split(s);
 		if (v.length > 0 && "DOCTYPE".equals(v[0])) {
 			if (v.length > 1) {
