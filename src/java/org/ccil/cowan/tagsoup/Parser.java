@@ -642,6 +642,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				if (v.length > 4) {
 					systemid = v[4];
 					}
+				else {
+					systemid = "";
+					}
                     }
                 }
             }

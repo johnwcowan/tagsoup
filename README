@@ -14,12 +14,11 @@
    well-formed XML that is a close approximation to XHTML.
 
    TagSoup is free and Open Source software, licensed under the
-   [2]Academic Free License, a cleaned-up and patent-safe BSD-style
-   license which allows proprietary re-use. It's also licensed under the
-   [3]GNU GPL, since unfortunately the GPL and the AFL are incompatible.
-   You can choose to license TagSoup from me under either the GPL or the
-   AFL. As of 1.0rc4, we are using the AFL version 3.0, which is upward
-   compatible with 2.1.
+   [2]Academic Free License version 3.0, a cleaned-up and patent-safe
+   BSD-style license which allows proprietary re-use. It's also licensed
+   under the [3]GNU GPL version 2.0, since unfortunately the GPL and the
+   AFL are incompatible. You can choose to license TagSoup from me under
+   either the GPL or the AFL.
 
   Warning: TagSoup will not build in Java 5.0!
 
@@ -27,6 +26,13 @@
    not build out of the box on Java 5.0. Instead, build it under Java
    1.4, or else install Xalan or Saxon, and the result will then work
    fine under either 1.4 or 5.0.
+
+  TagSoup 1.0 Release Candidate 9 released
+
+   This is just a small change; if there is a public identifier but no
+   system identifier, the system identifier is set to "". This is closer
+   to what XML applications expect, because in XML there cannot be a
+   public identifier without a system identifier.
 
   TagSoup 1.0 Release Candidate 8 released
 
@@ -49,8 +55,8 @@
    element instead. This eliminates some random newlines that were being
    added at the end of such a root-level script element as well.
 
-   [4]Download the TagSoup 1.0rc8 jar file here. It's about 49K long.
-   [5]Download the full TagSoup 1.0rc8 source here. If you don't have
+   [4]Download the TagSoup 1.0rc9 jar file here. It's about 49K long.
+   [5]Download the full TagSoup 1.0rc9 source here. If you don't have
    zip, you can use jar to unpack it.
 
   What TagSoup does
@@ -104,7 +110,7 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
   TagSoup as a stand-alone program
 
    It is possible to run TagSoup as a program by saying java -jar
-   tagsoup-1.0rc8 [option ...] [file ...]. Files mentioned on the command
+   tagsoup-1.0rc9 [option ...] [file ...]. Files mentioned on the command
    line will be parsed individually. If no files are specified, the
    standard input is read.
 
@@ -197,8 +203,8 @@ References
    1. http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html
    2. http://www.opensource.org/licenses/afl-3.0.php
    3. http://www.opensource.org/licenses/gpl-license.php
-   4. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc8.jar
-   5. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc8-src.zip
+   4. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc9.jar
+   5. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc9-src.zip
    6. http://tidy.sf.net/
    7. http://www.crumbmuseum.com/truckin.html
    8. http://www.cafeconleche.org/XOM
