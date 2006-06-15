@@ -49,11 +49,10 @@ public class CommandLine {
 		options.put("--nodefaults", Boolean.FALSE);
 							// no default attrs
 		options.put("--nocolons", Boolean.FALSE);
+		options.put("--norestart", Boolean.FALSE);
+							// no restartable elements
 							// colon to underscore
-							// use Xerces
 		}
-
-	// The schema we are going to use
 
 	/**
 	Main method.  Processes specified files or standard input.
@@ -140,10 +139,10 @@ public class CommandLine {
 			ElementType style = theSchema.getElementType("style");
 			style.setFlags(0);
 			}
+
 		if (hasOption(options, "--nons") || hasOption(options, "--html")) {
 			r.setFeature(Parser.namespacesFeature, false);
 			}
-
 
 		if (hasOption(options, "--nobogons")) {
 			r.setFeature(Parser.ignoreBogonsFeature, true);
@@ -158,6 +157,10 @@ public class CommandLine {
 			}
 		if (hasOption(options, "--nocolons")) {
 			r.setFeature(Parser.translateColonsFeature, true);
+			}
+
+		if (hasOption(options, "--norestart")) {
+			r.setFeature(Parser.restartElementsFeature, false);
 			}
 
 		if (hasOption(options, "--pyxin")) {

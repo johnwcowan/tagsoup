@@ -45,6 +45,9 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
               change  explicit colons in element and attribute names to under-
               scores
 
+       [1m--norestart[0m
+              don't restart any restartable elements
+
        [1m--any  [22mtreat unknown non-HTML elements as allowing any content
 
        [1m--nocdata[0m

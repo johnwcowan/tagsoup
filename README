@@ -27,37 +27,19 @@
    1.4, or else install Xalan or Saxon, and the result will then work
    fine under either 1.4 or 5.0.
 
-  TagSoup 1.0 Release Candidate 9 released
+  TagSoup 1.0 Final released
 
-   This is just a small change; if there is a public identifier but no
-   system identifier, the system identifier is set to "". This is closer
-   to what XML applications expect, because in XML there cannot be a
-   public identifier without a system identifier.
+   Another small change: There is a switch --norestart to prevent
+   restartable elements from being restarted.
 
-  TagSoup 1.0 Release Candidate 8 released
+   This is the end of my current plans for TagSoup. I will continue to
+   fix bugs, but it now does everything that I foresaw back in 2002 when
+   I started this project, and a great deal more. Thanks to everyone on
+   the tagsoup-friends mailing list for their efforts.
 
-   This fixes a minor configuration glitch that prevented the distributed
-   source code of rc7 from building properly. I also updated the README
-   file. There are no functional changes.
-
-  TagSoup 1.0 Release Candidate 7 released
-
-   Mike Bremford sent me a patch that causes TagSoup to send the system
-   and public IDs to the LexicalHandler if there is a DOCTYPE declaration
-   present in the input. Formerly, DOCTYPE declarations were simply
-   ignored. This patch is too good to reject even at this stage, and with
-   a few emendations it passed all my acceptance tests, so I've
-   incorporated it.
-
-   In addition, the last known remaining bug was removed. In the last few
-   releases, the script element was allowed to be a root element (a
-   by-product of allowing it anywhere). Now it will be wrapped in an html
-   element instead. This eliminates some random newlines that were being
-   added at the end of such a root-level script element as well.
-
-   [4]Download the TagSoup 1.0rc9 jar file here. It's about 49K long.
-   [5]Download the full TagSoup 1.0rc9 source here. If you don't have
-   zip, you can use jar to unpack it.
+   [4]Download the TagSoup 1.0 jar file here. It's about 50K long.
+   [5]Download the full TagSoup 1.0 source here. If you don't have zip,
+   you can use jar to unpack it.
 
   What TagSoup does
 
@@ -81,18 +63,18 @@ This is <B>bold, <I>bold italic, </b>italic, </i>normal text
    gets correctly rewritten as:
 This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
 
-   By intention, TagSoup is small and fast. Eventually, I will spend some
-   time making it faster if it turns out to be too slow. It does not
-   depend on the existence of any framework other than SAX, and should be
-   able to work with any framework that can accept SAX parsers. In
-   particular, [8]XOM is known to work.
+   By intention, TagSoup is small and fast. It does not depend on the
+   existence of any framework other than SAX, and should be able to work
+   with any framework that can accept SAX parsers. In particular, [8]XOM
+   is known to work.
 
    You can replace the low-level HTML scanner with one based on Sean
    McGrath's [9]PYX format (very close to James Clark's ESIS format). You
    can also supply an AutoDetector that peeks at the incoming byte stream
-   and guesses a character encoding for it. (Otherwise, the platform
-   default is used. If someone supplies a good AutoDetector I may package
-   it with later releases -- the [10]Mozilla one is too big.
+   and guesses a character encoding for it. Otherwise, the platform
+   default is used. If you need an autodetector of character sets,
+   consider trying to adapt the [10]Mozilla one; if you succeed, let me
+   know.
 
   Note: TagSoup in Java 1.1
 
@@ -110,7 +92,7 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
   TagSoup as a stand-alone program
 
    It is possible to run TagSoup as a program by saying java -jar
-   tagsoup-1.0rc9 [option ...] [file ...]. Files mentioned on the command
+   tagsoup-1.0 [option ...] [file ...]. Files mentioned on the command
    line will be parsed individually. If no files are specified, the
    standard input is read.
 
@@ -150,6 +132,9 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
    --nocolons
           change explicit colons in element and attribute names to
           underscores
+
+   --norestart
+          don't restart any normally restartable elements
 
    --any
           Bogons are given a content model of ANY rather than EMPTY.
@@ -203,21 +188,21 @@ References
    1. http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html
    2. http://www.opensource.org/licenses/afl-3.0.php
    3. http://www.opensource.org/licenses/gpl-license.php
-   4. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc9.jar
-   5. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0rc9-src.zip
+   4. http://ccil.org/~cowan/XML/tagsoup/tagsoup-1.0.jar
+   5. http://ccil.org/~cowan/XML/tagsoup/tagsoup-1.0-src.zip
    6. http://tidy.sf.net/
    7. http://www.crumbmuseum.com/truckin.html
    8. http://www.cafeconleche.org/XOM
    9. http://gnosis.cx/publish/programming/xml_matters_17.html
   10. http://jchardet.sourceforge.net/
   11. http://www.ccil.org/~cowan
-  12. http://home.ccil.org/~cowan/XML/tagsoup/tsaxon
+  12. http://ccil.org/~cowan/XML/tagsoup/tsaxon
   13. http://www.extrememarkup.com/extreme/2004
-  14. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup.odp
-  15. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup.ppt
-  16. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup.pdf
-  17. http://home.ccil.org/~cowan/XML/tagsoup/extreme.html
-  18. http://home.ccil.org/~cowan/XML/tagsoup/extreme.xhtml
+  14. http://ccil.org/~cowan/XML/tagsoup/tagsoup.odp
+  15. http://ccil.org/~cowan/XML/tagsoup/tagsoup.ppt
+  16. http://ccil.org/~cowan/XML/tagsoup/tagsoup.pdf
+  17. http://ccil.org/~cowan/XML/tagsoup/extreme.html
+  18. http://ccil.org/~cowan/XML/tagsoup/extreme.xhtml
   19. http://groups.yahoo.com/group/tagsoup-friends
   20. http://groups.yahoo.com/
   21. http://groups.yahoo.com/group/tagsoup-friends/join

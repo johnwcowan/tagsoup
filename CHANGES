@@ -1,3 +1,10 @@
+Changes from 1.0rc9 to 1.0
+=============================
+Added feature to control restartability
+	(thanks to Nikita Zhuk)
+Added corresponding --norestart switch in CommandLine
+Made translate-colons feature actually work
+
 Changes from 1.0rc8 to 1.0rc9
 =============================
 If there is a publicid but no systemid, set systemid to ""

@@ -45,6 +45,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private boolean bogonsEmpty = true;
 	private boolean defaultAttributes = true;
 	private boolean translateColons = false;
+	private boolean restartElements = true;
 
 	/**
 	A value of "true" indicates namespace URIs and unprefixed local
@@ -195,6 +196,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		"http://www.ccil.org/~cowan/tagsoup/features/translate-colons";
 
 	/**
+	A value of "true" indicates that the parser will 
+	attempt to restart the restartable elements.
+	**/
+	public final static String restartElementsFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/restart-elements";
+
+	/**
 	Used to see some syntax events that are essential in some
 	applications: comments, CDATA delimiters, selected general
 	entity inclusions, and the start and end of the DTD (and
@@ -243,6 +251,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
 		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
 		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
+		theFeatures.put(translateColonsFeature, Boolean.FALSE);
+		theFeatures.put(restartElementsFeature, Boolean.TRUE);
 		}
 
 
@@ -269,6 +279,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		else if (name.equals(bogonsEmptyFeature)) bogonsEmpty = value;
 		else if (name.equals(defaultAttributesFeature)) defaultAttributes = value;
 		else if (name.equals(translateColonsFeature)) translateColons = value;
+		else if (name.equals(restartElementsFeature)) restartElements = value;
 		}
 
 	public Object getProperty (String name)
@@ -584,7 +595,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private void restartablyPop() throws SAXException {
 		Element popped = theStack;
 		pop();
-		if ((popped.flags() & Schema.F_RESTART) != 0) {
+		if (restartElements && (popped.flags() & Schema.F_RESTART) != 0) {
 			popped.anonymize();
 			popped.setNext(theSaved);
 			theSaved = popped;
