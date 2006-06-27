@@ -48,10 +48,14 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        [1m--norestart[0m
               don't restart any restartable elements
 
+       [1m--ignorable[0m
+              pass through ignorable whitespace  (whitespace  in  element-only
+              content)
+
        [1m--any  [22mtreat unknown non-HTML elements as allowing any content
 
        [1m--nocdata[0m
-              Treat the CDATA-content elements [4mscript[24m and  [4mstyle[24m  as  ordinary
+              Treat  the  CDATA-content  elements [4mscript[24m and [4mstyle[24m as ordinary
               elements (mostly for testing)
 
        [1m--pyx  [22moutput PYX format rather than XML (mostly for testing)
@@ -67,40 +71,40 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        [1m--version[0m
               output version number
 
-       [1mTagSoup  [22mis  a parser and reformatter for nasty, ugly HTML.  Its normal
-       processing mode is to accept HTML files on the command  line,  or  from
-       the  standard  input if none are given, and output them as clean XML to
-       the standard output.  The encoding is assumed to be the  platform-local
+       [1mTagSoup [22mis a parser and reformatter for nasty, ugly HTML.   Its  normal
+       processing  mode  is  to accept HTML files on the command line, or from
+       the standard input if none are given, and output them as clean  XML  to
+       the  standard output.  The encoding is assumed to be the platform-local
        encoding on input, and is always UTF-8 on output.
 
-       When  the [1m--files [22moption is given, each input file is processed into an
-       output file of the corresponding name, with the  extension  changed  to
+       When the [1m--files [22moption is given, each input file is processed into  an
+       output  file  of  the corresponding name, with the extension changed to
        [4mxhtml[24m.  If the extension is already [4mxhtml[24m, it is changed to [4mxhtml_[24m.
 
-       TagSoup  will  repair,  by  whatever means necessary, violations of XML
-       well-formedness.  In particular, it will  fix  up  malformed  attribute
+       TagSoup will repair, by whatever means  necessary,  violations  of  XML
+       well-formedness.   In  particular,  it  will fix up malformed attribute
        names and supply missing attribute-value quotation marks.  More signif-
        icantly, it supplies end-tags where HTML allows them to be omitted, and
-       sometimes  where it doesn't.  It will even supply start-tags where nec-
+       sometimes where it doesn't.  It will even supply start-tags where  nec-
        essary; for example, if a document begins with a <li> tag, TagSoup will
        automatically prefix it with <html><body><ul>.
 
 
 [1mBUGS[0m
-       TagSoup  can  be fooled by missing close quotes after attribute values,
-       and by incorrect character encodings (it does not contain  an  encoding
+       TagSoup can be fooled by missing close quotes after  attribute  values,
+       and  by  incorrect character encodings (it does not contain an encoding
        guesser).
 
        Processing TagSoup output through TagSoup a second time should in prin-
-       ciple produce identical results, but sometimes does  not.   That's  why
+       ciple  produce  identical  results, but sometimes does not.  That's why
        this release is not 1.0.
 
-       TagSoup  doesn't understand namespace declarations, which are not prop-
-       erly part of HTML.  Instead, any element or  attribute  name  beginning
+       TagSoup doesn't understand namespace declarations, which are not  prop-
+       erly  part  of  HTML.  Instead, any element or attribute name beginning
        [4mfoo[24m: will be put into the artificial namespace urn:x-prefix:[4mfoo[24m.
 
-       For  the  same  reasons,  namespace-qualified attributes like xml:space
-       can't be returned as default values, though an  explicit  attribute  in
+       For the same reasons,  namespace-qualified  attributes  like  xml:space
+       can't  be  returned  as default values, though an explicit attribute in
        the xml namespace will be returned with the proper namespace URI.
 
 [1mAUTHOR[0m
@@ -109,7 +113,7 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
 [1mCOPYRIGHT[0m
        Copyright (C) 2005 John Cowan
        This is free software; see the source for copying conditions.  There is
-       NO warranty; not even for MERCHANTABILITY or FITNESS FOR  A  PARTICULAR
+       NO  warranty;  not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
        PURPOSE.
 
 

@@ -1,3 +1,8 @@
+Changes from 1.0 to 1.0.1
+=============================
+Added ignorableWhitespaceFeature and --ignorable to report ignorable whitespace
+	(thanks to David Pashley)
+
 Changes from 1.0rc9 to 1.0
 =============================
 Added feature to control restartability

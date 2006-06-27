@@ -46,6 +46,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private boolean defaultAttributes = true;
 	private boolean translateColons = false;
 	private boolean restartElements = true;
+	private boolean ignorableWhitespace = false;
 
 	/**
 	A value of "true" indicates namespace URIs and unprefixed local
@@ -203,6 +204,16 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		"http://www.ccil.org/~cowan/tagsoup/features/restart-elements";
 
 	/**
+	A value of "true" indicates that the parser will 
+	transmit whitespace in element-only content via the SAX
+	ignorableWhitespace callback.  Normally this is not done,
+	because HTML is an SGML application and SGML suppresses
+	such whitespace.
+	**/
+	public final static String ignorableWhitespaceFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/ignorable-whitespace";
+
+	/**
 	Used to see some syntax events that are essential in some
 	applications: comments, CDATA delimiters, selected general
 	entity inclusions, and the start and end of the DTD (and
@@ -253,6 +264,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
 		theFeatures.put(translateColonsFeature, Boolean.FALSE);
 		theFeatures.put(restartElementsFeature, Boolean.TRUE);
+		theFeatures.put(ignorableWhitespaceFeature, Boolean.FALSE);
 		}
 
 
@@ -280,6 +292,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		else if (name.equals(defaultAttributesFeature)) defaultAttributes = value;
 		else if (name.equals(translateColonsFeature)) translateColons = value;
 		else if (name.equals(restartElementsFeature)) restartElements = value;
+		else if (name.equals(ignorableWhitespaceFeature)) ignorableWhitespace = value;
 		}
 
 	public Object getProperty (String name)
@@ -760,9 +773,15 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 				allWhite = false;
 				}
 			}
-		if (allWhite && !theStack.canContain(thePCDATA)) return;
-		rectify(thePCDATA);
-		theContentHandler.characters(buff, offset, length);
+		if (allWhite && !theStack.canContain(thePCDATA)) {
+			if (ignorableWhitespace) {
+				theContentHandler.ignorableWhitespace(buff, offset, length);
+				}
+			}
+		else {
+			rectify(thePCDATA);
+			theContentHandler.characters(buff, offset, length);
+			}
 		}
 
 	public void pitarget(char[] buff, int offset, int length) throws SAXException {

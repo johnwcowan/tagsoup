@@ -49,9 +49,10 @@ public class CommandLine {
 		options.put("--nodefaults", Boolean.FALSE);
 							// no default attrs
 		options.put("--nocolons", Boolean.FALSE);
+							// colon to underscore
 		options.put("--norestart", Boolean.FALSE);
 							// no restartable elements
-							// colon to underscore
+		options.put("--ignorable", Boolean.FALSE);
 		}
 
 	/**
@@ -161,6 +162,10 @@ public class CommandLine {
 
 		if (hasOption(options, "--norestart")) {
 			r.setFeature(Parser.restartElementsFeature, false);
+			}
+
+		if (hasOption(options, "--ignorable")) {
+			r.setFeature(Parser.ignorableWhitespaceFeature, true);
 			}
 
 		if (hasOption(options, "--pyxin")) {
