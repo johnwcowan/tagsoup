@@ -817,8 +817,25 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		etag_basic(buff, offset, length);
 		}
 
+	// Comment buffer is twice the size of the output buffer
+	private char[] theCommentBuffer = new char[4000];
 	public void cmnt(char[] buff, int offset, int length) throws SAXException {
-		theLexicalHandler.comment(buff, offset, length);
+		int postOffset = offset + length;
+		int newSpaces = 0;
+		for (int i = offset, j = offset; i < postOffset; i++, j++) {
+			if (i == offset && buff[i] == '-') {
+				theCommentBuffer[j++] = ' ';
+				newSpaces++;
+				}
+			theCommentBuffer[j] = buff[i];
+			if (buff[i] == '-') {
+				if (i == postOffset || buff[i+1] == '-') {
+					theCommentBuffer[j++] = ' ';
+					newSpaces++;
+					}
+				}
+			}
+		theLexicalHandler.comment(theCommentBuffer, offset, length + newSpaces);
 		}
 
 	// Rectify the stack, pushing and popping as needed
