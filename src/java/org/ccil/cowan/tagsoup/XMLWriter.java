@@ -499,7 +499,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     {
 	reset();
 	if (!("yes".equals(outputProperties.getProperty(OMIT_XML_DECLARATION, "no"))))
-	    write("<?xml version=\"1.0\" standalone=\"yes\"?>\n\n");
+	    write("<?xml version=\"1.0\" standalone=\"yes\"?>\n");
 	super.startDocument();
     }
 
@@ -1272,7 +1272,29 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     public void endDTD() throws SAXException { }
     public void endEntity(String name) throws SAXException { }
     public void startCDATA() throws SAXException { }
-    public void startDTD(String name, String publicId, String systemId) throws SAXException { }
+    public void startDTD(String name, String publicid, String systemid) throws SAXException {
+	if (name == null) return;		// can't cope
+	write("<!DOCTYPE ");
+	if (systemid == null) systemid = "";
+	char sysquote = (systemid.indexOf('"') != -1) ? '\'': '"';
+	write(name);
+	if (!(publicid == null || "".equals(publicid))) {
+		char pubquote = (publicid.indexOf('"') != -1) ? '\'': '"';
+		write(" PUBLIC ");
+		write(pubquote);
+		write(publicid);
+		write(pubquote);
+		write(' ');
+		}
+	else {
+		write(" SYSTEM ");
+		}
+	write(sysquote);
+	write(systemid);
+	write(sysquote);
+	write(">\n");
+	}
+
     public void startEntity(String name) throws SAXException { }
 
 

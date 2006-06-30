@@ -5,13 +5,13 @@
 
    This is the home page of TagSoup, a SAX-compliant parser written in
    Java that, instead of parsing well-formed or valid XML, parses HTML as
-   it is found in the wild: [1]nasty and brutish, though quite often far
-   from short. TagSoup is designed for people who have to process this
-   stuff using some semblance of a rational application design. By
-   providing a SAX interface, it allows standard XML tools to be applied
-   to even the worst HTML. TagSoup also includes a command-line processor
-   that reads HTML files and can generate either clean HTML or
-   well-formed XML that is a close approximation to XHTML.
+   it is found in the wild: [1]poor, nasty and brutish, though quite
+   often far from short. TagSoup is designed for people who have to
+   process this stuff using some semblance of a rational application
+   design. By providing a SAX interface, it allows standard XML tools to
+   be applied to even the worst HTML. TagSoup also includes a
+   command-line processor that reads HTML files and can generate either
+   clean HTML or well-formed XML that is a close approximation to XHTML.
 
    TagSoup is free and Open Source software, licensed under the
    [2]Academic Free License version 3.0, a cleaned-up and patent-safe
@@ -27,6 +27,30 @@
    1.4, or else install Xalan or Saxon, and the result will then work
    fine under either 1.4 or 5.0.
 
+  TagSoup 1.0.1 released
+
+   One new user-supplied feature, plus two features or bugfixes,
+   depending on how you look at them. None are critical, so you needn't
+   update unless you care.
+
+   Previous versions of TagSoup always ignored whitespace in elements
+   that don't have PCDATA as a possible child. Now, if you turn on the
+   ignorableWhitespaceFeature (or use the --ignorable option), that
+   whitespace will be returned to your application through the previously
+   unused ContentHandler.ignorableWhitespace callback. This isn't done by
+   default for backwards compatibility, and also because HTML is an SGML
+   application and SGML parsers routinely dropped such whitespace.
+
+   If you install a LexicalHandler in order to pick up comments and
+   DOCTYPE declarations (or use the --lexical option), you may get
+   comments or public identifiers that aren't valid XML: in particular,
+   comments may contain -- sequences. TagSoup will now insert a space
+   into such sequences, as well as immediately after a final - in a
+   comment. Likewise, TagSoup will now change all illegal characters in
+   public identifiers to spaces. What's more, the --lexical option will
+   now cause a DOCTYPE declaration to be output if there is one in the
+   input.
+
   TagSoup 1.0 Final released
 
    Another small change: There is a switch --norestart to prevent
@@ -37,8 +61,8 @@
    I started this project, and a great deal more. Thanks to everyone on
    the tagsoup-friends mailing list for their efforts.
 
-   [4]Download the TagSoup 1.0 jar file here. It's about 50K long.
-   [5]Download the full TagSoup 1.0 source here. If you don't have zip,
+   [4]Download the TagSoup 1.0.1 jar file here. It's about 50K long.
+   [5]Download the full TagSoup 1.0.1 source here. If you don't have zip,
    you can use jar to unpack it.
 
   What TagSoup does
@@ -84,15 +108,15 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
 
   The TSaxon XSLT-for-HTML processor
 
-   [11]I am also distributing [12]TSaxon, a repackaging of version 6.5.3
-   of Michael Kay's Saxon XSLT 1.0 implementation that includes TagSoup.
-   TSaxon is a drop-in replacement for Saxon, and can be used to process
-   either HTML or XML documents with XSLT stylesheets.
+   [11]I am also distributing [12]TSaxon, a repackaging of version 6.5.5
+   of Michael Kay's Saxon XSLT version 1.0 implementation that includes
+   TagSoup. TSaxon is a drop-in replacement for Saxon, and can be used to
+   process either HTML or XML documents with XSLT stylesheets.
 
   TagSoup as a stand-alone program
 
    It is possible to run TagSoup as a program by saying java -jar
-   tagsoup-1.0 [option ...] [file ...]. Files mentioned on the command
+   tagsoup-1.0.1 [option ...] [file ...]. Files mentioned on the command
    line will be parsed individually. If no files are specified, the
    standard input is read.
 
@@ -135,6 +159,9 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
 
    --norestart
           don't restart any normally restartable elements
+
+   --ignorable
+          output whitespace in elements with element-only content
 
    --any
           Bogons are given a content model of ANY rather than EMPTY.
@@ -183,13 +210,16 @@ This is <b>bold, <i>bold italic, </i></b><i>italic, </i>normal text.
    [22]tagsoup-friends-subscribe@yahoogroups.com. The [23]archives are
    open to all.
 
+   Online TagSoup processing for publicly accessible HTML documents is
+   now [24]available courtesy of Leigh Dodds.
+
 References
 
    1. http://oregonstate.edu/instruct/phl302/texts/hobbes/leviathan-c.html
    2. http://www.opensource.org/licenses/afl-3.0.php
    3. http://www.opensource.org/licenses/gpl-license.php
-   4. http://ccil.org/~cowan/XML/tagsoup/tagsoup-1.0.jar
-   5. http://ccil.org/~cowan/XML/tagsoup/tagsoup-1.0-src.zip
+   4. http://ccil.org/~cowan/XML/tagsoup/tagsoup-1.0.1.jar
+   5. http://ccil.org/~cowan/XML/tagsoup/tagsoup-1.0.1-src.zip
    6. http://tidy.sf.net/
    7. http://www.crumbmuseum.com/truckin.html
    8. http://www.cafeconleche.org/XOM
@@ -208,3 +238,4 @@ References
   21. http://groups.yahoo.com/group/tagsoup-friends/join
   22. mailto:tagsoup-friends-subscribe@yahoogroups.com
   23. http://groups.yahoo.com/group/tagsoup-friends/messages
+  24. http://xmlarmyknife.org/docs/xhtml/tagsoup/
