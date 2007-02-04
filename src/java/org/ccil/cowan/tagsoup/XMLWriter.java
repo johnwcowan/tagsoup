@@ -3,9 +3,9 @@
 // NO WARRANTY!  This class is in the public domain.
 // Modified by John Cowan and Leigh Klotz for the TagSoup project.  Still in the public domain.
 // New features:
-//	it is a LexicalHandler
-//	it prints a comment if the LexicalHandler#comment method is called
-//	it supports certain XSLT output properties using get/setOutputProperty
+//      it is a LexicalHandler
+//      it prints a comment if the LexicalHandler#comment method is called
+//      it supports certain XSLT output properties using get/setOutputProperty
 
 // $Id: XMLWriter.java,v 1.1 2004/01/28 05:35:43 joe Exp $
 
@@ -261,7 +261,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public XMLWriter () 
     {
-	init(null);
+        init(null);
     }
     
 
@@ -275,7 +275,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public XMLWriter (Writer writer) 
     {
-	init(writer);
+        init(writer);
     }
     
 
@@ -289,8 +289,8 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public XMLWriter (XMLReader xmlreader) 
     {
-	super(xmlreader);
-	init(null);
+        super(xmlreader);
+        init(null);
     }
     
 
@@ -307,8 +307,8 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public XMLWriter (XMLReader xmlreader, Writer writer) 
     {
-	super(xmlreader);
-	init(writer);
+        super(xmlreader);
+        init(writer);
     }
 
 
@@ -322,12 +322,12 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     private void init (Writer writer)
     {
-	setOutput(writer);
-	nsSupport = new NamespaceSupport();
-	prefixTable = new Hashtable();
-	forcedDeclTable = new Hashtable();
-	doneDeclTable = new Hashtable();
-	outputProperties = new Properties();
+        setOutput(writer);
+        nsSupport = new NamespaceSupport();
+        prefixTable = new Hashtable();
+        forcedDeclTable = new Hashtable();
+        doneDeclTable = new Hashtable();
+        outputProperties = new Properties();
     }
 
 
@@ -358,9 +358,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public void reset ()
     {
-	elementLevel = 0;
-	prefixCounter = 0;
-	nsSupport.reset();
+        elementLevel = 0;
+        prefixCounter = 0;
+        nsSupport.reset();
     }
     
 
@@ -379,9 +379,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #reset
      */
     public void flush ()
-	throws IOException 
+        throws IOException 
     {
-	output.flush();
+        output.flush();
     }
     
 
@@ -395,11 +395,11 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public void setOutput (Writer writer)
     {
-	if (writer == null) {
-	    output = new OutputStreamWriter(System.out);
-	} else {
-	    output = writer;
-	}
+        if (writer == null) {
+            output = new OutputStreamWriter(System.out);
+        } else {
+            output = writer;
+        }
     }
 
 
@@ -419,7 +419,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */    
     public void setPrefix (String uri, String prefix)
     {
-	prefixTable.put(uri, prefix);
+        prefixTable.put(uri, prefix);
     }
     
 
@@ -432,7 +432,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public String getPrefix (String uri)
     {
-	return (String)prefixTable.get(uri);
+        return (String)prefixTable.get(uri);
     }
     
 
@@ -454,7 +454,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public void forceNSDecl (String uri)
     {
-	forcedDeclTable.put(uri, Boolean.TRUE);
+        forcedDeclTable.put(uri, Boolean.TRUE);
     }
     
 
@@ -473,8 +473,8 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public void forceNSDecl (String uri, String prefix)
     {
-	setPrefix(uri, prefix);
-	forceNSDecl(uri);
+        setPrefix(uri, prefix);
+        forceNSDecl(uri);
     }
     
 
@@ -495,12 +495,19 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#startDocument
      */
     public void startDocument ()
-	throws SAXException
+        throws SAXException
     {
-	reset();
-	if (!("yes".equals(outputProperties.getProperty(OMIT_XML_DECLARATION, "no"))))
-	    write("<?xml version=\"1.0\" standalone=\"yes\"?>\n");
-	super.startDocument();
+        reset();
+        if (!("yes".equals(outputProperties.getProperty(OMIT_XML_DECLARATION, "no")))) {
+            write("<?xml version=\"1.0\"");
+            if (outputEncoding != null) {
+                write(" encoding=\"");
+                write(outputEncoding);
+                write("\"");
+            }
+            write(" standalone=\"yes\"?>\n");
+        }
+        super.startDocument();
     }
 
 
@@ -515,15 +522,15 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#endDocument
      */
     public void endDocument ()
-	throws SAXException
+        throws SAXException
     {
-	write('\n');
-	super.endDocument();
-	try {
-	    flush();
-	} catch (IOException e) {
-	    throw new SAXException(e);
-	}
+        write('\n');
+        super.endDocument();
+        try {
+            flush();
+        } catch (IOException e) {
+            throw new SAXException(e);
+        }
     }
     
 
@@ -547,24 +554,24 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#startElement
      */
     public void startElement (String uri, String localName,
-			      String qName, Attributes atts)
-	throws SAXException
+                              String qName, Attributes atts)
+        throws SAXException
     {
-	elementLevel++;
-	nsSupport.pushContext();
-	write('<');
-	writeName(uri, localName, qName, true);
-	writeAttributes(atts);
-	if (elementLevel == 1) {
-	    forceNSDecls();
-	}
-	writeNSDecls();
-	write('>');
-	if ("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
-	    (localName.equals("script") || localName.equals("style"))) {
-		cdataElement = true;
-		}
-	super.startElement(uri, localName, qName, atts);
+        elementLevel++;
+        nsSupport.pushContext();
+        write('<');
+        writeName(uri, localName, qName, true);
+        writeAttributes(atts);
+        if (elementLevel == 1) {
+            forceNSDecls();
+        }
+        writeNSDecls();
+        write('>');
+        if ("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
+            (localName.equals("script") || localName.equals("style"))) {
+                cdataElement = true;
+                }
+        super.startElement(uri, localName, qName, atts);
     }
 
 
@@ -587,28 +594,28 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#endElement
      */
     public void endElement (String uri, String localName, String qName)
-	throws SAXException
+        throws SAXException
     {
-	if (!("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
-	    uri.equals("http://www.w3.org/1999/xhtml") && (
-	    localName.equals("area") || localName.equals("base") ||
-	    localName.equals("basefont") || localName.equals("br") ||
-	    localName.equals("col") || localName.equals("frame") ||
-	    localName.equals("hr") || localName.equals("img") ||
-	    localName.equals("input") || localName.equals("isindex") ||
-	    localName.equals("link") || localName.equals("meta") ||
-	    localName.equals("param")))) {
-		write("</");
-		writeName(uri, localName, qName, true);
-		write('>');
-	    }
-	if (elementLevel == 1) {
-	    write('\n');
-	}
-	cdataElement = false;
-	super.endElement(uri, localName, qName);
-	nsSupport.popContext();
-	elementLevel--;
+        if (!("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
+            uri.equals("http://www.w3.org/1999/xhtml") && (
+            localName.equals("area") || localName.equals("base") ||
+            localName.equals("basefont") || localName.equals("br") ||
+            localName.equals("col") || localName.equals("frame") ||
+            localName.equals("hr") || localName.equals("img") ||
+            localName.equals("input") || localName.equals("isindex") ||
+            localName.equals("link") || localName.equals("meta") ||
+            localName.equals("param")))) {
+                write("</");
+                writeName(uri, localName, qName, true);
+                write('>');
+            }
+        if (elementLevel == 1) {
+            write('\n');
+        }
+        cdataElement = false;
+        super.endElement(uri, localName, qName);
+        nsSupport.popContext();
+        elementLevel--;
     }
     
 
@@ -626,17 +633,17 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#characters
      */
     public void characters (char ch[], int start, int len)
-	throws SAXException
+        throws SAXException
     {
-	if (!cdataElement) {
-	  writeEsc(ch, start, len, false);
-	  }
-	else {
-	  for (int i = start; i < start + len; i++) {
-	    write(ch[i]);
-	    }
-	  }
-	super.characters(ch, start, len);
+        if (!cdataElement) {
+          writeEsc(ch, start, len, false);
+          }
+        else {
+          for (int i = start; i < start + len; i++) {
+            write(ch[i]);
+            }
+          }
+        super.characters(ch, start, len);
     }
     
 
@@ -654,10 +661,10 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#ignorableWhitespace
      */
     public void ignorableWhitespace (char ch[], int start, int length)
-	throws SAXException
+        throws SAXException
     {
-	writeEsc(ch, start, length, false);
-	super.ignorableWhitespace(ch, start, length);
+        writeEsc(ch, start, length, false);
+        super.ignorableWhitespace(ch, start, length);
     }
     
 
@@ -675,17 +682,17 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see org.xml.sax.ContentHandler#processingInstruction
      */
     public void processingInstruction (String target, String data)
-	throws SAXException
+        throws SAXException
     {
-	write("<?");
-	write(target);
-	write(' ');
-	write(data);
-	write("?>");
-	if (elementLevel < 1) {
-	    write('\n');
-	}
-	super.processingInstruction(target, data);
+        write("<?");
+        write(target);
+        write(' ');
+        write(data);
+        write("?>");
+        if (elementLevel < 1) {
+            write('\n');
+        }
+        super.processingInstruction(target, data);
     }
     
 
@@ -719,20 +726,20 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #endElement 
      */
     public void emptyElement (String uri, String localName,
-			      String qName, Attributes atts)
-	throws SAXException
+                              String qName, Attributes atts)
+        throws SAXException
     {
-	nsSupport.pushContext();
-	write('<');
-	writeName(uri, localName, qName, true);
-	writeAttributes(atts);
-	if (elementLevel == 1) {
-	    forceNSDecls();
-	}
-	writeNSDecls();
-	write("/>");
-	super.startElement(uri, localName, qName, atts);
-	super.endElement(uri, localName, qName);
+        nsSupport.pushContext();
+        write('<');
+        writeName(uri, localName, qName, true);
+        writeAttributes(atts);
+        if (elementLevel == 1) {
+            forceNSDecls();
+        }
+        writeNSDecls();
+        write("/>");
+        super.startElement(uri, localName, qName, atts);
+        super.endElement(uri, localName, qName);
     }
 
 
@@ -760,9 +767,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #startElement(String, String, String, Attributes)
      */
     public void startElement (String uri, String localName)
-	throws SAXException
+        throws SAXException
     {
-	startElement(uri, localName, "", EMPTY_ATTS);
+        startElement(uri, localName, "", EMPTY_ATTS);
     }
 
 
@@ -782,9 +789,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #startElement(String, String, String, Attributes)
      */
     public void startElement (String localName)
-	throws SAXException
+        throws SAXException
     {
-	startElement("", localName, "", EMPTY_ATTS);
+        startElement("", localName, "", EMPTY_ATTS);
     }
 
 
@@ -803,9 +810,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #endElement(String, String, String)
      */
     public void endElement (String uri, String localName)
-	throws SAXException
+        throws SAXException
     {
-	endElement(uri, localName, "");
+        endElement(uri, localName, "");
     }
 
 
@@ -824,9 +831,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #endElement(String, String, String)
      */
     public void endElement (String localName)
-	throws SAXException
+        throws SAXException
     {
-	endElement("", localName, "");
+        endElement("", localName, "");
     }
 
 
@@ -846,9 +853,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #emptyElement(String, String, String, Attributes)
      */
     public void emptyElement (String uri, String localName)
-	throws SAXException
+        throws SAXException
     {
-	emptyElement(uri, localName, "", EMPTY_ATTS);
+        emptyElement(uri, localName, "", EMPTY_ATTS);
     }
 
 
@@ -868,9 +875,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #emptyElement(String, String, String, Attributes)
      */
     public void emptyElement (String localName)
-	throws SAXException
+        throws SAXException
     {
-	emptyElement("", localName, "", EMPTY_ATTS);
+        emptyElement("", localName, "", EMPTY_ATTS);
     }
 
 
@@ -900,13 +907,13 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #endElement(String, String, String)
      */
     public void dataElement (String uri, String localName,
-			     String qName, Attributes atts,
-			     String content)
-	throws SAXException
+                             String qName, Attributes atts,
+                             String content)
+        throws SAXException
     {
-	startElement(uri, localName, qName, atts);
-	characters(content);
-	endElement(uri, localName, qName);
+        startElement(uri, localName, qName, atts);
+        characters(content);
+        endElement(uri, localName, qName);
     }
 
 
@@ -935,9 +942,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #endElement(String, String, String)
      */
     public void dataElement (String uri, String localName, String content)
-	throws SAXException
+        throws SAXException
     {
-	dataElement(uri, localName, "", EMPTY_ATTS, content);
+        dataElement(uri, localName, "", EMPTY_ATTS, content);
     }
 
 
@@ -966,9 +973,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #endElement(String, String, String)
      */
     public void dataElement (String localName, String content)
-	throws SAXException
+        throws SAXException
     {
-	dataElement("", localName, "", EMPTY_ATTS, content);
+        dataElement("", localName, "", EMPTY_ATTS, content);
     }
 
 
@@ -986,10 +993,10 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      * @see #characters(char[], int, int)
      */
     public void characters (String data)
-	throws SAXException
+        throws SAXException
     {
-	char ch[] = data.toCharArray();
-	characters(ch, 0, ch.length);
+        char ch[] = data.toCharArray();
+        characters(ch, 0, ch.length);
     }
 
 
@@ -1007,11 +1014,11 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     private void forceNSDecls ()
     {
-	Enumeration prefixes = forcedDeclTable.keys();
-	while (prefixes.hasMoreElements()) {
-	    String prefix = (String)prefixes.nextElement();
-	    doPrefix(prefix, null, true);
-	}
+        Enumeration prefixes = forcedDeclTable.keys();
+        while (prefixes.hasMoreElements()) {
+            String prefix = (String)prefixes.nextElement();
+            doPrefix(prefix, null, true);
+        }
     }
 
 
@@ -1030,52 +1037,52 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     private String doPrefix (String uri, String qName, boolean isElement)
     {
-	String defaultNS = nsSupport.getURI("");
-	if ("".equals(uri)) {
-	    if (isElement && defaultNS != null)
-		nsSupport.declarePrefix("", "");
-	    return null;
-	}
-	String prefix;
-	if (isElement && defaultNS != null && uri.equals(defaultNS)) {
-	    prefix = "";
-	} else {
-	    prefix = nsSupport.getPrefix(uri);
-	}
-	if (prefix != null) {
-	    return prefix;
-	}
-	prefix = (String) doneDeclTable.get(uri);
-	if (prefix != null &&
-	    ((!isElement || defaultNS != null) &&
-	     "".equals(prefix) || nsSupport.getURI(prefix) != null)) {
-	    prefix = null;
-	}
-	if (prefix == null) {
-	    prefix = (String) prefixTable.get(uri);
-	    if (prefix != null &&
-		((!isElement || defaultNS != null) &&
-		 "".equals(prefix) || nsSupport.getURI(prefix) != null)) {
-		prefix = null;
-	    }
-	}
-	if (prefix == null && qName != null && !"".equals(qName)) {
-	    int i = qName.indexOf(':');
-	    if (i == -1) {
-		if (isElement && defaultNS == null) {
-		    prefix = "";
-		}
-	    } else {
-		prefix = qName.substring(0, i);
-	    }
-	}
-	for (;
-	     prefix == null || nsSupport.getURI(prefix) != null;
-	     prefix = "__NS" + ++prefixCounter)
-	    ;
-	nsSupport.declarePrefix(prefix, uri);
-	doneDeclTable.put(uri, prefix);
-	return prefix;
+        String defaultNS = nsSupport.getURI("");
+        if ("".equals(uri)) {
+            if (isElement && defaultNS != null)
+                nsSupport.declarePrefix("", "");
+            return null;
+        }
+        String prefix;
+        if (isElement && defaultNS != null && uri.equals(defaultNS)) {
+            prefix = "";
+        } else {
+            prefix = nsSupport.getPrefix(uri);
+        }
+        if (prefix != null) {
+            return prefix;
+        }
+        prefix = (String) doneDeclTable.get(uri);
+        if (prefix != null &&
+            ((!isElement || defaultNS != null) &&
+             "".equals(prefix) || nsSupport.getURI(prefix) != null)) {
+            prefix = null;
+        }
+        if (prefix == null) {
+            prefix = (String) prefixTable.get(uri);
+            if (prefix != null &&
+                ((!isElement || defaultNS != null) &&
+                 "".equals(prefix) || nsSupport.getURI(prefix) != null)) {
+                prefix = null;
+            }
+        }
+        if (prefix == null && qName != null && !"".equals(qName)) {
+            int i = qName.indexOf(':');
+            if (i == -1) {
+                if (isElement && defaultNS == null) {
+                    prefix = "";
+                }
+            } else {
+                prefix = qName.substring(0, i);
+            }
+        }
+        for (;
+             prefix == null || nsSupport.getURI(prefix) != null;
+             prefix = "__NS" + ++prefixCounter)
+            ;
+        nsSupport.declarePrefix(prefix, uri);
+        doneDeclTable.put(uri, prefix);
+        return prefix;
     }
     
 
@@ -1088,13 +1095,13 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      *            wrapped in a SAXException.
      */
     private void write (char c)
-	throws SAXException
+        throws SAXException
     {
-	try {
-	    output.write(c);
-	} catch (IOException e) {
-	    throw new SAXException(e);
-	}
+        try {
+            output.write(c);
+        } catch (IOException e) {
+            throw new SAXException(e);
+        }
     }
     
 
@@ -1109,11 +1116,11 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     private void write (String s)
     throws SAXException
     {
-	try {
-	    output.write(s);
-	} catch (IOException e) {
-	    throw new SAXException(e);
-	}
+        try {
+            output.write(s);
+        } catch (IOException e) {
+            throw new SAXException(e);
+        }
     }
 
 
@@ -1128,18 +1135,18 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      *            IOException wrapped in a SAXException.
      */
     private void writeAttributes (Attributes atts)
-	throws SAXException
+        throws SAXException
     {
-	int len = atts.getLength();
-	for (int i = 0; i < len; i++) {
-	    char ch[] = atts.getValue(i).toCharArray();
-	    write(' ');
-	    writeName(atts.getURI(i), atts.getLocalName(i),
-		      atts.getQName(i), false);
-	    write("=\"");
-	    writeEsc(ch, 0, ch.length, true);
-	    write('"');
-	}
+        int len = atts.getLength();
+        for (int i = 0; i < len; i++) {
+            char ch[] = atts.getValue(i).toCharArray();
+            write(' ');
+            writeName(atts.getURI(i), atts.getLocalName(i),
+                      atts.getQName(i), false);
+            write("=\"");
+            writeEsc(ch, 0, ch.length, true);
+            write('"');
+        }
     }
 
 
@@ -1155,37 +1162,37 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      *            IOException wrapped in a SAXException.
      */    
     private void writeEsc (char ch[], int start,
-			     int length, boolean isAttVal)
-	throws SAXException
+                             int length, boolean isAttVal)
+        throws SAXException
     {
-	for (int i = start; i < start + length; i++) {
-	    switch (ch[i]) {
-	    case '&':
-		write("&amp;");
-		break;
-	    case '<':
-		write("&lt;");
-		break;
-	    case '>':
-		write("&gt;");
-		break;
-	    case '\"':
-		if (isAttVal) {
-		    write("&quot;");
-		} else {
-		    write('\"');
-		}
-		break;
-	    default:
-		if (ch[i] > '\u007f') {
-		    write("&#");
-		    write(Integer.toString(ch[i]));
-		    write(';');
-		} else {
-		    write(ch[i]);
-		}
-	    }
-	}
+        for (int i = start; i < start + length; i++) {
+            switch (ch[i]) {
+            case '&':
+                write("&amp;");
+                break;
+            case '<':
+                write("&lt;");
+                break;
+            case '>':
+                write("&gt;");
+                break;
+            case '\"':
+                if (isAttVal) {
+                    write("&quot;");
+                } else {
+                    write('\"');
+                }
+                break;
+            default:
+                if (!unicodeMode && ch[i] > '\u007f') {
+                    write("&#");
+                    write(Integer.toString(ch[i]));
+                    write(';');
+                } else {
+                    write(ch[i]);
+                }
+            }
+        }
     }
 
 
@@ -1198,27 +1205,27 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      *            declarations.
      */    
     private void writeNSDecls ()
-	throws SAXException
+        throws SAXException
     {
-	Enumeration prefixes = nsSupport.getDeclaredPrefixes();
-	while (prefixes.hasMoreElements()) {
-	    String prefix = (String) prefixes.nextElement();
-	    String uri = nsSupport.getURI(prefix);
-	    if (uri == null) {
-		uri = "";
-	    }
-	    char ch[] = uri.toCharArray();
-	    write(' ');
-	    if ("".equals(prefix)) {
-		write("xmlns=\"");
-	    } else {
-		write("xmlns:");
-		write(prefix);
-		write("=\"");
-	    }
-	    writeEsc(ch, 0, ch.length, true);
-	    write('\"');
-	}
+        Enumeration prefixes = nsSupport.getDeclaredPrefixes();
+        while (prefixes.hasMoreElements()) {
+            String prefix = (String) prefixes.nextElement();
+            String uri = nsSupport.getURI(prefix);
+            if (uri == null) {
+                uri = "";
+            }
+            char ch[] = uri.toCharArray();
+            write(' ');
+            if ("".equals(prefix)) {
+                write("xmlns=\"");
+            } else {
+                write("xmlns:");
+                write(prefix);
+                write("=\"");
+            }
+            writeEsc(ch, 0, ch.length, true);
+            write('\"');
+        }
     }
     
 
@@ -1235,20 +1242,20 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      *            an error writing the name.
      */
     private void writeName (String uri, String localName,
-			      String qName, boolean isElement)
-	throws SAXException
+                              String qName, boolean isElement)
+        throws SAXException
     {
-	String prefix = doPrefix(uri, qName, isElement);
-	if (prefix != null && !"".equals(prefix)) {
-	    write(prefix);
-	    write(':');
-	}
-	if (localName != null && !"".equals(localName)) {
-	    write(localName);
-	} else {
-	    int i = qName.indexOf(':');
-	    write(qName.substring(i + 1, qName.length()));
-	}
+        String prefix = doPrefix(uri, qName, isElement);
+        if (prefix != null && !"".equals(prefix)) {
+            write(prefix);
+            write(':');
+        }
+        if (localName != null && !"".equals(localName)) {
+            write(localName);
+        } else {
+            int i = qName.indexOf(':');
+            write(qName.substring(i + 1, qName.length()));
+        }
     }
 
 
@@ -1259,13 +1266,13 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     
     public void comment(char[] ch, int start, int length) throws SAXException
     {
-	write("<!--");
-	for (int i = start; i < start + length; i++) {
-		write(ch[i]);
-		if (ch[i] == '-' && i + 1 <= start + length && ch[i+1] == '-')
-			write(' ');
-		}
-	write("-->");
+        write("<!--");
+        for (int i = start; i < start + length; i++) {
+                write(ch[i]);
+                if (ch[i] == '-' && i + 1 <= start + length && ch[i+1] == '-')
+                        write(' ');
+                }
+        write("-->");
     }
 
     public void endCDATA() throws SAXException { }
@@ -1273,27 +1280,27 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     public void endEntity(String name) throws SAXException { }
     public void startCDATA() throws SAXException { }
     public void startDTD(String name, String publicid, String systemid) throws SAXException {
-	if (name == null) return;		// can't cope
-	write("<!DOCTYPE ");
-	if (systemid == null) systemid = "";
-	char sysquote = (systemid.indexOf('"') != -1) ? '\'': '"';
-	write(name);
-	if (!(publicid == null || "".equals(publicid))) {
-		char pubquote = (publicid.indexOf('"') != -1) ? '\'': '"';
-		write(" PUBLIC ");
-		write(pubquote);
-		write(publicid);
-		write(pubquote);
-		write(' ');
-		}
-	else {
-		write(" SYSTEM ");
-		}
-	write(sysquote);
-	write(systemid);
-	write(sysquote);
-	write(">\n");
-	}
+        if (name == null) return;               // can't cope
+        write("<!DOCTYPE ");
+        if (systemid == null) systemid = "";
+        char sysquote = (systemid.indexOf('"') != -1) ? '\'': '"';
+        write(name);
+        if (!(publicid == null || "".equals(publicid))) {
+                char pubquote = (publicid.indexOf('"') != -1) ? '\'': '"';
+                write(" PUBLIC ");
+                write(pubquote);
+                write(publicid);
+                write(pubquote);
+                write(' ');
+                }
+        else {
+                write(" SYSTEM ");
+                }
+        write(sysquote);
+        write(systemid);
+        write(sysquote);
+        write(">\n");
+        }
 
     public void startEntity(String name) throws SAXException { }
 
@@ -1303,11 +1310,16 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     ////////////////////////////////////////////////////////////////////
 
     public String getOutputProperty(String key) {
-	return outputProperties.getProperty(key);
+        return outputProperties.getProperty(key);
     }
 
     public void setOutputProperty(String key, String value) {
-	outputProperties.setProperty(key, value);
+        outputProperties.setProperty(key, value);
+        if (key.equals(ENCODING)) {
+            outputEncoding = value;
+            unicodeMode = value.substring(0, 3).equalsIgnoreCase("utf");
+//                System.out.println("%%%% unicodeMode = " + unicodeMode);
+        }
     }
 
     
@@ -1318,15 +1330,15 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 
     private final Attributes EMPTY_ATTS = new AttributesImpl();
     public static final String CDATA_SECTION_ELEMENTS =
-	"cdata-section-elements";
+        "cdata-section-elements";
     public static final String DOCTYPE_PUBLIC = "doctype-public";
     public static final String DOCTYPE_SYSTEM = "doctype-system";
     public static final String ENCODING = "encoding";
-    public static final String INDENT = "indent";
-    public static final String MEDIA_TYPE = "media-type";
-    public static final String METHOD = "method";
+    public static final String INDENT = "indent";  // currently ignored
+    public static final String MEDIA_TYPE = "media-type";  // currently ignored
+    public static final String METHOD = "method";  // currently html or xml
     public static final String OMIT_XML_DECLARATION = "omit-xml-declaration";
-    public static final String STANDALONE = "standalone";
+    public static final String STANDALONE = "standalone";  // currently ignored
     public static final String VERSION = "version";
 
 
@@ -1343,6 +1355,8 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     private NamespaceSupport nsSupport;
     private int prefixCounter = 0;
     private Properties outputProperties;
+    private boolean unicodeMode = false;
+    private String outputEncoding = "";
     private boolean cdataElement = false;
     
 }

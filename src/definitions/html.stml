@@ -86,7 +86,7 @@
 	</state>
 	<state id='S_COM'>
 		<tr symbol='default' action='A_SAVE' newstate='S_COM'/>
-		<tr char='-' action='A_SAVE' newstate='S_COMD'/>
+		<tr char='-' action='A_SKIP' newstate='S_COMD'/>
 		<tr symbol='EOF' action='A_CMNT' newstate='S_DONE'/>
 		<tr symbol='CR' action='A_LF' newstate='S_COMCRLF'/>
 	</state>

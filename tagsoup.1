@@ -26,6 +26,13 @@ should be processed into corresponding output files
 .BI --encoding= encoding
 specifies the encoding of input files
 .TP
+.BI --output-encoding= encoding
+specifies the encoding of the output
+(if the encoding name begins with ``utf'',
+the output will not contain character entities;
+otherwise, all non-ASCII characters are
+represented as entities)
+.TP
 .B --html
 output rectified HTML rather than XML,
 omitting the XML declaration
@@ -38,7 +45,7 @@ output rectified HTML rather than XML
 omit the XML declaration
 .TP
 .B --lexical
-output lexical features (specifically comments)
+output lexical features (specifically comments and any DOCTYPE declaration)
 .TP
 .B --nons
 suppress namespaces in output
@@ -60,12 +67,13 @@ don't restart any restartable elements
 .B --ignorable
 pass through ignorable whitespace
 (whitespace in element-only content)
+via SAX method handler ignorableWhitespace
 .TP
 .B --any
 treat unknown non-HTML elements as allowing any content
 .TP
 .B --nocdata
-Treat the CDATA-content elements
+treat the CDATA-content elements
 .I script
 and
 .I style
@@ -138,7 +146,7 @@ will be returned with the proper namespace URI.
 .SH AUTHOR
 John Cowan <cowan@ccil.org>
 .SH COPYRIGHT
-Copyright \(co 2005 John Cowan
+Copyright \(co 2007 John Cowan
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

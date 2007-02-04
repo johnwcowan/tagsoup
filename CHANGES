@@ -1,5 +1,13 @@
+Changes from 1.0.1 to 1.0.2
+===========================
+Version attribute default value removed from html element
+Leading and trailing hyphens now trimmed properly from comments
+Added --output-encoding switch to control encoding
+If output encoding is Unicode, don't generate character references
+Whitespace compressed and junk stripped from public identifiers
+
 Changes from 1.0 to 1.0.1
-=============================
+=========================
 Added ignorableWhitespaceFeature and --ignorable to report ignorable whitespace
 	Patch due to David Pashley
 Insert spaces to break up -- in comments
@@ -8,7 +16,7 @@ Change bogus chars in publicids to spaces
 Remove unnecessary blank line after XML declaration
 
 Changes from 1.0rc9 to 1.0
-=============================
+==========================
 Added feature to control restartability
 	Patch due to Nikita Zhuk
 Added corresponding --norestart switch in CommandLine

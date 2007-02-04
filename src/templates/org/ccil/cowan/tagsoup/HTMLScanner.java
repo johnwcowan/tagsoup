@@ -38,7 +38,7 @@ public class HTMLScanner implements Scanner, Locator {
 
 	int theState;					// Current state
 	int theNextState;				// Next state
-	char[] theOutputBuffer = new char[2000];	// Output buffer
+	char[] theOutputBuffer = new char[200];	// Output buffer
 	int theSize;					// Current buffer size
 	int[] theWinMap = {				// Windows chars map
 		0x20AC, 0xFFFD, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
@@ -275,7 +275,9 @@ Integer.toString(theState));
 				break;
 			case A_CMNT:
 				mark();
-				h.cmnt(theOutputBuffer, 1, theSize - 3);
+				if (theOutputBuffer[theSize - 1] == '-') theSize--;
+				if (theOutputBuffer[theSize - 1] == '-') theSize--;
+				h.cmnt(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
         		case A_PI:

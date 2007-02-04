@@ -41,18 +41,15 @@ public class CommandLine {
 		options.put("--pyx", Boolean.FALSE);	// output is PYX
 		options.put("--html", Boolean.FALSE);	// output is HTML
 		options.put("--method=", Boolean.FALSE); // output method
-		options.put("--omit-xml-declaration", Boolean.FALSE);
-							// omit XML decl
+		options.put("--output-encoding=", Boolean.FALSE); // output encoding
+		options.put("--omit-xml-declaration", Boolean.FALSE); // omit XML decl
 		options.put("--encoding=", Boolean.FALSE); // specify encoding
 		options.put("--help", Boolean.FALSE); 	// display help
 		options.put("--version", Boolean.FALSE);	// display version
-		options.put("--nodefaults", Boolean.FALSE);
-							// no default attrs
-		options.put("--nocolons", Boolean.FALSE);
-							// colon to underscore
-		options.put("--norestart", Boolean.FALSE);
-							// no restartable elements
-		options.put("--ignorable", Boolean.FALSE);
+		options.put("--nodefaults", Boolean.FALSE); // no default attrs
+		options.put("--nocolons", Boolean.FALSE); // colon to underscore
+		options.put("--norestart", Boolean.FALSE); // no restartable elements
+		options.put("--ignorable", Boolean.FALSE);  // return ignorable whitespace
 		}
 
 	/**
@@ -118,6 +115,7 @@ public class CommandLine {
 
 	private static Parser theParser = null;
 	private static HTMLSchema theSchema = null;
+	private static String theOutputEncoding = null;
 
 	// Process one source onto an output stream.
 
@@ -172,7 +170,13 @@ public class CommandLine {
 			r.setProperty(Parser.scannerProperty, new PYXScanner());
 			}
 
-		Writer w = new OutputStreamWriter(os, "UTF-8");
+		Writer w;
+		if (theOutputEncoding == null) {
+			w = new OutputStreamWriter(os);
+			}
+		else {
+			w = new OutputStreamWriter(os, theOutputEncoding);
+			}
 		ContentHandler h = chooseContentHandler(w);
 		r.setContentHandler(h);
 		if (hasOption(options, "--lexical") && h instanceof LexicalHandler) {
@@ -210,6 +214,13 @@ public class CommandLine {
 			String method = (String)options.get("--method=");
 			if (method != null) {
 				x.setOutputProperty(XMLWriter.METHOD, method);
+				}
+			}
+		else if (hasOption(options, "--output-encoding=")) {
+			theOutputEncoding = (String)options.get("--output-encoding=");
+//			System.err.println("%%%% Output encoding is " + theOutputEncoding);
+			if (theOutputEncoding != null) {
+				x.setOutputProperty(XMLWriter.ENCODING, theOutputEncoding);
 				}
 			}
 		else if (hasOption(options, "--omit-xml-declaration")) {

@@ -292,7 +292,6 @@
   <element name='html' type='element'>
     <isRoot/>
     <contains group='M_HTML'/>
-    <attribute name='version' default='-//W3C//DTD HTML 4.01 Transitional//EN'/>
     <element name='body' type='mixed' text-parent='true'>
       <memberOf group='M_HTML'/>
       <memberOf group='M_BODY'/>

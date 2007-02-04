@@ -741,26 +741,35 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			lastc = c;
 			}
 		l.add(val.substring(s, e));
-//                if (sq) throw new IllegalArgumentException("Missing closing quote (') on attribute");
-//                if (dq) throw new IllegalArgumentException("Missing closing quote (\") on attribute");
 		return (String[])l.toArray(new String[0]);
 		}
         }
 
 	// Replace junk in publicids with spaces
 	private static String legal =
-		" \r\nabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'()+,./:=?;!*#@$_%";
+		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'()+,./:=?;!*#@$_%";
 
 	private String cleanPublicid(String src) {
 		if (src == null) return null;
 		int len = src.length();
 		StringBuffer dst = new StringBuffer(len);
+		boolean suppressSpace = true;
 		for (int i = 0; i < len; i++) {
 			char ch = src.charAt(i);
-			if (legal.indexOf(ch) != -1) dst.append(ch);
-			else dst.append(' ');
+			if (legal.indexOf(ch) != -1) { 	// legal but not whitespace
+				dst.append(ch);
+				suppressSpace = false;
+				}
+			else if (suppressSpace) {	// normalizable whitespace or junk
+				;
+				}
+			else {
+				dst.append(' ');
+				suppressSpace = true;
+				}
 			}
-		return dst.toString();
+//		System.err.println("%% Publicid [" + dst.toString().trim() + "]");
+		return dst.toString().trim();	// trim any final junk whitespace
 		}
 
 
