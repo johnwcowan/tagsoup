@@ -29,6 +29,13 @@
    $ANT_HOME/lib. The Ant build process for TagSoup will then notice that
    Saxon is available and use it instead.
 
+  TagSoup 1.0.4 released!
+
+   This is a bug-fix release. The --method=html switch, and consequently
+   --html as well, wasn't working properly, and while fixing that I found
+   that several switches were mutually exclusive that should not have
+   been.
+
   TagSoup 1.0.3 released!
 
    There is only one new feature in this release, the --output-encoding
