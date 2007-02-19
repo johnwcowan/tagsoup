@@ -63,7 +63,7 @@ public class CommandLine {
 			return;
 			}
 		if (hasOption(options, "--version")) {
-			System.err.println("TagSoup version 1.0.3");
+			System.err.println("TagSoup version 1.0.4");
 			return;
 			}
 		if (argv.length == optind) {
@@ -210,20 +210,20 @@ public class CommandLine {
 			x.setOutputProperty(XMLWriter.METHOD, "html");
 			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
 			}
-		else if (hasOption(options, "--method=")) {
+		if (hasOption(options, "--method=")) {
 			String method = (String)options.get("--method=");
 			if (method != null) {
 				x.setOutputProperty(XMLWriter.METHOD, method);
 				}
 			}
-		else if (hasOption(options, "--output-encoding=")) {
+		if (hasOption(options, "--output-encoding=")) {
 			theOutputEncoding = (String)options.get("--output-encoding=");
 //			System.err.println("%%%% Output encoding is " + theOutputEncoding);
 			if (theOutputEncoding != null) {
 				x.setOutputProperty(XMLWriter.ENCODING, theOutputEncoding);
 				}
 			}
-		else if (hasOption(options, "--omit-xml-declaration")) {
+		if (hasOption(options, "--omit-xml-declaration")) {
 			x.setOutputProperty(XMLWriter.OMIT_XML_DECLARATION, "yes");
 			}
 		x.setPrefix(theSchema.getURI(), "");

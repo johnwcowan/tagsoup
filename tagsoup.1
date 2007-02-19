@@ -1,8 +1,8 @@
-.TH TAGSOUP "1" "May 2005" "TagSoup 1.0rc4" "User Commands"
+.TH TAGSOUP "1" "May 2005" "TagSoup 1.0.4" "User Commands"
 .SH NAME
 TagSoup \- convert nasty, ugly HTML to clean XHTML
 .SH SYNOPSIS
-.B java -jar tagsoup-1.0rc4
+.B java -jar tagsoup-1.0.4
 [
 .I options
 ] [
@@ -40,6 +40,9 @@ and any namespace declarations
 .TP
 .B --method=html
 output rectified HTML rather than XML
+(end-tags are omitted for empty elements,
+and no character escaping is done in
+script and style elements)
 .TP
 .B --omit-xml-declaration
 omit the XML declaration
@@ -127,10 +130,6 @@ start-tags where necessary; for example, if a document begins with a
 .SH BUGS
 TagSoup can be fooled by missing close quotes after attribute values, and by
 incorrect character encodings (it does not contain an encoding guesser).
-.PP
-Processing TagSoup output through TagSoup a second time should in principle
-produce identical results, but sometimes does not.  That's why this release
-is not 1.0.
 .PP
 TagSoup doesn't understand namespace declarations, which are not properly
 part of HTML.  Instead, any element or attribute name beginning

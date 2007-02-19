@@ -6,7 +6,7 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        TagSoup - convert nasty, ugly HTML to clean XHTML
 
 [1mSYNOPSIS[0m
-       [1mjava -jar tagsoup-1.0rc4 [22m[ [4moptions[24m ] [ [4mfiles[24m ]
+       [1mjava -jar tagsoup-1.0.4 [22m[ [4moptions[24m ] [ [4mfiles[24m ]
 
 [1mDESCRIPTION[0m
        Rectify  arbitrary  HTML into clean XHTML, using a tailored description
@@ -31,7 +31,9 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
               tion and any namespace declarations
 
        [1m--method=html[0m
-              output rectified HTML rather than XML
+              output rectified HTML rather than XML (end-tags are omitted  for
+              empty  elements, and no character escaping is done in script and
+              style elements)
 
        [1m--omit-xml-declaration[0m
               omit the XML declaration
@@ -102,10 +104,6 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        and  by  incorrect character encodings (it does not contain an encoding
        guesser).
 
-       Processing TagSoup output through TagSoup a second time should in prin-
-       ciple  produce  identical  results, but sometimes does not.  That's why
-       this release is not 1.0.
-
        TagSoup doesn't understand namespace declarations, which are not  prop-
        erly  part  of  HTML.  Instead, any element or attribute name beginning
        [4mfoo[24m: will be put into the artificial namespace urn:x-prefix:[4mfoo[24m.
@@ -125,4 +123,4 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
 
 
 
-TagSoup 1.0rc4                     May 2005                         TAGSOUP(1)
+TagSoup 1.0.4                      May 2005                         TAGSOUP(1)

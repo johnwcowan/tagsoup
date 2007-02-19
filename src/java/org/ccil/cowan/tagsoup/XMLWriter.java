@@ -500,7 +500,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
         reset();
         if (!("yes".equals(outputProperties.getProperty(OMIT_XML_DECLARATION, "no")))) {
             write("<?xml version=\"1.0\"");
-            if (outputEncoding != null) {
+            if (outputEncoding != null && outputEncoding != "") {
                 write(" encoding=\"");
                 write(outputEncoding);
                 write("\"");
@@ -567,9 +567,10 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
         }
         writeNSDecls();
         write('>');
-        if ("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
-            (localName.equals("script") || localName.equals("style"))) {
+//	System.out.println("%%%% startElement [" + qName + "] htmlMode = " + htmlMode);
+	if (htmlMode && (qName.equals("script") || qName.equals("style"))) {
                 cdataElement = true;
+//		System.out.println("%%%% CDATA element");
                 }
         super.startElement(uri, localName, qName, atts);
     }
@@ -596,15 +597,16 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     public void endElement (String uri, String localName, String qName)
         throws SAXException
     {
-        if (!("html".equals(outputProperties.getProperty(METHOD, "xml")) && 
-            uri.equals("http://www.w3.org/1999/xhtml") && (
-            localName.equals("area") || localName.equals("base") ||
-            localName.equals("basefont") || localName.equals("br") ||
-            localName.equals("col") || localName.equals("frame") ||
-            localName.equals("hr") || localName.equals("img") ||
-            localName.equals("input") || localName.equals("isindex") ||
-            localName.equals("link") || localName.equals("meta") ||
-            localName.equals("param")))) {
+	if (!(htmlMode &&
+            (uri.equals("http://www.w3.org/1999/xhtml") ||
+		uri.equals("")) &&
+            (qName.equals("area") || qName.equals("base") ||
+            qName.equals("basefont") || qName.equals("br") ||
+            qName.equals("col") || qName.equals("frame") ||
+            qName.equals("hr") || qName.equals("img") ||
+            qName.equals("input") || qName.equals("isindex") ||
+            qName.equals("link") || qName.equals("meta") ||
+            qName.equals("param")))) {
                 write("</");
                 writeName(uri, localName, qName, true);
                 write('>');
@@ -1315,13 +1317,17 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
 
     public void setOutputProperty(String key, String value) {
         outputProperties.setProperty(key, value);
+//	System.out.println("%%%% key = [" + key + "] value = [" + value +"]");
         if (key.equals(ENCODING)) {
             outputEncoding = value;
             unicodeMode = value.substring(0, 3).equalsIgnoreCase("utf");
 //                System.out.println("%%%% unicodeMode = " + unicodeMode);
-        }
+	}
+	if (key.equals(METHOD)) {
+		htmlMode = value.equals("html");
+	}
+//	System.out.println("%%%% htmlMode = " + htmlMode);
     }
-
     
 
     ////////////////////////////////////////////////////////////////////
@@ -1357,6 +1363,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     private Properties outputProperties;
     private boolean unicodeMode = false;
     private String outputEncoding = "";
+    private boolean htmlMode = false;
     private boolean cdataElement = false;
     
 }

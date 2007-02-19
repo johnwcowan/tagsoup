@@ -1,3 +1,9 @@
+Changes from 1.0.4 to 1.0.3
+===========================
+Certain options were mutually exclusive that should not have been
+Blocked XML declaration from specifying an encoding of ""
+--method=html was not doing the right thing
+
 Changes from 1.0.3 to 1.0.2
 ===========================
 Fixed build file to use Java target version 1.4
