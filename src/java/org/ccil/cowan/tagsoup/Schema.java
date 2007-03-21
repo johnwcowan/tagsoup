@@ -121,7 +121,8 @@ public abstract class Schema {
 //		System.err.println("%% Looking up entity " + name);
 		if (name.length() == 0) return 0;
 		if (name.charAt(0) == '#') {
-			if (name.length() > 1 && name.charAt(1) == 'x') {
+			if (name.length() > 1 && (name.charAt(1) == 'x'
+					|| name.charAt(1) == 'X')) {
 				try {
 					return (char)Integer.parseInt(name.substring(2), 16);
 					}

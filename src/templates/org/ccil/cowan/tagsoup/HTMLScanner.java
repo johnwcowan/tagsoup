@@ -103,6 +103,9 @@ public class HTMLScanner implements Scanner, Locator {
 			r = new PushbackReader(new BufferedReader(r0));
 			}
 
+		int firstChar = r.read();	// Remove any leading BOM
+		if (firstChar != '\uFEFF' && firstChar != -1) r.unread(firstChar);
+
 		while (theState != S_DONE) {
 			int ch = r.read();
 			if (ch >= 0x80 && ch <= 0x9F) ch = theWinMap[ch-0x80];
@@ -275,10 +278,20 @@ Integer.toString(theState));
 				break;
 			case A_CMNT:
 				mark();
-				if (theOutputBuffer[theSize - 1] == '-') theSize--;
-				if (theOutputBuffer[theSize - 1] == '-') theSize--;
 				h.cmnt(theOutputBuffer, 0, theSize);
 				theSize = 0;
+				break;
+			case A_MINUS3:
+				save('-', h);
+				save(' ', h);
+				break;
+			case A_MINUS2:
+				save('-', h);
+				save(' ', h);
+				// fall through into A_MINUS
+			case A_MINUS:
+				save('-', h);
+				save(ch, h);
 				break;
         		case A_PI:
 				mark();
@@ -301,8 +314,7 @@ Integer.toString(theState));
         		case A_SAVE_PUSH:
 				savedState = theState;
 				savedSize = theSize;
-				save(ch, h);
-				break;
+				// fall through into A_SAVE
         		case A_SAVE:
 				save(ch, h);
 				break;

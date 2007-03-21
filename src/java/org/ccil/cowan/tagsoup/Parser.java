@@ -844,25 +844,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// Comment buffer is twice the size of the output buffer
 	private char[] theCommentBuffer = new char[2000];
 	public void cmnt(char[] buff, int offset, int length) throws SAXException {
-		int postOffset = offset + length;
-		if (theCommentBuffer.length < postOffset * 2) {
-			theCommentBuffer = new char[postOffset * 2];
-			}
-		int newSpaces = 0;
-		for (int i = offset, j = offset; i < postOffset; i++, j++) {
-			if (i == offset && buff[i] == '-') {
-				theCommentBuffer[j++] = ' ';
-				newSpaces++;
-				}
-			theCommentBuffer[j] = buff[i];
-			if (buff[i] == '-') {
-				if (i == postOffset || buff[i+1] == '-') {
-					theCommentBuffer[j++] = ' ';
-					newSpaces++;
-					}
-				}
-			}
-		theLexicalHandler.comment(theCommentBuffer, offset, length + newSpaces);
+		theLexicalHandler.comment(buff, offset, length);
 		}
 
 	// Rectify the stack, pushing and popping as needed

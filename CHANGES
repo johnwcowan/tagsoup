@@ -1,3 +1,11 @@
+Changes from 1.0.5 to 1.0.4
+===========================
+Major repairs to comment scanning
+Skip leading BOM
+Comment out debugging code in PYXWriter
+Allow &#X as well as &#x
+Add net.sf.saxon to list of supported XSLT engines
+
 Changes from 1.0.4 to 1.0.3
 ===========================
 Certain options were mutually exclusive that should not have been

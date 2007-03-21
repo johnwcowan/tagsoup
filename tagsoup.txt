@@ -123,4 +123,4 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
 
 
 
-TagSoup 1.0.4                      May 2005                         TAGSOUP(1)
+TagSoup 1.0.5                     March 2006                        TAGSOUP(1)

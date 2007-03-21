@@ -126,7 +126,7 @@ public class PYXWriter
 		}
 
 	public void stagc(char[] buff, int offset, int length) throws SAXException {
-		theWriter.println("!");			// FIXME
+//		theWriter.println("!");			// FIXME
 		}
 
 	public void stage(char[] buff, int offset, int length) throws SAXException {

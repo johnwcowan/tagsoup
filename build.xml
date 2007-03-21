@@ -8,6 +8,9 @@
   <available property="transformer.factory"
      classname="com.icl.saxon.TransformerFactoryImpl"
      value="com.icl.saxon.TransformerFactoryImpl"/>
+  <available property="transformer.factor"
+     classname="net.sf.saxon.TransformerFactoryImpl"
+     value="net.sf.saxon.TransformerFactoryImpl"/>
   <available property="transformer.factory"
      classname="org.apache.xalan.processor.TransformerFactoryImpl"
      value="org.apache.xalan.processor.TransformerFactoryImpl"/>
