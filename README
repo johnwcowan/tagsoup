@@ -45,6 +45,10 @@
    I've also added the promised documentation on [5]SAX features and
    properties specific to TagSoup.
 
+   [6]Download the TagSoup 1.0.5 jar file here. It's about 51K long.
+   [7]Download the full TagSoup 1.0.5 source here. If you don't have zip,
+   you can use jar to unpack it.
+
   TagSoup 1.0.4 released!
 
    This is a bug-fix release. The --method=html switch, and consequently
@@ -105,10 +109,6 @@
    fix bugs, but it now does everything that I foresaw back in 2002 when
    I started this project, and a great deal more. Thanks to everyone on
    the tagsoup-friends mailing list for their efforts.
-
-   [6]Download the TagSoup 1.0.5 jar file here. It's about 51K long.
-   [7]Download the full TagSoup 1.0.4 source here. If you don't have zip,
-   you can use jar to unpack it.
 
   What TagSoup does
 

@@ -8,7 +8,7 @@
   <available property="transformer.factory"
      classname="com.icl.saxon.TransformerFactoryImpl"
      value="com.icl.saxon.TransformerFactoryImpl"/>
-  <available property="transformer.factor"
+  <available property="transformer.factory"
      classname="net.sf.saxon.TransformerFactoryImpl"
      value="net.sf.saxon.TransformerFactoryImpl"/>
   <available property="transformer.factory"

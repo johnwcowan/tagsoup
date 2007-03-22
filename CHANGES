@@ -1,4 +1,8 @@
-Changes from 1.0.5 to 1.0.4
+Changes from 1.0.5 to 1.1
+===========================
+Add Tatu Saloranta's JAXP support package
+
+Changes from 1.0.4 to 1.0.5
 ===========================
 Major repairs to comment scanning
 Skip leading BOM
