@@ -13,6 +13,8 @@
    command-line processor that reads HTML files and can generate either
    clean HTML or well-formed XML that is a close approximation to XHTML.
 
+   This is also the README file packaged with TagSoup.
+
    TagSoup is free and Open Source software, licensed under the
    [2]Academic Free License version 3.0, a cleaned-up and patent-safe
    BSD-style license which allows proprietary re-use. It's also licensed
@@ -20,7 +22,7 @@
    AFL are incompatible. You can choose to license TagSoup from me under
    either the GPL or the AFL.
 
-  Warning: TagSoup will not build on Java 5.x or 6.x!
+  Warning: TagSoup will not build on stock Java 5.x or 6.x!
 
    Due to a bug in the versions of Xalan shipped with Java 5.x and 6.x,
    TagSoup will not build out of the box. You need to retrieve [4]Saxon
@@ -29,7 +31,48 @@
    $ANT_HOME/lib. The Ant build process for TagSoup will then notice that
    Saxon is available and use it instead.
 
-  TagSoup 1.0.5 released!
+  TagSoup 1.1.2 released
+
+   This release fixes the reporting of CDATA sections. In TagSoup 1.1 and
+   previous versions, if you specified a SAX LexicalHandler to receive
+   indications of comments and CDATA sections, you were told that the
+   contents of the elements "style" and "script" constitute a CDATA
+   section. This report was incorrect, as "style" and "script" elements
+   may contain characters that are illegal in XML CDATA sections.
+   Consequently, the reports have been removed. However, this release now
+   correctly reports actual CDATA sections, which was not the case in any
+   previous release. Neither of these changes affects users who don't
+   make use of the SAX LexicalHandler facilities.
+
+   XMLWriter has not changed, so command-line TagSoup users will not see
+   CDATA sections appearing in the output.
+
+   I have also added CDATAElementsFeature, which is the programmatic
+   equivalent of the --nocdata switch. Turning this feature off
+   suppresses the special interpretation given to script and style
+   elements.
+
+   (TagSoup 1.1.1 had a paper-bag bug and is withdrawn.)
+
+  TagSoup 1.1 released
+
+   TagSoup 1.1 adds Tatu Saloranta's JAXP support for TagSoup. To use
+   TagSoup within the JAXP framework (which is not something I
+   necessarily recommend, but it is part of the Java XML platform), you
+   can create a SAXParser by calling
+   org.ccil.cowan.tagsoup.jaxp.SAXParserImpl.newInstance(). You can also
+   set the system property javax.xml.parsers.SAXParserFactory to
+   org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl, but be aware that doing
+   this will cause all JAXP-based XML parsing to go through TagSoup,
+   which is a Bad Thing if your application also reads XML documents.
+
+   There are no new features in TagSoup itself.
+
+   [5]Download the TagSoup 1.1.2 jar file here. It's about 58K long.
+   [6]Download the full TagSoup 1.1.2 source here. If you don't have zip,
+   you can use jar to unpack it.
+
+  TagSoup 1.0.5 released
 
    This is yet another bug-fix release. The main issue was with HTML
    comments, which were very badly broken -- any > character would
@@ -42,73 +85,8 @@
    document is skipped, and the new version of Saxon is now supported as
    an XSLT processor.
 
-   I've also added the promised documentation on [5]SAX features and
+   I've also added the promised documentation on [7]SAX features and
    properties specific to TagSoup.
-
-   [6]Download the TagSoup 1.0.5 jar file here. It's about 51K long.
-   [7]Download the full TagSoup 1.0.5 source here. If you don't have zip,
-   you can use jar to unpack it.
-
-  TagSoup 1.0.4 released!
-
-   This is a bug-fix release. The --method=html switch, and consequently
-   --html as well, wasn't working properly, and while fixing that I found
-   that several switches were mutually exclusive that should not have
-   been.
-
-  TagSoup 1.0.3 released!
-
-   There is only one new feature in this release, the --output-encoding
-   switch, which allows you to specify the character encoding for TagSoup
-   output. The encoding must be one that your JVM supports; if you omit
-   this switch, you will get the platform default, which is generally
-   either Latin-1 or its superset Windows-1252. If the encoding you
-   specify is a Unicode one, TagSoup will not generate character
-   references; otherwise, it will continue to do so.
-
-   In other news, the misleading version attribute of the html element
-   has been removed; comments with defective hyphens are cleaned up
-   properly; broken public identifiers in the DOCTYPE declaration are
-   cleaned.
-
-   Version 1.0.2 was accidentally released with Java 6 classes in the
-   jarfile, which cannot be run on earlier versions of the JVM. 1.0.3
-   fixes this problem, fixes the build file, and fixes the output of the
-   --version switch, which had been stuck on 1.0rc4 since that release.
-
-  TagSoup 1.0.1 features
-
-   One new user-supplied feature, plus two features or bugfixes,
-   depending on how you look at them. None are critical, so you needn't
-   update unless you care.
-
-   Previous versions of TagSoup always ignored whitespace in elements
-   that don't have PCDATA as a possible child. Now, if you turn on the
-   ignorableWhitespaceFeature (or use the --ignorable option), that
-   whitespace will be returned to your application through the previously
-   unused ContentHandler.ignorableWhitespace callback. This isn't done by
-   default for backwards compatibility, and also because HTML is an SGML
-   application and SGML parsers routinely dropped such whitespace.
-
-   If you install a LexicalHandler in order to pick up comments and
-   DOCTYPE declarations (or use the --lexical option), you may get
-   comments or public identifiers that aren't valid XML: in particular,
-   comments may contain -- sequences. TagSoup will now insert a space
-   into such sequences, as well as immediately after a final - in a
-   comment. Likewise, TagSoup will now change all illegal characters in
-   public identifiers to spaces. What's more, the --lexical option will
-   now cause a DOCTYPE declaration to be output if there is one in the
-   input.
-
-  TagSoup 1.0 Final released
-
-   Another small change: There is a switch --norestart to prevent
-   restartable elements from being restarted.
-
-   This is the end of my current plans for TagSoup. I will continue to
-   fix bugs, but it now does everything that I foresaw back in 2002 when
-   I started this project, and a great deal more. Thanks to everyone on
-   the tagsoup-friends mailing list for their efforts.
 
   What TagSoup does
 
@@ -315,9 +293,9 @@ References
    2. http://www.opensource.org/licenses/afl-3.0.php
    3. http://www.opensource.org/licenses/gpl-license.php
    4. http://prdownloads.sourceforge.net/saxon/saxon6-5-5.zip
-   5. http://home.ccil.org/~cowan/XML/tagsoup/#properties
-   6. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0.5.jar
-   7. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.0.5-src.zip
+   5. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.1.2.jar
+   6. http://home.ccil.org/~cowan/XML/tagsoup/tagsoup-1.1.2-src.zip
+   7. http://home.ccil.org/~cowan/XML/tagsoup/#properties
    8. http://tidy.sf.net/
    9. http://www.crumbmuseum.com/truckin.html
   10. http://www.cafeconleche.org/XOM

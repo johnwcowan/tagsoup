@@ -63,7 +63,7 @@ public class CommandLine {
 			return;
 			}
 		if (hasOption(options, "--version")) {
-			System.err.println("TagSoup version 1.1.1");
+			System.err.println("TagSoup version 1.1.2");
 			return;
 			}
 		if (argv.length == optind) {

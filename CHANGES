@@ -1,3 +1,7 @@
+Changes from 1.1.1 to 1.1.2
+===========================
+Setting CDATAElementsFeature didn't really set CDATAElements instance variable
+
 Changes from 1.1 to 1.1.1
 =========================
 Removed lexical handler calls to startCDATA/endCDATA from CDATA element handling

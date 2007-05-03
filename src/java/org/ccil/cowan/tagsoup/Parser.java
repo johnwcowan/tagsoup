@@ -274,6 +274,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(translateColonsFeature, Boolean.FALSE);
 		theFeatures.put(restartElementsFeature, Boolean.TRUE);
 		theFeatures.put(ignorableWhitespaceFeature, Boolean.FALSE);
+		theFeatures.put(CDATAElementsFeature, Boolean.TRUE);
 		}
 
 
@@ -302,6 +303,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		else if (name.equals(translateColonsFeature)) translateColons = value;
 		else if (name.equals(restartElementsFeature)) restartElements = value;
 		else if (name.equals(ignorableWhitespaceFeature)) ignorableWhitespace = value;
+		else if (name.equals(CDATAElementsFeature)) CDATAElements = value;
 		}
 
 	public Object getProperty (String name)
