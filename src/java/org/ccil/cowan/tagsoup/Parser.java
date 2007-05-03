@@ -47,6 +47,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private boolean translateColons = false;
 	private boolean restartElements = true;
 	private boolean ignorableWhitespace = false;
+	private boolean CDATAElements = true;
 
 	/**
 	A value of "true" indicates namespace URIs and unprefixed local
@@ -212,6 +213,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	**/
 	public final static String ignorableWhitespaceFeature =
 		"http://www.ccil.org/~cowan/tagsoup/features/ignorable-whitespace";
+
+	/**
+	A value of "true" indicates that the parser will treat CDATA
+	elements specially.  Normally true, since the input is by
+	default HTML.
+	**/
+	public final static String CDATAElementsFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/cdata-elements";
 
 	/**
 	Used to see some syntax events that are essential in some
@@ -527,7 +536,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		// If this is a CDATA element and the tag doesn't match,
 		// or isn't properly formed (junk after the name),
 		// restart CDATA mode and process the tag as characters.
-		if ((theStack.flags() & Schema.F_CDATA) != 0) {
+		if (CDATAElements && (theStack.flags() & Schema.F_CDATA) != 0) {
 			boolean realTag = (length == currentName.length());
 			if (realTag) {
 				for (int i = 0; i < length; i++) {
@@ -598,8 +607,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		String localName = theStack.localName();
 		String namespace = theStack.namespace();
 //		System.err.println("%% Popping " + name);
-		if ((theStack.flags() & Schema.F_CDATA) != 0) {
-			}
 		if (!namespaces) namespace = localName = "";
 		theContentHandler.endElement(namespace, localName, name);
 		theStack = theStack.next();
@@ -634,7 +641,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		e.setNext(theStack);
 		theStack = e;
 		virginStack = false;
-		if ((theStack.flags() & Schema.F_CDATA) != 0) {
+		if (CDATAElements && (theStack.flags() & Schema.F_CDATA) != 0) {
 			theScanner.startCDATA();
 			}
 		}

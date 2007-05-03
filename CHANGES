@@ -2,6 +2,7 @@ Changes from 1.1 to 1.1.1
 =========================
 Removed lexical handler calls to startCDATA/endCDATA from CDATA element handling
 Added lexical handler calls to startCDATA/endCDATA from CDATA section handling
+Added CDATAElementsFeature, the programmatic equivalent of the --nocdata switch
 
 Changes from 1.0.5 to 1.1
 =========================

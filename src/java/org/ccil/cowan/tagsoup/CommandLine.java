@@ -133,10 +133,7 @@ public class CommandLine {
 		r.setProperty(Parser.schemaProperty, theSchema);
 
 		if (hasOption(options, "--nocdata")) {
-			ElementType script = theSchema.getElementType("script");
-			script.setFlags(0);
-			ElementType style = theSchema.getElementType("style");
-			style.setFlags(0);
+			r.setFeature(Parser.CDATAElementsFeature, false);
 			}
 
 		if (hasOption(options, "--nons") || hasOption(options, "--html")) {
