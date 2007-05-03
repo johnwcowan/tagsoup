@@ -2,93 +2,93 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
 
 
 
-[1mNAME[0m
+NNAAMMEE
        TagSoup - convert nasty, ugly HTML to clean XHTML
 
-[1mSYNOPSIS[0m
-       [1mjava -jar tagsoup-1.0.4 [22m[ [4moptions[24m ] [ [4mfiles[24m ]
+SSYYNNOOPPSSIISS
+       jjaavvaa --jjaarr ttaaggssoouupp--11..11 [ _o_p_t_i_o_n_s ] [ _f_i_l_e_s ]
 
-[1mDESCRIPTION[0m
+DDEESSCCRRIIPPTTIIOONN
        Rectify  arbitrary  HTML into clean XHTML, using a tailored description
-       of HTML.  The output will be well-formed XML, but not necessarily [4mvalid[0m
+       of HTML.  The output will be well-formed XML, but not necessarily _v_a_l_i_d
        XHTML.
 
 
-       [1m--files[0m
-              multiple input [4mfiles[24m should be processed into corresponding out-
+       ----ffiilleess
+              multiple input _f_i_l_e_s should be processed into corresponding out-
               put files
 
-       [1m--encoding=[4m[22mencoding[0m
+       ----eennccooddiinngg==_e_n_c_o_d_i_n_g
               specifies the encoding of input files
 
-       [1m--output-encoding=[4m[22mencoding[0m
+       ----oouuttppuutt--eennccooddiinngg==_e_n_c_o_d_i_n_g
               specifies the encoding of  the  output  (if  the  encoding  name
               begins with ``utf'', the output will not contain character enti-
               ties; otherwise, all non-ASCII  characters  are  represented  as
               entities)
 
-       [1m--html [22moutput rectified HTML rather than XML, omitting the XML declara-
+       ----hhttmmll output rectified HTML rather than XML, omitting the XML declara-
               tion and any namespace declarations
 
-       [1m--method=html[0m
+       ----mmeetthhoodd==hhttmmll
               output rectified HTML rather than XML (end-tags are omitted  for
               empty  elements, and no character escaping is done in script and
               style elements)
 
-       [1m--omit-xml-declaration[0m
+       ----oommiitt--xxmmll--ddeeccllaarraattiioonn
               omit the XML declaration
 
-       [1m--lexical[0m
+       ----lleexxiiccaall
               output lexical features (specifically comments and  any  DOCTYPE
               declaration)
 
-       [1m--nons [22msuppress namespaces in output
+       ----nnoonnss suppress namespaces in output
 
-       [1m--nobogons[0m
+       ----nnoobbooggoonnss
               suppress unknown non-HTML elements in output
 
-       [1m--nodefaults[0m
+       ----nnooddeeffaauullttss
               suppress default attribute values
 
-       [1m--nocolons[0m
+       ----nnooccoolloonnss
               change  explicit colons in element and attribute names to under-
               scores
 
-       [1m--norestart[0m
+       ----nnoorreessttaarrtt
               don't restart any restartable elements
 
-       [1m--ignorable[0m
+       ----iiggnnoorraabbllee
               pass through ignorable whitespace  (whitespace  in  element-only
               content) via SAX method handler ignorableWhitespace
 
-       [1m--any  [22mtreat unknown non-HTML elements as allowing any content
+       ----aannyy  treat unknown non-HTML elements as allowing any content
 
-       [1m--nocdata[0m
-              treat  the  CDATA-content  elements [4mscript[24m and [4mstyle[24m as ordinary
+       ----nnooccddaattaa
+              treat  the  CDATA-content  elements _s_c_r_i_p_t and _s_t_y_l_e as ordinary
               elements (mostly for testing)
 
-       [1m--pyx  [22moutput PYX format rather than XML (mostly for testing)
+       ----ppyyxx  output PYX format rather than XML (mostly for testing)
 
-       [1m--pyxin[0m
+       ----ppyyxxiinn
               input is PYX-format HTML (mostly for testing)
 
-       [1m--reuse[0m
+       ----rreeuussee
               reuse the same Parser object internally (for testing only)
 
-       [1m--help [22moutput basic help
+       ----hheellpp output basic help
 
-       [1m--version[0m
+       ----vveerrssiioonn
               output version number
 
-       [1mTagSoup [22mis a parser and reformatter for nasty, ugly HTML.   Its  normal
+       TTaaggSSoouupp is a parser and reformatter for nasty, ugly HTML.   Its  normal
        processing  mode  is  to accept HTML files on the command line, or from
        the standard input if none are given, and output them as clean  XML  to
        the  standard output.  The encoding is assumed to be the platform-local
        encoding on input, and is always UTF-8 on output.
 
-       When the [1m--files [22moption is given, each input file is processed into  an
+       When the ----ffiilleess option is given, each input file is processed into  an
        output  file  of  the corresponding name, with the extension changed to
-       [4mxhtml[24m.  If the extension is already [4mxhtml[24m, it is changed to [4mxhtml_[24m.
+       _x_h_t_m_l.  If the extension is already _x_h_t_m_l, it is changed to _x_h_t_m_l__.
 
        TagSoup will repair, by whatever means  necessary,  violations  of  XML
        well-formedness.   In  particular,  it  will fix up malformed attribute
@@ -99,28 +99,28 @@ TAGSOUP(1)                       User Commands                      TAGSOUP(1)
        automatically prefix it with <html><body><ul>.
 
 
-[1mBUGS[0m
+BBUUGGSS
        TagSoup can be fooled by missing close quotes after  attribute  values,
        and  by  incorrect character encodings (it does not contain an encoding
        guesser).
 
        TagSoup doesn't understand namespace declarations, which are not  prop-
        erly  part  of  HTML.  Instead, any element or attribute name beginning
-       [4mfoo[24m: will be put into the artificial namespace urn:x-prefix:[4mfoo[24m.
+       _f_o_o: will be put into the artificial namespace urn:x-prefix:_f_o_o.
 
        For the same reasons,  namespace-qualified  attributes  like  xml:space
        can't  be  returned  as default values, though an explicit attribute in
        the xml namespace will be returned with the proper namespace URI.
 
-[1mAUTHOR[0m
+AAUUTTHHOORR
        John Cowan <cowan@ccil.org>
 
-[1mCOPYRIGHT[0m
-       Copyright © 2007 John Cowan
+CCOOPPYYRRIIGGHHTT
+       Copyright (C) 2007 John Cowan
        This is free software; see the source for copying conditions.  There is
        NO  warranty;  not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
        PURPOSE.
 
 
 
-TagSoup 1.1                       March 2007                        TAGSOUP(1)
+TagSoup 1.1.1                      May 2007                         TAGSOUP(1)

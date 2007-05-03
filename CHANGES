@@ -1,5 +1,10 @@
+Changes from 1.1 to 1.1.1
+=========================
+Removed lexical handler calls to startCDATA/endCDATA from CDATA element handling
+Added lexical handler calls to startCDATA/endCDATA from CDATA section handling
+
 Changes from 1.0.5 to 1.1
-===========================
+=========================
 Add Tatu Saloranta's JAXP support package
 
 Changes from 1.0.4 to 1.0.5

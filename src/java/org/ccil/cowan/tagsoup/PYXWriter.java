@@ -80,6 +80,10 @@ public class PYXWriter
 		theWriter.println();
 		}
 
+	public void cdsect(char[] buff, int offset, int length) throws SAXException {
+		pcdata(buff, offset, length);
+		}
+
 	public void pcdata(char[] buff, int offset, int length) throws SAXException {
 		if (length == 0) return;	// nothing to do
 		boolean inProgress = false;

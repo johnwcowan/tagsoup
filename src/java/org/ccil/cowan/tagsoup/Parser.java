@@ -599,7 +599,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		String namespace = theStack.namespace();
 //		System.err.println("%% Popping " + name);
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
-			theLexicalHandler.endCDATA();
 			}
 		if (!namespaces) namespace = localName = "";
 		theContentHandler.endElement(namespace, localName, name);
@@ -637,7 +636,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		virginStack = false;
 		if ((theStack.flags() & Schema.F_CDATA) != 0) {
 			theScanner.startCDATA();
-			theLexicalHandler.startCDATA();
 			}
 		}
 
@@ -789,6 +787,11 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 //		System.err.println("%% Got GI " + theNewElement.name());
 		}
 
+	public void cdsect(char[] buff, int offset, int length) throws SAXException {
+		theLexicalHandler.startCDATA();
+		pcdata(buff, offset, length);
+		theLexicalHandler.endCDATA();
+		}
 	public void pcdata(char[] buff, int offset, int length) throws SAXException {
 		if (length == 0) return;
 		boolean allWhite = true;

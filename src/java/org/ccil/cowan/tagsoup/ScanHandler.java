@@ -40,8 +40,14 @@ public interface ScanHandler {
 	public void aval(char[] buff, int offset, int length) throws SAXException;
 
 	/**
+	  * Reports the content of a CDATA section (not a CDATA element)
+	  */
+	public void cdsect(char[] buff, int offset, int length) throws SAXException;
+
+	/**
          * Reports a <!....> declaration - typically a DOCTYPE
          */
+
 	public void decl(char[] buff, int offset, int length) throws SAXException;
 
 	/**
