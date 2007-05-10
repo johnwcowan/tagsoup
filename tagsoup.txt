@@ -123,4 +123,4 @@ CCOOPPYYRRIIGGHHTT
 
 
 
-TagSoup 1.1.2                      May 2007                         TAGSOUP(1)
+TagSoup 1.1.3                      May 2007                         TAGSOUP(1)

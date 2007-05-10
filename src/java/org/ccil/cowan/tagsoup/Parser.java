@@ -328,7 +328,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void setProperty (String name, Object value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
 		if (name.equals(lexicalHandlerProperty)) {
-			if (value instanceof LexicalHandler) {
+			if (value == null) {
+				theLexicalHandler = this;
+				}
+			else if (value instanceof LexicalHandler) {
 				theLexicalHandler = (LexicalHandler)value;
 				}
 			else {
@@ -365,7 +368,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void setEntityResolver (EntityResolver resolver) {
-		theEntityResolver = resolver;
+		theEntityResolver = (resolver == null) ? this : resolver;
 		}
 
 	public EntityResolver getEntityResolver () {
@@ -373,7 +376,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void setDTDHandler (DTDHandler handler) {
-		theDTDHandler = handler;
+		theDTDHandler = (handler == null) ? this : handler;
 		}
 
 	public DTDHandler getDTDHandler () {
@@ -381,7 +384,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void setContentHandler (ContentHandler handler) {
-		theContentHandler = handler;
+		theContentHandler = (handler == null) ? this : handler;
 		}
 
 	public ContentHandler getContentHandler () {
@@ -389,7 +392,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		}
 
 	public void setErrorHandler (ErrorHandler handler) {
-		theErrorHandler = handler;
+		theErrorHandler = (handler == null) ? this : handler;
 		}
 
 	public ErrorHandler getErrorHandler () {
