@@ -1,14 +1,15 @@
-// This file is part of TagSoup.
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.  You may also distribute
-// and/or modify it under version 3.0 of the Academic Free License.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+// This file is part of TagSoup and is Copyright 2002-2007 by John Cowan.
+//
+// TagSoup is licensed under the Apache License,
+// Version 2.0.  You may obtain a copy of this license at
+// http://www.apache.org/licenses/LICENSE-2.0 .  You may also have
+// additional legal rights not granted by this license.
+//
+// TagSoup is distributed in the hope that it will be useful, but
+// unless required by applicable law or agreed to in writing, TagSoup
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+// OF ANY KIND, either express or implied; not even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // 
 // 
 // The TagSoup parser
@@ -39,6 +40,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Schema theSchema;
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
+
 	// Feature flags
 	private boolean namespaces = true;
 	private boolean ignoreBogons = false;
@@ -436,7 +438,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theSaved = null;
 		theEntity = 0;
 		virginStack = true;
-                doctypename = doctypepublicid = doctypesystemid = null;
+                theDoctypeName = theDoctypePublicId = theDoctypeSystemId = null;
 		}
 
 	// Return a Reader based on the contents of an InputSource
@@ -479,9 +481,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	private Element theNewElement = null;
 	private String theAttributeName = null;
-	private String doctypepublicid = null;
-	private String doctypesystemid = null;
-	private String doctypename = null;
+	private boolean theDoctypeIsPresent = false;
+	private String theDoctypePublicId = null;
+	private String theDoctypeSystemId = null;
+	private String theDoctypeName = null;
 	private String thePITarget = null;
 	private Element theStack = null;
 	private Element theSaved = null;
@@ -637,9 +640,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 //		System.err.println("%% Pushing " + name);
 		e.clean();
 		if (!namespaces) namespace = localName = "";
-                if (virginStack && localName.equalsIgnoreCase(doctypename)) {
+                if (virginStack && localName.equalsIgnoreCase(theDoctypeName)) {
                     try {
-                        theEntityResolver.resolveEntity(doctypepublicid, doctypesystemid);
+                        theEntityResolver.resolveEntity(theDoctypePublicId, theDoctypeSystemId);
                     } catch (IOException ew) { }   // Can't be thrown for root I believe.
                 }
 		theContentHandler.startElement(namespace, localName, name, e.atts());
@@ -668,6 +671,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		String publicid = null;
 		String[] v = split(s);
 		if (v.length > 0 && "DOCTYPE".equals(v[0])) {
+			if (theDoctypeIsPresent) return;		// one doctype only!
+			theDoctypeIsPresent = true;
 			if (v.length > 1) {
 				name = v[1];
 				if (v.length>3 && "SYSTEM".equals(v[2])) {
@@ -690,12 +695,12 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			publicid = cleanPublicid(publicid);
 			theLexicalHandler.startDTD(name, publicid, systemid);
 			theLexicalHandler.endDTD();
-			doctypename = name;
-			doctypepublicid = publicid;
+			theDoctypeName = name;
+			theDoctypePublicId = publicid;
 		if (theScanner instanceof Locator) {    // Must resolve systemid
-                    doctypesystemid  = ((Locator)theScanner).getSystemId();
+                    theDoctypeSystemId  = ((Locator)theScanner).getSystemId();
                     try {
-                        doctypesystemid = new URL(new URL(doctypesystemid), systemid).toString();
+                        theDoctypeSystemId = new URL(new URL(theDoctypeSystemId), systemid).toString();
                     } catch (Exception e) {}
                 }
             }
@@ -826,6 +831,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void pitarget(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
 		thePITarget = makeName(buff, offset, length);
+		thePITarget = thePITarget.replace(':', '_');
+		if (thePITarget.equalsIgnoreCase("xml")) {
+			thePITarget = thePITarget.concat("_");
+			}
 		}
 
 	public void pi(char[] buff, int offset, int length) throws SAXException {

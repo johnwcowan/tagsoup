@@ -1,14 +1,15 @@
-// This file is part of TagSoup.
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.  You may also distribute
-// and/or modify it under version 3.0 of the Academic Free License.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+// This file is part of TagSoup and is Copyright 2002-2007 by John Cowan.
+//
+// TagSoup is licensed under the Apache License,
+// Version 2.0.  You may obtain a copy of this license at
+// http://www.apache.org/licenses/LICENSE-2.0 .  You may also have
+// additional legal rights not granted by this license.
+//
+// TagSoup is distributed in the hope that it will be useful, but
+// unless required by applicable law or agreed to in writing, TagSoup
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+// OF ANY KIND, either express or implied; not even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // 
 // 
 package org.ccil.cowan.tagsoup;
@@ -90,8 +91,6 @@ public class HTMLScanner implements Scanner, Locator {
 
 	public void scan(Reader r0, ScanHandler h) throws IOException, SAXException {
 		theState = S_PCDATA;
-		int savedState = 0;
-		int savedSize = 0;
 		PushbackReader r;
 		if (r0 instanceof PushbackReader) {
 			r = (PushbackReader)r0;
@@ -104,11 +103,20 @@ public class HTMLScanner implements Scanner, Locator {
 			}
 
 		int firstChar = r.read();	// Remove any leading BOM
-		if (firstChar != '\uFEFF' && firstChar != -1) r.unread(firstChar);
+		if (firstChar != '\uFEFF') unread(r, firstChar);
 
 		while (theState != S_DONE) {
 			int ch = r.read();
+
+			// Process control characters
 			if (ch >= 0x80 && ch <= 0x9F) ch = theWinMap[ch-0x80];
+			if (ch == '\r') {
+				ch = r.read();		// expect LF next
+				if (ch != '\n') {
+					unread(r, ch);	// nope
+					ch = '\n';
+					}
+				}
 			if (ch == '\n') {
 				theCurrentLine++;
 				theCurrentColumn = 0;
@@ -116,7 +124,9 @@ public class HTMLScanner implements Scanner, Locator {
 			else {
 				theCurrentColumn++;
 				}
-			if (ch < 0x20 && ch != '\n' && ch != '\r' && ch != '\t' && ch != -1) continue;
+			if (ch > 20 || ch == '\n' || ch == '\t' || ch == -1) ;
+			else continue;			// drop all other controls
+
 			// Search state table
 			int action = 0;
 			for (int i = 0; i < statetable.length; i += 4) {
@@ -185,6 +195,11 @@ Integer.toString(theState));
 				h.pcdata(theOutputBuffer, 0, theSize);
 				theSize = 0;
 				break;
+			case A_ENTITY_START:
+				h.pcdata(theOutputBuffer, 0, theSize);
+				theSize = 0;
+				save(ch, h);
+				break;
 			case A_ENTITY:
 				mark();
 				char ch1 = (char)ch;
@@ -212,12 +227,13 @@ Integer.toString(theState));
 					break;
 					}
 
+				// The whole entity reference has been collected
 //				System.err.println("%%" + new String(theOutputBuffer, 0, theSize));
-				h.entity(theOutputBuffer, savedSize + 1, theSize - savedSize - 1);
+				h.entity(theOutputBuffer, 1, theSize - 1);
 				int ent = h.getEntity();
 //				System.err.println("%% value = " + ent);
 				if (ent != 0) {
-					theSize = savedSize;
+					theSize = 0;
 					if (ent >= 0x80 && ent <= 0x9F) {
 						ent = theWinMap[ent-0x80];
 						}
@@ -239,7 +255,7 @@ Integer.toString(theState));
 					unread(r, ch);
 					theCurrentColumn--;
 					}
-				theNextState = savedState;
+				theNextState = S_PCDATA;
 				break;
         		case A_ETAG:
 				h.etag(theOutputBuffer, 0, theSize);
@@ -258,12 +274,10 @@ Integer.toString(theState));
 				theSize = 0;
 				h.stagc(theOutputBuffer, 0, theSize);
 				break;
-        		case A_LF:
-				save('\n', h);
-				break;
         		case A_LT:
 				mark();
 				save('<', h);
+				save(ch, h);
 				break;
 			case A_LT_PCDATA:
 				mark();
@@ -307,14 +321,6 @@ Integer.toString(theState));
 				theSize = 0;
 				h.pi(theOutputBuffer, 0, theSize);
 				break;
-			case A_PCDATA_SAVE_PUSH:
-				h.pcdata(theOutputBuffer, 0, theSize);
-				theSize = 0;
-				// fall through into A_SAVE_PUSH
-        		case A_SAVE_PUSH:
-				savedState = theState;
-				savedSize = theSize;
-				// fall through into A_SAVE
         		case A_SAVE:
 				save(ch, h);
 				break;
@@ -401,16 +407,10 @@ Integer.toString(theState));
 		}
 
 
-        private static final String nicechar(int in) {
-            if (in=='\n') {
-                return "\n";
-            } else if (in=='\r') {
-                return "\r";
-            } else if (in < 32) {
-                return "0x"+Integer.toHexString(in);
-            } else {
-                return "'"+((char)in)+"'";
-            }
-        }
+	private static String nicechar(int in) {
+		if (in == '\n') return "\\n";
+		if (in < 32) return "0x"+Integer.toHexString(in);
+		return "'"+((char)in)+"'";
+		}
 
 	}

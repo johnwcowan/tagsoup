@@ -86,11 +86,6 @@
           <xsl:with-param name="char" select="&quot;'\n'&quot;"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="@symbol = 'CR'">
-        <xsl:call-template name="dump-tr">
-          <xsl:with-param name="char" select="&quot;'\r'&quot;"/>
-        </xsl:call-template>
-      </xsl:when>
       <xsl:when test="@symbol = 'default'">
         <xsl:call-template name="dump-tr">
           <xsl:with-param name="char" select="&quot;0&quot;"/>
@@ -104,9 +99,6 @@
       <xsl:when test="@symbol = 'S'">
         <xsl:call-template name="dump-tr">
           <xsl:with-param name="char" select="&quot;' '&quot;"/>
-        </xsl:call-template>
-        <xsl:call-template name="dump-tr">
-          <xsl:with-param name="char" select="&quot;'\r'&quot;"/>
         </xsl:call-template>
         <xsl:call-template name="dump-tr">
           <xsl:with-param name="char" select="&quot;'\n'&quot;"/>

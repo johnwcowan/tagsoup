@@ -1,3 +1,19 @@
+Changes from 1.1.3 to 1.2
+=========================
+Changed license to Apache 2.0
+Suppress all but the first DOCTYPE declaration
+Correctly handle runs of less-than characters
+Clean up newline processing, shrinking html.stml considerably
+Support new DOCTYPE output switches --doctype-system and --doctype-public
+Support new XML declaration output switches --standalone and --version
+Allow cells and forms in thead and tfoot elements without intervening tr element
+Support Netscape-specific nobr element
+In HTML mode, boolean attributes like checked are output in minized form
+Allow link elements in the body as well as the head, to avoid excess bodies
+Allow tables inside paragraphs
+Allow divs as inline elements (people should really use spans, but ...)
+Modify PI targets equal to "xml" or containing colons
+
 Changes from 1.1.2 to 1.1.3
 ===========================
 Allow Parser.set* methods to accept null

@@ -1,13 +1,17 @@
 // XMLWriter.java - serialize an XML document.
 // Written by David Megginson, david@megginson.com
-// NO WARRANTY!  This class is in the public domain.
-// Modified by John Cowan and Leigh Klotz for the TagSoup project.  Still in the public domain.
-// New features:
-//      it is a LexicalHandler
-//      it prints a comment if the LexicalHandler#comment method is called
-//      it supports certain XSLT output properties using get/setOutputProperty
-
-// $Id: XMLWriter.java,v 1.1 2004/01/28 05:35:43 joe Exp $
+// and placed by him into the public domain.
+// Extensively modified by John Cowan for TagSoup.
+// TagSoup is licensed under the Apache License,
+// Version 2.0.  You may obtain a copy of this license at
+// http://www.apache.org/licenses/LICENSE-2.0 .  You may also have
+// additional legal rights not granted by this license.
+//
+// TagSoup is distributed in the hope that it will be useful, but
+// unless required by applicable law or agreed to in writing, TagSoup
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+// OF ANY KIND, either express or implied; not even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 package org.ccil.cowan.tagsoup;
 
@@ -499,13 +503,26 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     {
         reset();
         if (!("yes".equals(outputProperties.getProperty(OMIT_XML_DECLARATION, "no")))) {
-            write("<?xml version=\"1.0\"");
+            write("<?xml");
+            if (version == null) {
+                write(" version=\"1.0\"");
+            } else {
+                write(" version=\"");
+                write(version);
+                write("\"");
+            }
             if (outputEncoding != null && outputEncoding != "") {
                 write(" encoding=\"");
                 write(outputEncoding);
                 write("\"");
             }
-            write(" standalone=\"yes\"?>\n");
+            if (standalone == null) {
+                write(" standalone=\"yes\"?>\n");
+            } else {
+                write(" standalone=\"");
+                write(standalone);
+                write("\"");
+            }
         }
         super.startDocument();
     }
@@ -559,6 +576,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     {
         elementLevel++;
         nsSupport.pushContext();
+	if (forceDTD && !hasOutputDTD) startDTD(localName == null ? qName : localName, "", "");
         write('<');
         writeName(uri, localName, qName, true);
         writeAttributes(atts);
@@ -1145,12 +1163,34 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
             write(' ');
             writeName(atts.getURI(i), atts.getLocalName(i),
                       atts.getQName(i), false);
+            if (htmlMode &&
+                booleanAttribute(atts.getLocalName(i), atts.getQName(i), atts.getValue(i))) break;
             write("=\"");
             writeEsc(ch, 0, ch.length, true);
             write('"');
         }
     }
 
+
+    private String[] booleans = {"checked", "compact", "declare", "defer",
+                                 "disabled", "ismap", "multiple",
+                                 "nohref", "noresize", "noshade",
+                                 "nowrap", "readonly", "selected"};
+
+    // Return true if the attribute is an HTML boolean from the above list.
+    private boolean booleanAttribute (String localName, String qName, String value)
+    {
+        String name = localName;
+        if (name == null) {
+            int i = qName.indexOf(':');
+            if (i != -1) name = qName.substring(i + 1, qName.length());
+        }
+        if (!name.equals(value)) return false;
+        for (int j = 0; j < booleans.length; j++) {
+            if (name.equals(booleans[j])) return true;
+            }
+        return false;
+    }
 
     /**
      * Write an array of data characters with escaping.
@@ -1283,10 +1323,14 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     public void startCDATA() throws SAXException { }
     public void startDTD(String name, String publicid, String systemid) throws SAXException {
         if (name == null) return;               // can't cope
+	if (hasOutputDTD) return;		// only one DTD
+	hasOutputDTD = true;
         write("<!DOCTYPE ");
-        if (systemid == null) systemid = "";
-        char sysquote = (systemid.indexOf('"') != -1) ? '\'': '"';
         write(name);
+        if (systemid == null) systemid = "";
+	if (overrideSystem != null) systemid = overrideSystem;
+        char sysquote = (systemid.indexOf('"') != -1) ? '\'': '"';
+	if (overridePublic != null) publicid = overridePublic;
         if (!(publicid == null || "".equals(publicid))) {
                 char pubquote = (publicid.indexOf('"') != -1) ? '\'': '"';
                 write(" PUBLIC ");
@@ -1323,9 +1367,23 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
             unicodeMode = value.substring(0, 3).equalsIgnoreCase("utf");
 //                System.out.println("%%%% unicodeMode = " + unicodeMode);
 	}
-	if (key.equals(METHOD)) {
+	else if (key.equals(METHOD)) {
 		htmlMode = value.equals("html");
 	}
+	else if (key.equals(DOCTYPE_PUBLIC)) {
+		overridePublic = value;
+		forceDTD = true;
+		}
+	else if (key.equals(DOCTYPE_SYSTEM)) {
+		overrideSystem = value;
+		forceDTD = true;
+		}
+	else if (key.equals(VERSION)) {
+		version = value;
+		}
+	else if (key.equals(STANDALONE)) {
+		standalone = value;
+		}
 //	System.out.println("%%%% htmlMode = " + htmlMode);
     }
     
@@ -1364,6 +1422,12 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     private boolean unicodeMode = false;
     private String outputEncoding = "";
     private boolean htmlMode = false;
+    private boolean forceDTD = false;
+    private boolean hasOutputDTD = false;
+    private String overridePublic = null;
+    private String overrideSystem = null;
+    private String version = null;
+    private String standalone = null;
     private boolean cdataElement = false;
     
 }
