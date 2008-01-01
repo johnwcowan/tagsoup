@@ -1,4 +1,4 @@
-// This file is part of TagSoup and is Copyright 2002-2007 by John Cowan.
+// This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
 //
 // TagSoup is licensed under the Apache License,
 // Version 2.0.  You may obtain a copy of this license at
@@ -44,7 +44,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// Feature flags
 	private boolean namespaces = true;
 	private boolean ignoreBogons = false;
-	private boolean bogonsEmpty = true;
+	private boolean bogonsEmpty = false;
+        private boolean rootBogons = true;
 	private boolean defaultAttributes = true;
 	private boolean translateColons = false;
 	private boolean restartElements = true;
@@ -186,6 +187,13 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		"http://www.ccil.org/~cowan/tagsoup/features/bogons-empty";
 
 	/**
+	A value of "true" indicates that the parser will allow unknown
+	elements to be the root element.
+	**/
+	public final static String rootBogonsFeature =
+		"http://www.ccil.org/~cowan/tagsoup/features/root-bogons";
+
+	/**
 	A value of "true" indicates that the parser will return default
 	attribute values for missing attributes that have default values.
 	**/
@@ -272,6 +280,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(XML11Feature, Boolean.FALSE);
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
 		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
+		theFeatures.put(rootBogonsFeature, Boolean.TRUE);
 		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
 		theFeatures.put(translateColonsFeature, Boolean.FALSE);
 		theFeatures.put(restartElementsFeature, Boolean.TRUE);
@@ -301,6 +310,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (name.equals(namespacesFeature)) namespaces = value;
 		else if (name.equals(ignoreBogonsFeature)) ignoreBogons = value;
 		else if (name.equals(bogonsEmptyFeature)) bogonsEmpty = value;
+		else if (name.equals(rootBogonsFeature)) rootBogons = value;
 		else if (name.equals(defaultAttributesFeature)) defaultAttributes = value;
 		else if (name.equals(translateColonsFeature)) translateColons = value;
 		else if (name.equals(restartElementsFeature)) restartElements = value;
@@ -499,7 +509,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void aname(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null) return;
-		theAttributeName = makeName(buff, offset, length);
+		// Currently we don't rely on Schema to canonicalize
+		// attribute names.
+		theAttributeName = makeName(buff, offset, length).toLowerCase();
 //		System.err.println("%% Attribute name " + theAttributeName);
 		}
 
@@ -568,8 +580,14 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void etag_basic(char[] buff, int offset, int length) throws SAXException {
 		theNewElement = null;
 		String name;
-		if (length != 0) name = makeName(buff, offset, length);
-		else name = theStack.name();
+		if (length != 0) {
+			// Canonicalize case of name
+			name = makeName(buff, offset, length);
+			name = theSchema.getElementType(name).name();
+			}
+		else {
+			name = theStack.name();
+			}
 //		System.err.println("%% Got end of " + name);
 
 		Element sp;
@@ -796,7 +814,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (type == null) {
 			// Suppress unknown elements if ignore-bogons is on
 			if (ignoreBogons) return;
-			theSchema.elementType(name, bogonsEmpty ? Schema.M_EMPTY : Schema.M_ANY, Schema.M_ANY, 0);
+			int bogonModel = bogonsEmpty ? Schema.M_EMPTY : Schema.M_ANY;
+			int bogonMemberOf = rootBogons ? Schema.M_ANY : (Schema.M_ANY & ~ Schema.M_ROOT);
+			theSchema.elementType(name, bogonModel, bogonMemberOf, 0);
+			if (!rootBogons) theSchema.parent(name, theSchema.rootElementType().name());
 			type = theSchema.getElementType(name);
 			}
 
@@ -830,16 +851,12 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public void pitarget(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
-		thePITarget = makeName(buff, offset, length);
-		thePITarget = thePITarget.replace(':', '_');
-		if (thePITarget.equalsIgnoreCase("xml")) {
-			thePITarget = thePITarget.concat("_");
-			}
+		thePITarget = makeName(buff, offset, length).replace(':', '_');
 		}
 
 	public void pi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null || thePITarget == null) return;
-		if (thePITarget.toLowerCase().equals("xml")) return;
+		if ("xml".equalsIgnoreCase(thePITarget)) return;
 //		if (length > 0 && buff[length - 1] == '?') System.out.println("%% Removing ? from PI");
 		if (length > 0 && buff[length - 1] == '?') length--;	// remove trailing ?
 		theContentHandler.processingInstruction(thePITarget,
@@ -906,14 +923,16 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		return theEntity;
 		}
 
-	// Return the argument as a valid XML name, lowercased
+	// Return the argument as a valid XML name
+	// This no longer lowercases the result: we depend on Schema to
+	// canonicalize case.
 	private String makeName(char[] buff, int offset, int length) {
 		StringBuffer dst = new StringBuffer(length + 2);
 		boolean seenColon = false;
 		boolean start = true;
 //		String src = new String(buff, offset, length); // DEBUG
 		for (; length-- > 0; offset++) {
-			char ch = Character.toLowerCase(buff[offset]);
+			char ch = buff[offset];
 			if (Character.isLetter(ch) || ch == '_') {
 				start = false;
 				dst.append(ch);

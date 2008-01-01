@@ -8,11 +8,15 @@ Support new DOCTYPE output switches --doctype-system and --doctype-public
 Support new XML declaration output switches --standalone and --version
 Allow cells and forms in thead and tfoot elements without intervening tr element
 Support Netscape-specific nobr element
-In HTML mode, boolean attributes like checked are output in minized form
+In HTML mode, boolean attributes like checked are output in minimized form
 Allow link elements in the body as well as the head, to avoid excess bodies
 Allow tables inside paragraphs
 Allow divs as inline elements (people should really use spans, but ...)
 Modify PI targets equal to "xml" or containing colons
+The case of element tags is now canonicalized to the schema
+PI targets are no longer forced to lower case
+Bogon default model is now ANY, not EMPTY
+New --norootbogons switch makes bogons children of the root
 
 Changes from 1.1.2 to 1.1.3
 ===========================

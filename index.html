@@ -1,3 +1,20 @@
+<!--
+// This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
+//
+// This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
+//
+// TagSoup is licensed under the Apache License,
+// Version 2.0.  You may obtain a copy of this license at
+// http://www.apache.org/licenses/LICENSE-2.0 .  You may also have
+// additional legal rights not granted by this license.
+//
+// TagSoup is distributed in the hope that it will be useful, but
+// unless required by applicable law or agreed to in writing, TagSoup
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+// OF ANY KIND, either express or implied; not even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+-->
+
 <html><head><title>TagSoup home page</title></head><body>
 <h1>TagSoup - Just Keep On Truckin'</h1>
 
@@ -16,14 +33,12 @@ close approximation to XHTML.</p>
 
 <p>This is also the README file packaged with TagSoup.</p>
 
-<p>TagSoup is free and Open Source software, licensed under the
-<a href="http://www.opensource.org/licenses/afl-3.0.php">
-Academic Free License</a> version 3.0, a cleaned-up and patent-safe
-BSD-style license which allows proprietary re-use.
-It's also licensed under the
-<a href="http://www.opensource.org/licenses/gpl-license.php">GNU GPL</a>
-version 2.0, since unfortunately the GPL and the AFL are incompatible.
-You can choose to license TagSoup from me under either the GPL or the AFL.</p>
+<p>TagSoup is free and Open Source software.  As of version 2.1, it
+is licensed under the
+<a href="http://opensource.org/licenses/apache2.0.php">
+Apache License, Version 2.0</a>, which allows proprietary re-use as well
+as use with GPL 3.0 or GPL 2.0-or-later projects.  (If anyone needs a
+GPL 2.0 license for a GPL 2.0-only project, feel free to ask.)
 
 <h3><i>Warning:</i> TagSoup will not build on stock Java 5.x or 6.x!</h3>
 
@@ -38,6 +53,73 @@ use it instead.</p>
 
 <h3>TagSoup 1.2 released</h3>
 
+<p>Although this is a bug-fix release, I have bumped the minor version
+number because of the large number of bugs that have been pending since
+TagSoup 1.1.3 was released.  Here they are:</p>
+
+<ul>
+
+<li>As noted above, I have changed the license to Apache 2.0.</li>
+
+<li>The default content model for bogons (unknown elements) is now
+ANY rather than EMPTY.  <b>This is a breaking change</b>, which I have
+done only because there was so much demand for it.  It can be undone
+on the command line with the <code>--emptybogons</code> switch, or
+programmatically with <code>parser.setFeature(Parser.emptyBogonsFeature,
+true);</code>.
+
+<li>If multiple <code>DOCTYPE</code> declarations appear in the input,
+all but the first one are suppressed.</li>
+
+<li>A sequence of two or more less-than characters followed by whitespace
+is now treated as text rather than a <i>very</i> broken start-tag.</li>
+
+<li>All bugs around newline processing on Windows should now be gone.</li>
+
+<li>The new output switches <code>--doctype-system</code> and
+<code>--doctype-public</code> force a <code>DOCTYPE</code> declaration
+to be output and allow setting the system and public identifiers.</li>
+
+<li>The new output switches <code>--standalone</code> and
+<code>--version</code> allow control of the XML declaration
+that is output.  (Note that TagSoup's XML output is always
+version 1.0, even if you use <code>--version=1.1</code>.)
+
+<li>Table cells are now allowed in <code>thead</code> and
+<code>tfoot</code> elements even if no <code>tr</code> element is
+present.</li>
+
+<li>The Netscape-specific <code>nobr</code> element is now supported.</li>
+
+<li>In HTML mode, boolean attributes like <code>checked</code>
+are now output as such, rather than in XML style as
+<code>checked="checked"</code>.</li>
+
+<li><code>link</code> elements are now allowed in the body as well as
+the head, which prevents multiple <code>body</code> elements from being
+created.</li>
+
+<li>Tables are now allowed inside paragraphs.</li>
+
+<li><code>div</code> elements are now treated as inline elements as well
+as block elements.</li>
+
+<li>Colons in processing instruction targets are changed to
+underscores.</li>
+
+<li>Element tags are no longer forced to be in lower case; instead,
+they are canonicalized to whatever case appears in the TagSoup schema.
+This does not affect HTML parsing, but may be useful for parsing other
+markup languages.</li>
+
+<li>Processing instruction targets are no longer forced to lower
+case.</li>
+
+<li>The new <code>--norootbogons</code> switch causes unknown elements
+not to be allowed as the document root element.  Instead, they are made
+children of the default root element (the <code>html</code> element
+for HTML).</li>
+</ul>
 
 <p><a href="tagsoup-1.1.3.jar">Download</a> the TagSoup 1.1.3 jar
 file here.
@@ -163,7 +245,7 @@ for the known empty elements.</dd>
 namespace, and all attributes are in no namespace.</dd>
 
 <dt><code>--nobogons</code></dt>
-<dd>Bogons (unknown elements) are suppressed.  Normally, they are treated as empty.</dd>
+<dd>Bogons (unknown elements) are suppressed.</dd>
 
 <dt><code>--nodefaults</code></dt>
 <dd>suppress default attribute values</dd>
@@ -177,8 +259,14 @@ namespace, and all attributes are in no namespace.</dd>
 <dt><code>--ignorable</code></dt>
 <dd>output whitespace in elements with element-only content</dd>
 
+<dt><code>--emptybogons</code></dt>
+<dd>Bogons are given a content model of EMPTY rather than ANY.</dd>
+
 <dt><code>--any</code></dt>
-<dd>Bogons are given a content model of ANY rather than EMPTY.</dd>
+<dd>Bogons are given a content model of ANY rather than EMPTY (default).</dd>
+
+<dt><code>--norootbogons</code></dt>
+<dd>Don't allow bogons to be root elements; make them subordinate to the root.</dd>
 
 <dt><code>--lexical</code></dt>
 <dd>Pass through HTML comments and DOCTYPE declarations.  Has no effect

@@ -1,4 +1,4 @@
-// This file is part of TagSoup and is Copyright 2002-2007 by John Cowan.
+// This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
 //
 // TagSoup is licensed under the Apache License,
 // Version 2.0.  You may obtain a copy of this license at
@@ -37,6 +37,8 @@ public class CommandLine {
 		options.put("--nons", Boolean.FALSE);	// no namespaces
 		options.put("--nobogons", Boolean.FALSE);  // suppress unknown elements
 		options.put("--any", Boolean.FALSE);	// unknowns have ANY content model
+		options.put("--emptybogons", Boolean.FALSE);	// unknowns have EMPTY content model
+		options.put("--norootbogons", Boolean.FALSE);	// unknowns can't be the root
 		options.put("--pyxin", Boolean.FALSE);	// input is PYX
 		options.put("--lexical", Boolean.FALSE); // output comments
 		options.put("--pyx", Boolean.FALSE);	// output is PYX
@@ -149,6 +151,13 @@ public class CommandLine {
 
 		if (hasOption(options, "--any")) {
 			r.setFeature(Parser.bogonsEmptyFeature, false);
+			}
+		else if (hasOption(options, "--emptybogons")) {
+			r.setFeature(Parser.bogonsEmptyFeature, true);
+			}
+
+		if (hasOption(options, "--norootbogons")) {
+			r.setFeature(Parser.rootBogonsFeature, false);
 			}
 
 		if (hasOption(options, "--nodefaults")) {

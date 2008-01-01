@@ -1,4 +1,4 @@
-// This file is part of TagSoup and is Copyright 2002-2007 by John Cowan.
+// This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
 //
 // TagSoup is licensed under the Apache License,
 // Version 2.0.  You may obtain a copy of this license at
@@ -41,6 +41,7 @@ public abstract class Schema {
 
 	private String theURI = "";
 	private String thePrefix = "";
+	private ElementType theRoot = null;
 
 	/**
 	Add or replace an element type for this schema.
@@ -52,7 +53,16 @@ public abstract class Schema {
 
 	public void elementType(String name, int model, int memberOf, int flags) {
 		ElementType e = new ElementType(name, model, memberOf, flags, this);
-		theElementTypes.put(name, e);
+		theElementTypes.put(name.toLowerCase(), e);
+		if (memberOf == M_ROOT) theRoot = e;
+		}
+
+	/**
+	Get the root element of this schema
+	**/
+
+	public ElementType rootElementType() {
+		return theRoot;
 		}
 
 	/**
@@ -109,7 +119,7 @@ public abstract class Schema {
 	**/
 
 	public ElementType getElementType(String name) {
-		return (ElementType)(theElementTypes.get(name));
+		return (ElementType)(theElementTypes.get(name.toLowerCase()));
 		}
 
 	/**
