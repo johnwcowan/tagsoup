@@ -17,6 +17,7 @@ The case of element tags is now canonicalized to the schema
 PI targets are no longer forced to lower case
 Bogon default model is now ANY, not EMPTY
 New --norootbogons switch makes bogons children of the root
+Don't resolve entity references in attribute values unless semicolon-terminated
 
 Changes from 1.1.2 to 1.1.3
 ===========================

@@ -238,7 +238,7 @@ Integer.toString(theState));
 						ent = theWinMap[ent-0x80];
 						}
 					if (ent < 0x20) ent = 0x20;
-					if (ent < 0x10000) {
+					if (ent <= 0xFFFF) {
 						save(ent, h);
 						}
 					else {

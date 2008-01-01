@@ -60,7 +60,7 @@ public class PYXWriter
 
 	public void entity(char[] buff, int offset, int length) throws SAXException { }
 
-	public char getEntity() { return 0; }
+	public int getEntity() { return 0; }
 
 	public void eof(char[] buff, int offset, int length) throws SAXException {
 		theWriter.close();

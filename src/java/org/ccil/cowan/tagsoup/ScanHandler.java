@@ -115,5 +115,5 @@ public interface ScanHandler {
 	Returns the value of the last entity or character reference reported.
 	**/
 
-	public char getEntity();
+	public int getEntity();
 	}

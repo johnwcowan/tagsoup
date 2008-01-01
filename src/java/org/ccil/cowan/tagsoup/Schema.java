@@ -128,27 +128,11 @@ public abstract class Schema {
 	@return The corresponding character, or 0 if none
 	**/
 
-	public char getEntity(String name) {
+	public int getEntity(String name) {
 //		System.err.println("%% Looking up entity " + name);
-		if (name.length() == 0) return 0;
-		if (name.charAt(0) == '#') {
-			if (name.length() > 1 && (name.charAt(1) == 'x'
-					|| name.charAt(1) == 'X')) {
-				try {
-					return (char)Integer.parseInt(name.substring(2), 16);
-					}
-				catch (NumberFormatException e) { return 0; }
-				}
-			try {
-				return (char)Integer.parseInt(name.substring(1));
-				}
-			catch (NumberFormatException e) { return 0; }
-			}
-		Character c = (Character)theEntities.get(name);
-		if (c == null) {
-			return 0;
-			}
-		return c.charValue();
+		Integer ch = (Integer)theEntities.get(name);
+		if (ch == null) return 0;
+		return ch.intValue();
 		}
 
 	/**

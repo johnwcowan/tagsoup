@@ -41,7 +41,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
 
-	// Feature flags
+	// Feature flags.  The default values here set the defaults for
+	// actual processing, but must be kept in sync with the entries
+	// in theFeatures.
+
 	private boolean namespaces = true;
 	private boolean ignoreBogons = false;
 	private boolean bogonsEmpty = false;
@@ -260,6 +263,11 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public final static String autoDetectorProperty =
 		"http://www.ccil.org/~cowan/tagsoup/properties/auto-detector";
 
+	// Due to sucky Java order of initialization issues, these
+	// entries are maintained separately from the initial values of
+	// the corresponding instance variables, but care must be taken
+	// to keep them in sync.
+
 	private HashMap theFeatures = new HashMap();
 	{
 		theFeatures.put(namespacesFeature, Boolean.TRUE);
@@ -279,7 +287,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(xmlnsURIsFeature, Boolean.FALSE);
 		theFeatures.put(XML11Feature, Boolean.FALSE);
 		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
-		theFeatures.put(bogonsEmptyFeature, Boolean.TRUE);
+		theFeatures.put(bogonsEmptyFeature, Boolean.FALSE);
 		theFeatures.put(rootBogonsFeature, Boolean.TRUE);
 		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
 		theFeatures.put(translateColonsFeature, Boolean.FALSE);
@@ -499,7 +507,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Element theStack = null;
 	private Element theSaved = null;
 	private Element thePCDATA = null;
-	private char theEntity = 0;
+	private int theEntity = 0;	// needs to support chars past U+FFFF
 
 	public void adup(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement == null || theAttributeName == null) return;
@@ -519,20 +527,84 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (theNewElement == null || theAttributeName == null) return;
 		String value = new String(buff, offset, length);
 //		System.err.println("%% Attribute value [" + value + "]");
+		value = expandEntities(value);
 		theNewElement.setAttribute(theAttributeName, null, value);
 		theAttributeName = null;
 //		System.err.println("%% Aval done");
 		}
 
-	public void entity(char[] buff, int offset, int length) throws SAXException {
-		if (length < 1) {
-			theEntity = 0;
-			return;
+	// Expand entity references in attribute values selectively.
+	// Currently we expand a reference iff it is properly terminated
+	// with a semicolon.
+	private String expandEntities(String src) {
+		int refStart = -1;
+		int len = src.length();
+		char[] dst = new char[len];
+		int dstlen = 0;
+		for (int i = 0; i < len; i++) {
+			char ch = src.charAt(i);
+			dst[dstlen++] = ch;
+			if (ch == '&' && refStart == -1) {
+				// start of a ref excluding &
+				refStart = dstlen;
+				}
+			else if (refStart == -1) {
+				// not in a ref
+				}
+			else if (Character.isLetter(ch) ||
+					Character.isDigit(ch) ||
+					ch == '#') {
+				// valid entity char
+				}
+			else if (ch == ';') {
+				// properly terminated ref
+				int ent = lookupEntity(dst, refStart, i - refStart);
+				if (ent > 0xFFFF) {
+					ent -= 0x10000;
+					dst[refStart - 1] = (char)((ent>>10) + 0xD800);
+					dst[refStart] = (char)((ent&0x3FF) + 0xDC00);
+					dstlen = refStart + 1;
+					refStart = -1;
+					}
+				else if (ent != 0) {
+					dst[refStart - 1] = (char)ent;
+					dstlen = refStart;
+					refStart = -1;
+					}
+				}
+			else {
+				// improperly terminated ref
+				refStart = -1;
+				}
 			}
+		return new String(dst, 0, dstlen);
+		}
+
+	public void entity(char[] buff, int offset, int length) throws SAXException {
+		theEntity = lookupEntity(buff, offset, length);
+		}
+
+	// Process numeric character references,
+	// deferring to the schema for named ones.
+	private int lookupEntity(char[] buff, int offset, int length) {
+		int result = 0;
+		if (length < 1) return result;
 //		System.err.println("%% Entity at " + offset + " " + length);
-		String name = new String(buff, offset, length);
-//		System.err.println("%% Got entity [" + name + "]");
-		theEntity = theSchema.getEntity(name);
+//		System.err.println("%% Got entity [" + new String(buff, offset, length) + "]");
+		if (buff[offset] == '#') {
+                        if (length > 1 && (buff[offset+1] == 'x'
+                                        || buff[offset+1] == 'X')) {
+                                try {
+                                        return Integer.parseInt(new String(buff, offset + 2, length - 2), 16);
+                                        }
+                                catch (NumberFormatException e) { return 0; }
+                                }
+                        try {
+                                return Integer.parseInt(new String(buff, offset + 1, length - 1), 10);
+                                }
+                        catch (NumberFormatException e) { return 0; }
+                        }
+		return theSchema.getEntity(new String(buff, offset, length));
 		}
 
 	public void eof(char[] buff, int offset, int length) throws SAXException {
@@ -919,7 +991,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theNewElement = null;
 		}
 
-	public char getEntity() {
+	public int getEntity() {
 		return theEntity;
 		}
 

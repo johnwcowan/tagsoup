@@ -1,6 +1,4 @@
-Entityblind option (treat entity references as literal text)
-Handle entity references in attribute values
-	expand iff ;-terminated
+theEntity needs to be an int, not a char
 Don't just chuck out namespace declarations
 Allow inline cruft in table bodies and rows
 	(Don't break up tables, ever?)
