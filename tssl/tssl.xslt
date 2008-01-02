@@ -3,8 +3,6 @@
 <!--
 // This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
 // 
-// This file is part of TagSoup and is Copyright 2002-2008 by John Cowan.
-//
 // TagSoup is licensed under the Apache License,
 // Version 2.0.  You may obtain a copy of this license at
 // http://www.apache.org/licenses/LICENSE-2.0 .  You may also have
@@ -214,17 +212,8 @@
   <xsl:template match="tssl:entity">
     <xsl:text>&#x9;&#x9;entity("</xsl:text>
     <xsl:value-of select="@name"/>
-    <xsl:text>", </xsl:text>
-    <xsl:choose>
-      <xsl:when test="@codepoint = '0027'">
-        <xsl:text>'\''</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>'\u</xsl:text>
-        <xsl:value-of select="@codepoint"/>
-        <xsl:text>'</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:text>", 0x</xsl:text>
+    <xsl:value-of select="@codepoint"/>
     <xsl:text>);&#xA;</xsl:text>
   </xsl:template>
 

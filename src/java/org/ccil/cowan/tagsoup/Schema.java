@@ -108,8 +108,8 @@ public abstract class Schema {
 	@param value Value of the entity
 	**/
 
-	public void entity(String name, char value) {
-		theEntities.put(name, new Character(value));
+	public void entity(String name, int value) {
+		theEntities.put(name, new Integer(value));
 		}
 
 	/**

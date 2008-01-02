@@ -18,6 +18,8 @@ PI targets are no longer forced to lower case
 Bogon default model is now ANY, not EMPTY
 New --norootbogons switch makes bogons children of the root
 Don't resolve entity references in attribute values unless semicolon-terminated
+Support character entities above U+FFFF
+Add character entities from the 2007-12-14 draft of xml-entity-names
 
 Changes from 1.1.2 to 1.1.3
 ===========================

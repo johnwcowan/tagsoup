@@ -55,77 +55,75 @@ use it instead.</p>
 
 <p>Although this is a bug-fix release, I have bumped the minor version
 number because of the large number of bugs that have been pending since
-TagSoup 1.1.3 was released.  Here they are:</p>
+TagSoup 1.1.3 was released.  Here are the most important changes
+(for the rest, see the CHANGES file in the source distribution):</p>
 
 <ul>
 
-<li>As noted above, I have changed the license to Apache 2.0.</li>
+<li><p>As noted above, I have changed the license to Apache 2.0.</p></li>
 
-<li>The default content model for bogons (unknown elements) is now
+<li><p>The default content model for bogons (unknown elements) is now
 ANY rather than EMPTY.  <b>This is a breaking change</b>, which I have
 done only because there was so much demand for it.  It can be undone
 on the command line with the <code>--emptybogons</code> switch, or
 programmatically with <code>parser.setFeature(Parser.emptyBogonsFeature,
-true);</code>.
+true)</code>.</p></li>
 
-<li>If multiple <code>DOCTYPE</code> declarations appear in the input,
-all but the first one are suppressed.</li>
+<li><p>The processing of entity references in attribute values has
+finally been fixed to do what browsers do.  That is, a reference
+is only recognized if it is properly terminated by a semicolon;
+otherwise it is treated as plain text.  This means that URIs
+like <code>foo?cdown=32&amp;cup=42</code> are no longer seen as
+containing an instance of the &cup; character (whose name happens to
+be <code>cup</code>).</p></li>
 
-<li>A sequence of two or more less-than characters followed by whitespace
-is now treated as text rather than a <i>very</i> broken start-tag.</li>
+<li><p>Several new switches have been added:
 
-<li>All bugs around newline processing on Windows should now be gone.</li>
+<ul>
 
-<li>The new output switches <code>--doctype-system</code> and
-<code>--doctype-public</code> force a <code>DOCTYPE</code> declaration
-to be output and allow setting the system and public identifiers.</li>
+<li><p><code>--doctype-system</code> and <code>--doctype-public</code>
+force a <code>DOCTYPE</code> declaration to be output and allow setting
+the system and public identifiers.</p></li>
 
-<li>The new output switches <code>--standalone</code> and
-<code>--version</code> allow control of the XML declaration
-that is output.  (Note that TagSoup's XML output is always
-version 1.0, even if you use <code>--version=1.1</code>.)
+<li><p><code>--standalone</code> and <code>--version</code> allow control
+of the XML declaration that is output.  (Note that TagSoup's XML output
+is always version 1.0, even if you use <code>--version=1.1</code>.)</p></li>
 
-<li>Table cells are now allowed in <code>thead</code> and
+<li><p><code>--norootbogons</code> causes unknown elements not to be allowed
+as the document root element.  Instead, they are made children of the
+default root element (the <code>html</code> element for HTML).</p></li>
+
+</ul>
+<li><p>The TagSoup core now supports character entities with values
+above U+FFFF.  As a consequence, the HTML schema now supports all
+2,210 standard character entities from the 
+<a href="http://www.w3.org/TR/2007/WD-xml-entity-names-20071214">
+2007-12-14 draft of XML Entity Definitions for Characters</a>, except the
+94 which require more than one Unicode character to represent.</p></li>
+
+
+<li><p>All bugs around newline processing on Windows should now be gone.</p></li>
+
+<li><p>Table cells are now allowed in <code>thead</code> and
 <code>tfoot</code> elements even if no <code>tr</code> element is
-present.</li>
+present.</p></li>
 
-<li>The Netscape-specific <code>nobr</code> element is now supported.</li>
-
-<li>In HTML mode, boolean attributes like <code>checked</code>
+<li><p>In HTML output mode, boolean attributes like <code>checked</code>
 are now output as such, rather than in XML style as
-<code>checked="checked"</code>.</li>
+<code>checked="checked"</code>.</p></li>
 
-<li><code>link</code> elements are now allowed in the body as well as
+<li><p><code>link</code> elements are now allowed in the body as well as
 the head, which prevents multiple <code>body</code> elements from being
-created.</li>
+created.</p></li>
 
-<li>Tables are now allowed inside paragraphs.</li>
-
-<li><code>div</code> elements are now treated as inline elements as well
-as block elements.</li>
-
-<li>Colons in processing instruction targets are changed to
-underscores.</li>
-
-<li>Element tags are no longer forced to be in lower case; instead,
-they are canonicalized to whatever case appears in the TagSoup schema.
-This does not affect HTML parsing, but may be useful for parsing other
-markup languages.</li>
-
-<li>Processing instruction targets are no longer forced to lower
-case.</li>
-
-<li>The new <code>--norootbogons</code> switch causes unknown elements
-not to be allowed as the document root element.  Instead, they are made
-children of the default root element (the <code>html</code> element
-for HTML).</li>
 </ul>
 
-<p><a href="tagsoup-1.1.3.jar">Download</a> the TagSoup 1.1.3 jar
+<p><a href="tagsoup-1.2.jar">Download</a> the TagSoup 1.2 jar
 file here.
-It's about 58K long.<br/>
-<a href="tagsoup-1.1.3-src.zip">Download</a> the full TagSoup 1.1.3 source
-here.  If you don't have zip, you can use jar to unpack it.  </p>
+It's about 87K long.<br/>
+<a href="tagsoup-1.2-src.zip">Download</a> the full TagSoup 1.2 source
+here.  If you don't have zip, you can use jar to unpack it.  <br/>
+<a href="CHANGES">Download</a> the current CHANGES file here.</p>
 
 <h3>TagSoup 1.1 released</h3>
 
@@ -139,8 +137,6 @@ to <tt>org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl</tt>, but <i>be
 aware</i> that doing this will cause all JAXP-based XML parsing to go
 through TagSoup, which is a Bad Thing if your application also reads
 XML documents.</p>
-
-<p>There are no new features in TagSoup itself.</p>
 
 <h3>What TagSoup does</h3>
 <p>TagSoup is designed as a parser, not a whole application; it isn't

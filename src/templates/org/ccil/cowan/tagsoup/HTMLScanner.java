@@ -110,6 +110,7 @@ public class HTMLScanner implements Scanner, Locator {
 
 			// Process control characters
 			if (ch >= 0x80 && ch <= 0x9F) ch = theWinMap[ch-0x80];
+
 			if (ch == '\r') {
 				ch = r.read();		// expect LF next
 				if (ch != '\n') {
@@ -117,6 +118,7 @@ public class HTMLScanner implements Scanner, Locator {
 					ch = '\n';
 					}
 				}
+
 			if (ch == '\n') {
 				theCurrentLine++;
 				theCurrentColumn = 0;
@@ -124,8 +126,8 @@ public class HTMLScanner implements Scanner, Locator {
 			else {
 				theCurrentColumn++;
 				}
-			if (ch > 20 || ch == '\n' || ch == '\t' || ch == -1) ;
-			else continue;			// drop all other controls
+
+			if (!(ch >= 0x20 || ch == '\n' || ch == '\t' || ch == -1)) continue;
 
 			// Search state table
 			int action = 0;
@@ -237,11 +239,20 @@ Integer.toString(theState));
 					if (ent >= 0x80 && ent <= 0x9F) {
 						ent = theWinMap[ent-0x80];
 						}
-					if (ent < 0x20) ent = 0x20;
-					if (ent <= 0xFFFF) {
+					if (ent < 0x20) {
+						// Control becomes space
+						ent = 0x20;
+						}
+					else if (ent >= 0xD800 && ent <= 0xDFFF) {
+						// Surrogates get dropped
+						ent = 0;
+						}
+					else if (ent <= 0xFFFF) {
+						// BMP character
 						save(ent, h);
 						}
 					else {
+						// Astral converted to two surrogates
 						ent -= 0x10000;
 						save((ent>>10) + 0xD800, h);
 						save((ent&0x3FF) + 0xDC00, h);

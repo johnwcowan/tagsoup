@@ -655,7 +655,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (length != 0) {
 			// Canonicalize case of name
 			name = makeName(buff, offset, length);
-			name = theSchema.getElementType(name).name();
+//			System.out.println("got etag [" + name + "]");
+			ElementType type = theSchema.getElementType(name);
+			if (type == null) return;	// mysterious end-tag
+			name = type.name();
 			}
 		else {
 			name = theStack.name();
