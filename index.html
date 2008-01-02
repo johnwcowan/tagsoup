@@ -53,10 +53,9 @@ use it instead.</p>
 
 <h3>TagSoup 1.2 released</h3>
 
-<p>Although this is a bug-fix release, I have bumped the minor version
-number because of the large number of bugs that have been pending since
-TagSoup 1.1.3 was released.  Here are the most important changes
-(for the rest, see the CHANGES file in the source distribution):</p>
+<p>There are a great many changes, most of them fixes for long-standing
+bugs, in this release.  Only the most important are listed here; for
+the rest, see the CHANGES file in the source distribution:</p>
 
 <ul>
 
@@ -101,6 +100,9 @@ above U+FFFF.  As a consequence, the HTML schema now supports all
 2007-12-14 draft of XML Entity Definitions for Characters</a>, except the
 94 which require more than one Unicode character to represent.</p></li>
 
+<li>The SAX events <code>startPrefixMapping</code> and
+<code>endPrefixMapping</code> are now being reported for all cases of
+foreign elements and attributes.</li>
 
 <li><p>All bugs around newline processing on Windows should now be gone.</p></li>
 

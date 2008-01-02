@@ -169,8 +169,7 @@ public class Element {
 	Clean the attributes of this element.
 	Attributes with null name (the name was ill-formed)
 	or null value (the attribute was present in the element type but
-	not in this actual element) are removed.  Type BOOLEAN is
-	changed to type NMTOKEN at this time.  
+	not in this actual element) are removed.
 	*/
 
 	public void clean() {
@@ -180,9 +179,6 @@ public class Element {
 					name.length() == 0) {
 				theAtts.removeAttribute(i);
 				continue;
-				}
-			if (theAtts.getType(i).equals("BOOLEAN")) {
-				theAtts.setType(i, "NMTOKEN");
 				}
 			}
 		}

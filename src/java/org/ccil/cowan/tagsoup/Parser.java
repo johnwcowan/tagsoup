@@ -41,19 +41,29 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private Scanner theScanner;
 	private AutoDetector theAutoDetector;
 
-	// Feature flags.  The default values here set the defaults for
-	// actual processing, but must be kept in sync with the entries
-	// in theFeatures.
+	// Default values for feature flags
 
-	private boolean namespaces = true;
-	private boolean ignoreBogons = false;
-	private boolean bogonsEmpty = false;
-        private boolean rootBogons = true;
-	private boolean defaultAttributes = true;
-	private boolean translateColons = false;
-	private boolean restartElements = true;
-	private boolean ignorableWhitespace = false;
-	private boolean CDATAElements = true;
+	private static boolean DEFAULT_NAMESPACES = true;
+	private static boolean DEFAULT_IGNORE_BOGONS = false;
+	private static boolean DEFAULT_BOGONS_EMPTY = false;
+        private static boolean DEFAULT_ROOT_BOGONS = true;
+	private static boolean DEFAULT_DEFAULT_ATTRIBUTES = true;
+	private static boolean DEFAULT_TRANSLATE_COLONS = false;
+	private static boolean DEFAULT_RESTART_ELEMENTS = true;
+	private static boolean DEFAULT_IGNORABLE_WHITESPACE = false;
+	private static boolean DEFAULT_CDATA_ELEMENTS = true;
+
+	// Feature flags.  
+
+	private boolean namespaces = DEFAULT_NAMESPACES;
+	private boolean ignoreBogons = DEFAULT_IGNORE_BOGONS;
+	private boolean bogonsEmpty = DEFAULT_BOGONS_EMPTY;
+        private boolean rootBogons = DEFAULT_ROOT_BOGONS;
+	private boolean defaultAttributes = DEFAULT_DEFAULT_ATTRIBUTES;
+	private boolean translateColons = DEFAULT_TRANSLATE_COLONS;
+	private boolean restartElements = DEFAULT_RESTART_ELEMENTS;
+	private boolean ignorableWhitespace = DEFAULT_IGNORABLE_WHITESPACE;
+	private boolean CDATAElements = DEFAULT_CDATA_ELEMENTS;
 
 	/**
 	A value of "true" indicates namespace URIs and unprefixed local
@@ -270,7 +280,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	private HashMap theFeatures = new HashMap();
 	{
-		theFeatures.put(namespacesFeature, Boolean.TRUE);
+		theFeatures.put(namespacesFeature, truthValue(DEFAULT_NAMESPACES));
 		theFeatures.put(namespacePrefixesFeature, Boolean.FALSE);
 		theFeatures.put(externalGeneralEntitiesFeature, Boolean.FALSE);
 		theFeatures.put(externalParameterEntitiesFeature, Boolean.FALSE);
@@ -286,14 +296,20 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		theFeatures.put(xmlnsURIsFeature, Boolean.FALSE);
 		theFeatures.put(xmlnsURIsFeature, Boolean.FALSE);
 		theFeatures.put(XML11Feature, Boolean.FALSE);
-		theFeatures.put(ignoreBogonsFeature, Boolean.FALSE);
-		theFeatures.put(bogonsEmptyFeature, Boolean.FALSE);
-		theFeatures.put(rootBogonsFeature, Boolean.TRUE);
-		theFeatures.put(defaultAttributesFeature, Boolean.TRUE);
-		theFeatures.put(translateColonsFeature, Boolean.FALSE);
-		theFeatures.put(restartElementsFeature, Boolean.TRUE);
-		theFeatures.put(ignorableWhitespaceFeature, Boolean.FALSE);
-		theFeatures.put(CDATAElementsFeature, Boolean.TRUE);
+		theFeatures.put(ignoreBogonsFeature, truthValue(DEFAULT_IGNORE_BOGONS));
+		theFeatures.put(bogonsEmptyFeature, truthValue(DEFAULT_BOGONS_EMPTY));
+		theFeatures.put(rootBogonsFeature, truthValue(DEFAULT_ROOT_BOGONS));
+		theFeatures.put(defaultAttributesFeature, truthValue(DEFAULT_DEFAULT_ATTRIBUTES));
+		theFeatures.put(translateColonsFeature, truthValue(DEFAULT_TRANSLATE_COLONS));
+		theFeatures.put(restartElementsFeature, truthValue(DEFAULT_RESTART_ELEMENTS));
+		theFeatures.put(ignorableWhitespaceFeature, truthValue(DEFAULT_IGNORABLE_WHITESPACE));
+		theFeatures.put(CDATAElementsFeature, truthValue(DEFAULT_CDATA_ELEMENTS));
+		}
+
+	// Private clone of Boolean.valueOf that is guaranteed to return
+	// Boolean.TRUE or Boolean.FALSE
+	private static Boolean truthValue(boolean b) {
+		return b ? Boolean.TRUE : Boolean.FALSE;
 		}
 
 
@@ -655,7 +671,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (length != 0) {
 			// Canonicalize case of name
 			name = makeName(buff, offset, length);
-//			System.out.println("got etag [" + name + "]");
+//			System.err.println("got etag [" + name + "]");
 			ElementType type = theSchema.getElementType(name);
 			if (type == null) return;	// mysterious end-tag
 			name = type.name();
@@ -707,9 +723,24 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		String name = theStack.name();
 		String localName = theStack.localName();
 		String namespace = theStack.namespace();
+		String prefix = prefixOf(name);
+
 //		System.err.println("%% Popping " + name);
 		if (!namespaces) namespace = localName = "";
 		theContentHandler.endElement(namespace, localName, name);
+		if (foreign(prefix, namespace)) {
+			theContentHandler.endPrefixMapping(prefix);
+//			System.err.println("%% Unmapping [" + prefix + "] for elements to " + namespace);
+			}
+		Attributes atts = theStack.atts();
+		for (int i = atts.getLength() - 1; i >= 0; i--) {
+			String attNamespace = atts.getURI(i);
+			String attPrefix = prefixOf(atts.getQName(i));
+			if (foreign(attPrefix, attNamespace)) {
+				theContentHandler.endPrefixMapping(attPrefix);
+//			System.err.println("%% Unmapping [" + attPrefix + "] for attributes to " + attNamespace);
+				}
+			}
 		theStack = theStack.next();
 		}
 
@@ -730,6 +761,8 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		String name = e.name();
 		String localName = e.localName();
 		String namespace = e.namespace();
+		String prefix = prefixOf(name);
+
 //		System.err.println("%% Pushing " + name);
 		e.clean();
 		if (!namespaces) namespace = localName = "";
@@ -738,6 +771,20 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
                         theEntityResolver.resolveEntity(theDoctypePublicId, theDoctypeSystemId);
                     } catch (IOException ew) { }   // Can't be thrown for root I believe.
                 }
+		if (foreign(prefix, namespace)) {
+			theContentHandler.startPrefixMapping(prefix, namespace);
+//			System.err.println("%% Mapping [" + prefix + "] for elements to " + namespace);
+			}
+		Attributes atts = e.atts();
+		int len = atts.getLength();
+		for (int i = 0; i < len; i++) {
+			String attNamespace = atts.getURI(i);
+			String attPrefix = prefixOf(atts.getQName(i));
+			if (foreign(attPrefix, attNamespace)) {
+				theContentHandler.startPrefixMapping(attPrefix, attNamespace);
+//				System.err.println("%% Mapping [" + attPrefix + "] for attributes to " + attNamespace);
+				}
+			}
 		theContentHandler.startElement(namespace, localName, name, e.atts());
 		e.setNext(theStack);
 		theStack = e;
@@ -745,6 +792,24 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		if (CDATAElements && (theStack.flags() & Schema.F_CDATA) != 0) {
 			theScanner.startCDATA();
 			}
+		}
+
+	// Get the prefix from a QName
+	private String prefixOf(String name) {
+		int i = name.indexOf(':');
+		String prefix = "";
+		if (i != -1) prefix = name.substring(0, i);
+//		System.err.println("%% " + prefix + " is prefix of " + name);
+		return prefix;
+		}
+
+	// Return true if we have a foreign name
+	private boolean foreign(String prefix, String namespace) {
+//		System.err.print("%% Testing " + prefix + " and " + namespace + " for foreignness -- ");
+		boolean foreign = !(prefix.equals("") || namespace.equals("") ||
+			namespace.equals(theSchema.getURI()));
+//		System.err.println(foreign);
+		return foreign;
 		}
 
         /**
@@ -932,7 +997,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void pi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null || thePITarget == null) return;
 		if ("xml".equalsIgnoreCase(thePITarget)) return;
-//		if (length > 0 && buff[length - 1] == '?') System.out.println("%% Removing ? from PI");
+//		if (length > 0 && buff[length - 1] == '?') System.err.println("%% Removing ? from PI");
 		if (length > 0 && buff[length - 1] == '?') length--;	// remove trailing ?
 		theContentHandler.processingInstruction(thePITarget,
 			new String(buff, offset, length));
