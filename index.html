@@ -33,7 +33,7 @@ close approximation to XHTML.</p>
 
 <p>This is also the README file packaged with TagSoup.</p>
 
-<p>TagSoup is free and Open Source software.  As of version 2.1, it
+<p>TagSoup is free and Open Source software.  As of version 1.2, it
 is licensed under the
 <a href="http://opensource.org/licenses/apache2.0.php">
 Apache License, Version 2.0</a>, which allows proprietary re-use as well
@@ -55,7 +55,9 @@ use it instead.</p>
 
 <p>There are a great many changes, most of them fixes for long-standing
 bugs, in this release.  Only the most important are listed here; for
-the rest, see the CHANGES file in the source distribution:</p>
+the rest, see the CHANGES file in the source distribution.  Very special
+thanks to Jojo Dijamco, whose intensive efforts at debugging made this
+release a usable upgrade rather than a useless mass of undetected bugs.</p>
 
 <ul>
 
@@ -106,17 +108,30 @@ foreign elements and attributes.</li>
 
 <li><p>All bugs around newline processing on Windows should now be gone.</p></li>
 
-<li><p>Table cells are now allowed in <code>thead</code> and
-<code>tfoot</code> elements even if no <code>tr</code> element is
-present.</p></li>
+<li>A number of content models have been loosened to allow elements
+to appear in new and non-standard (but commonly found) places.
+In particular, tables are now allowed inside paragraphs, against the
+letter of the W3C specification.</p>
+
+<li><p>Since the <code>span</code> element is intended for fine
+control of appearance using CSS, it should never have been a
+restartable element.  This very long-standing bug has now been
+fixed.</p></li>
+
+<li><p>The following non-standard elements are now at least partly
+supported: <code>bgsound</code>, <code>blink</code>, <code>canvas</code>,
+<code>comment</code>, <code>listing</code>, <code>marquee</code>,
+<code>nobr</code>, <code>rbc</code>, <code>rb</code>, <code>rp</code>,
+<code>rtc</code>, <code>rt</code>, <code>ruby</code>, <code>wbr</code>,
+<code>xmp</code>.</p></li>
 
 <li><p>In HTML output mode, boolean attributes like <code>checked</code>
 are now output as such, rather than in XML style as
 <code>checked="checked"</code>.</p></li>
 
-<li><p><code>link</code> elements are now allowed in the body as well as
-the head, which prevents multiple <code>body</code> elements from being
-created.</p></li>
+<li><p>Runs of &lt; characters such as &lt;&lt; and &lt;&lt;&lt; are now
+handled correctly in text rather than being transformed into extremely
+bogus start-tags.</p></li>
 
 </ul>
 
@@ -307,6 +322,10 @@ unknown elements.</dd>
 <dd>A value of "true" indicates that the parser will give unknown
 elements a content model of EMPTY; a value of "false", a
 content model of ANY.</dd>
+
+<dt><tt>http://www.ccil.org/~cowan/tagsoup/features/root-bogons</tt></dt>
+<dd>A value of "true" indicates that the parser will allow unknown
+elements to be the root of the output document.</dd>
 
 
 <dt><tt>http://www.ccil.org/~cowan/tagsoup/features/default-attributes</tt></dt>

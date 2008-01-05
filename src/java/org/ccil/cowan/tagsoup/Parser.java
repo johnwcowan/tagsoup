@@ -560,36 +560,42 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 		for (int i = 0; i < len; i++) {
 			char ch = src.charAt(i);
 			dst[dstlen++] = ch;
+//			System.err.print("i = " + i + ", d = " + dstlen + ", ch = [" + ch + "] ");
 			if (ch == '&' && refStart == -1) {
 				// start of a ref excluding &
 				refStart = dstlen;
+//				System.err.println("start of ref");
 				}
 			else if (refStart == -1) {
 				// not in a ref
+//				System.err.println("not in ref");
 				}
 			else if (Character.isLetter(ch) ||
 					Character.isDigit(ch) ||
 					ch == '#') {
 				// valid entity char
+//				System.err.println("valid");
 				}
 			else if (ch == ';') {
 				// properly terminated ref
-				int ent = lookupEntity(dst, refStart, i - refStart);
+//				System.err.print("got [" + new String(dst, refStart, dstlen-refStart-1) + "]");
+				int ent = lookupEntity(dst, refStart, dstlen - refStart - 1);
+//				System.err.println(" = " + ent);
 				if (ent > 0xFFFF) {
 					ent -= 0x10000;
 					dst[refStart - 1] = (char)((ent>>10) + 0xD800);
 					dst[refStart] = (char)((ent&0x3FF) + 0xDC00);
 					dstlen = refStart + 1;
-					refStart = -1;
 					}
 				else if (ent != 0) {
 					dst[refStart - 1] = (char)ent;
 					dstlen = refStart;
-					refStart = -1;
 					}
+				refStart = -1;
 				}
 			else {
 				// improperly terminated ref
+//				System.err.println("end of ref");
 				refStart = -1;
 				}
 			}

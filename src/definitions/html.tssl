@@ -46,7 +46,7 @@
   <entity name='Amacr' codepoint='0100'/>
   <entity name='amacr' codepoint='0101'/>
   <entity name='amalg' codepoint='2A3F'/>
-  <entity name='amp' codepoint='0038'/>
+  <entity name='amp' codepoint='0026'/>
   <entity name='and' codepoint='2227'/>
   <entity name='And' codepoint='2A53'/>
   <entity name='andand' codepoint='2A55'/>
@@ -1065,7 +1065,7 @@
   <entity name='lsquor' codepoint='201A'/>
   <entity name='Lstrok' codepoint='0141'/>
   <entity name='lstrok' codepoint='0142'/>
-  <entity name='lt' codepoint='0060'/>
+  <entity name='lt' codepoint='003C'/>
   <entity name='Lt' codepoint='226A'/>
   <entity name='ltcc' codepoint='2AA6'/>
   <entity name='ltcir' codepoint='2A79'/>
@@ -2208,6 +2208,11 @@
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
+      <element name='blink' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
       <element name='blockquote' type='mixed'>
         <memberOf group='M_BLOCK'/>
         <contains group='M_INLINE'/>
@@ -2217,6 +2222,11 @@
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <attribute name='clear' default='none'/>
+      </element>
+      <element name='canvas' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
       </element>
       <element name='center' type='mixed'>
         <memberOf group='M_BLOCK'/>
@@ -2229,6 +2239,11 @@
         <contains group='M_INLINE'/>
       </element>
       <element name='code' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='comment' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
@@ -2252,7 +2267,6 @@
       </element>
       <element name='div' type='mixed'>
         <memberOf group='M_BLOCK'/>
-        <memberOf group='M_INLINE'/>
         <contains group='M_INLINE'/>
         <contains group='M_BLOCK'/>
         <attribute name='align' type='NMTOKEN' />
@@ -2439,10 +2453,20 @@
         <contains group='M_LI'/>
         <attribute name='compact' type='BOOLEAN' />
       </element>
+      <element name='marquee' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+        <attribute name='width' type='NMTOKEN' />
+      </element>
       <element name='nobr' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
+      </element>
+      <element name='wbr' type='empty'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
       </element>
       <element name='noscript' type='mixed'>
         <memberOf group='M_BLOCK'/>
@@ -2482,7 +2506,47 @@
         <contains group='M_INLINE'/>
         <attribute name='width' type='NMTOKEN' />
       </element>
+      <element name='listing' type='mixed'>
+        <memberOf group='M_BLOCK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='xmp' type='mixed'>
+        <memberOf group='M_BLOCK'/>
+        <contains group='M_INLINE'/>
+        <attribute name='width' type='NMTOKEN' />
+      </element>
       <element name='q' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='ruby' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='rbc' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='rtc' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='rb' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+      </element>
+      <element name='rt' closeMode='restartable' type='mixed'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+        <contains group='M_INLINE'/>
+	<attribute name='rbspan' default='1'/>
+      </element>
+      <element name='rp' closeMode='restartable' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
@@ -2502,7 +2566,7 @@
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
       </element>
-      <element name='span' closeMode='restartable' type='mixed'>
+      <element name='span' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
         <contains group='M_INLINE'/>
@@ -2672,6 +2736,9 @@
         <memberOf group='M_INLINE'/>
       </element>
       <element name='title' type='string'>
+        <memberOf group='M_HEAD'/>
+      </element>
+      <element name='bgsound' type='empty'>
         <memberOf group='M_HEAD'/>
       </element>
     </element>
