@@ -1,3 +1,6 @@
+Allow lower-case doctype declaration (maybe cdata too)
+Handle namespace declarations
+
 Notice: It's quite possible that none of these features will ever be
 implemented.  If you'd like to implement one yourself, feel free to send
 me a patch.
