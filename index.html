@@ -23,9 +23,9 @@ TagSoup - Just Keep On Truckin'
 <a name="index"></a><h3>Index</h3>
 <ul>
 <li><a href="#intro">Introduction</a></li>
+<li><a href="#1.2.1">Tagsoup 1.2.1 released</a></li>
 <li><a href="#taggle">Taggle, a C++ port of TagSoup, available now</a></li>
 <li><a href="#1.2">TagSoup 1.2 released</a></li>
-<li><a href="#1.1">TagSoup 1.1 released</a></li>
 <li><a href="#what">What TagSoup does</a></li>
 <li><a href="#tsaxon">The TSaxon XSLT-for-HTML processor</a></li>
 <li><a href="#java1.1">Note: TagSoup in Java 1.1</a></li>
@@ -59,6 +59,30 @@ as use with GPL 3.0 or GPL 2.0-or-later projects.  (If anyone needs a
 GPL 2.0 license for a GPL 2.0-only project, feel free to ask.)
 
 <p>The TagSoup logo is courtesy Ian Leslie.</p>
+
+<a name="1.2.1"></a><h3>TagSoup 1.2.1 released</h3>
+
+<p>TagSoup 1.2.1 is a much-delayed bug fix release.  The following
+bugs have hopefully been repaired:
+
+<ul><li>DOCTYPE is now recognized even in lower case.</li>
+<li>We make sure to buffer the reader, eliminating a long-standing
+bug that would crash on certain inputs, such as &amp; followed by CR+LF.</li>
+<li>The HTML scanner's table is precompiled at run time for efficiency,
+causing a 4x speedup on large input documents.</li>
+<li><code>]]</code> within a CDATA section no longer causes input to be discarded.</li>
+<li>Remove bogus newline after printing children of the root element.</li>
+<li>Allow the <code>noscript</code> element anywhere, 
+the same as the <code>script</code> element.</li>
+<li>Updated to the 2011 edition of the W3C character entity list.</li></ul>
+
+<p><a href="tagsoup-1.2.1.jar">Download</a> the TagSoup 1.2.1 jar
+file here.
+It's about 89K long.<br/>
+<a href="tagsoup-1.2.1-src.zip">Download</a> the full TagSoup 1.2.1 source
+here.  If you don't have zip, you can use jar to unpack it.  <br/>
+<a href="CHANGES">Download</a> the current CHANGES file here.</p>
+
 
 <a name="taggle"></a><h3>Taggle, a TagSoup in C++, available now</h3>
 
@@ -161,26 +185,6 @@ bogus start-tags.</p></li>
 
 </ul>
 
-<p><a href="tagsoup-1.2.jar">Download</a> the TagSoup 1.2 jar
-file here.
-It's about 87K long.<br/>
-<a href="tagsoup-1.2-src.zip">Download</a> the full TagSoup 1.2 source
-here.  If you don't have zip, you can use jar to unpack it.  <br/>
-<a href="CHANGES">Download</a> the current CHANGES file here.</p>
-
-<a name="1.1"></a><h3>TagSoup 1.1 released</h3>
-
-<p>TagSoup 1.1 adds Tatu Saloranta's JAXP support for TagSoup.
-To use TagSoup within the JAXP framework (which is not
-something I necessarily recommend, but it is part of the Java
-XML platform), you can create a <tt>SAXParser</tt> by calling
-<tt>org.ccil.cowan.tagsoup.jaxp.SAXParserImpl.newInstance()</tt>.  You can
-also set the system property <tt>javax.xml.parsers.SAXParserFactory</tt>
-to <tt>org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl</tt>, but <i>be
-aware</i> that doing this will cause all JAXP-based XML parsing to go
-through TagSoup, which is a Bad Thing if your application also reads
-XML documents.</p>
-
 <a name="what"></a><h3>What TagSoup does</h3>
 <p>TagSoup is designed as a parser, not a whole application; it isn't
 intended to permanently clean up bad HTML, as 
@@ -248,9 +252,12 @@ zipfile in an empty directory and copy the <tt>saxon.jar</tt> and
 build process for TagSoup will then notice that Saxon is available and
 use it instead.</p>
 
+<p>In addition, if you are building on a Debian-derived distro, you will
+need to install not only the ant package but the ant-optional package as well.</p>
+
 <a name="program"></a><h3>TagSoup as a stand-alone program</h3>
 <p>It is possible to run TagSoup as a program by saying <code>java
--jar tagsoup-1.2 [<i>option ...</i>] [<i>file ...</i>]</code>.
+-jar tagsoup-1.2.1 [<i>option ...</i>] [<i>file ...</i>]</code>.
 Files mentioned on the command line will be parsed individually.  If no
 files are specified, the standard input is read.</p>
 
@@ -349,7 +356,6 @@ with the special CDATA content model.</dd>
 <p>TagSoup supports the following SAX features in addition to 
 <a href="http://www.saxproject.org/apidoc/org/xml/sax/package-summary.html">
 the standard ones</a>:</p>
-standard ones:</p>
 
 <dl>
 <dt><tt>http://www.ccil.org/~cowan/tagsoup/features/ignore-bogons</tt></dt>

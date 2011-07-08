@@ -1,11 +1,14 @@
+These will be fixed for the 1.3 release:
+
 Consider having elements that suppress reopening
 Handle namespace declarations semi-properly
 Squelch namespaces better in --nons mode
 Clean systemids as well as publicids
+Deal with zero or negative length ids in DOCTYPE declarations
+Fix duplicate attributes to use the last value, not the first
 
-Notice: It's quite possible that none of these features will ever be
-implemented.  If you'd like to implement one yourself, feel free to send
-me a patch.
+These may never be implemented.  If you'd like to implement one yourself,
+feel free to send me a patch.
 
 Flag added parent elements with a special attribute
 Allow case sensitivity as a standard feature
@@ -16,3 +19,5 @@ Allow inline cruft in table bodies and rows
 Suppress start-tags for some restartable elements if the element
 	is already on the stack (<b><b> is the same as <b>)
 Combine consecutive body elements
+If attributes are URIs, eliminate spaces and newlines altogether
+Clean up tags opened but not closed inside a table cell
